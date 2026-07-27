@@ -1,0 +1,52 @@
+name: Usulan fitur
+description: Usulkan perubahan yang mengurangi beban warga/pengurus tanpa menambah tekanan sosial.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah warga atau pengurus
+      description: Jelaskan kebutuhan nyata, bukan hanya solusi teknis.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Usulan alur paling sederhana
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatif yang sudah dipertimbangkan
+    validations:
+      required: true
+  - type: dropdown
+    id: optional
+    attributes:
+      label: Apakah fitur dapat dibuat opsional?
+      options:
+        - Ya
+        - Tidak
+        - Belum diketahui
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data baru yang dibutuhkan
+      description: Sebutkan purpose, role yang boleh mengakses, retensi, dan alasan setiap field.
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Guardrail produk
+      options:
+        - label: Fitur tidak memublikasikan tunggakan, alasan dispensasi, atau data keluarga.
+          required: true
+        - label: Fitur tidak membuat ranking, social score, tracking, atau surveillance warga.
+          required: true
+        - label: Manfaatnya lebih besar daripada beban operasional pengurus.
+          required: true
+

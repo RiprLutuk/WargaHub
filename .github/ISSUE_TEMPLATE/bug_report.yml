@@ -1,0 +1,70 @@
+name: Laporan bug
+description: Laporkan perilaku yang salah dan dapat direproduksi tanpa membagikan data warga.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih sudah membantu WargaHub. Jangan lampirkan password, token, cookie, data warga, bukti pembayaran, atau dokumen privat. Laporkan kerentanan melalui SECURITY.md, bukan issue publik.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Halaman publik / PWA
+        - Portal warga
+        - CMS pengurus
+        - REST API
+        - Database / migration
+        - Deployment / backup
+        - Aksesibilitas
+        - Lainnya
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Langkah reproduksi
+      description: Gunakan data contoh yang sudah disanitasi.
+      placeholder: |
+        1. Masuk sebagai role ...
+        2. Buka ...
+        3. Pilih ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Hasil yang diharapkan
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Hasil aktual
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versi/commit WargaHub
+      placeholder: v0.1.0 atau commit SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser dan deployment
+      placeholder: Firefox 128, Docker Compose, reverse proxy ...
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Pemeriksaan privasi
+      options:
+        - label: Saya sudah menghapus seluruh secret dan data pribadi dari laporan/lampiran.
+          required: true
+        - label: Ini bukan laporan kerentanan keamanan.
+          required: true
+

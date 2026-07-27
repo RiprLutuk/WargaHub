@@ -1,0 +1,41 @@
+{
+  admin off
+  http_port 8080
+  https_port 8443
+}
+
+{$SITE_ADDRESS:http://localhost} {
+  encode zstd gzip
+
+  @backend path /api/* /health /ready /documentation /documentation/*
+  handle @backend {
+    reverse_proxy api:3000
+  }
+
+  handle {
+    reverse_proxy web:8080
+  }
+
+  @https protocol https
+  header @https Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  header {
+    -Server
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
+    Referrer-Policy strict-origin-when-cross-origin
+    Permissions-Policy "camera=(), geolocation=(), microphone=()"
+  }
+
+  log {
+    output stdout
+    format json
+  }
+}
+
+# Liveness-only listener for the container health check. It is bound to the
+# container loopback interface and is not published by Compose.
+http://127.0.0.1:8081 {
+  @health path /health
+  respond @health 200
+  respond 404
+}

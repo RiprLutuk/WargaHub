@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="WargaHub">
+  <rect width="64" height="64" rx="18" fill="#07574f"/>
+  <path d="M14 29 32 13l18 16v21a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4Z" fill="none" stroke="#fffdf8" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M23 48c0-8 3-14 9-20 6 6 9 12 9 20M32 28v20" fill="none" stroke="#e2a43a" stroke-width="4" stroke-linecap="round"/>
+</svg>

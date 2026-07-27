@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  --ink-950: #102b27;
+  --ink-800: #24453f;
+  --ink-650: #45615c;
+  --ink-500: #6c817c;
+  --teal-800: #07574f;
+  --teal-700: #08675d;
+  --teal-600: #0b786c;
+  --teal-100: #d9eee8;
+  --teal-50: #eff8f5;
+  --cream-100: #f4efe4;
+  --cream-50: #fbf8f1;
+  --paper: #fffdf8;
+  --amber-700: #985f08;
+  --amber-500: #e2a43a;
+  --amber-100: #f9e7bd;
+  --coral-700: #9d3f32;
+  --coral-100: #f8ddd7;
+  --blue-700: #275c84;
+  --blue-100: #dcecf7;
+  --success-700: #247049;
+  --success-100: #dcefe3;
+  --line: #dce2dc;
+  --line-strong: #bdcbc5;
+  --shadow-sm: 0 1px 2px rgb(16 43 39 / 0.06), 0 6px 20px rgb(16 43 39 / 0.05);
+  --shadow-lg: 0 20px 60px rgb(16 43 39 / 0.13);
+  --radius-sm: 0.65rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.4rem;
+  --radius-xl: 2rem;
+  --content: 74rem;
+  --font-sans: Inter, Aptos, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+}

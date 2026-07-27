@@ -1,0 +1,30 @@
+{
+  "name": "wargahub",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "bun@1.3.12",
+  "engines": {
+    "node": ">=22 <25",
+    "bun": ">=1.2"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "test": "bun run --filter '*' test",
+    "typecheck": "bun run --filter '*' typecheck",
+    "check": "bun run typecheck && bun run test && bun run build",
+    "db:migrate": "bun run --cwd apps/api db:migrate",
+    "db:bootstrap": "bun run --cwd apps/api db:bootstrap",
+    "db:seed": "bun run --cwd apps/api db:seed",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

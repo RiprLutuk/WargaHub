@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.data/
+data/
+uploads/
+playwright-report/
+test-results/
+apps/web/public/sw.js
+apps/web/public/workbox-*.js
+apps/web/public/registerSW.js
