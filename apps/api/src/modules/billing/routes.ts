@@ -45,10 +45,17 @@ export async function billingRoutes(app: FastifyInstance): Promise<void> {
       }
       values.push(page.pageSize, (page.page - 1) * page.pageSize);
       const result = await app.database.query<BillRow & { total_count: number | string }>(
-        `SELECT id, organization_id, household_id, title, description, period, kind,
-           recurrence, amount, amount_paid, due_at, status, COUNT(*) OVER() AS total_count
-         FROM bills WHERE organization_id = $1${scope}
-         ORDER BY due_at ASC LIMIT $${values.length - 1} OFFSET $${values.length}`,
+        `SELECT b.id, b.organization_id, b.household_id, b.title, b.description, b.period, b.kind,
+           b.recurrence, b.amount, b.amount_paid, b.due_at,
+           CASE 
+             WHEN b.status = 'OPEN' AND EXISTS (
+               SELECT 1 FROM payments p WHERE p.bill_id = b.id AND p.status = 'PENDING_VERIFICATION'
+             ) THEN 'PENDING_VERIFICATION'
+             ELSE b.status
+           END AS status,
+           COUNT(*) OVER() AS total_count
+         FROM bills b WHERE b.organization_id = $1${scope}
+         ORDER BY b.due_at ASC LIMIT $${values.length - 1} OFFSET $${values.length}`,
         values,
       );
       return success(request, result.rows.map(mapBill), {
@@ -65,9 +72,15 @@ export async function billingRoutes(app: FastifyInstance): Promise<void> {
     async (request) => {
       const { id } = request.params as { id: string };
       const result = await app.database.query<BillRow>(
-        `SELECT id, organization_id, household_id, title, description, period, kind,
-           recurrence, amount, amount_paid, due_at, status
-         FROM bills WHERE id = $1 AND organization_id = $2`,
+        `SELECT b.id, b.organization_id, b.household_id, b.title, b.description, b.period, b.kind,
+           b.recurrence, b.amount, b.amount_paid, b.due_at,
+           CASE 
+             WHEN b.status = 'OPEN' AND EXISTS (
+               SELECT 1 FROM payments p WHERE p.bill_id = b.id AND p.status = 'PENDING_VERIFICATION'
+             ) THEN 'PENDING_VERIFICATION'
+             ELSE b.status
+           END AS status
+         FROM bills b WHERE b.id = $1 AND b.organization_id = $2`,
         [id, request.auth?.organizationId],
       );
       const row = result.rows[0];
