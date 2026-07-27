@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
-  Activity, Bell, BookOpen, CalendarClock, ClipboardList, FileText, Gauge, Home, Megaphone,
-  ReceiptText, Settings, ShieldCheck, Users, WalletCards,
+  Activity, Bell, BookOpen, CalendarClock, ClipboardList, FileSignature, FileText, Gauge,
+  HardHat, Home, Megaphone, ReceiptText, Settings, ShieldCheck, Store, Users, Vote, WalletCards,
 } from 'lucide-vue-next';
 import { computed, type Component } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -18,6 +18,11 @@ const residentItems: NavigationItem[] = [
   { to: '/app/pengaduan', label: 'Pengaduan', icon: ClipboardList, permission: 'complaint.read' },
   { to: '/app/kegiatan', label: 'Kegiatan', icon: Activity, permission: 'activity.read' },
   { to: '/app/ronda', label: 'Ronda', icon: ShieldCheck, permission: 'patrol.schedule.read' },
+  { to: '/app/surat', label: 'Surat', icon: FileSignature },
+  { to: '/app/voting', label: 'Voting', icon: Vote },
+  { to: '/app/fasilitas', label: 'Fasilitas', icon: Home },
+  { to: '/app/program', label: 'Program', icon: HardHat },
+  { to: '/app/layanan', label: 'Layanan', icon: Store },
   { to: '/app/dokumen', label: 'Dokumen', icon: FileText, permission: 'document.read' },
   { to: '/app/notifikasi', label: 'Notifikasi', icon: Bell, permission: 'notification.read' },
 ];
@@ -30,6 +35,11 @@ const adminItems: NavigationItem[] = [
   { to: '/admin/pembayaran', label: 'Pembayaran', icon: WalletCards, permission: 'billing.reconcile' },
   { to: '/admin/keuangan', label: 'Keuangan', icon: BookOpen, permission: 'finance.read' },
   { to: '/admin/operasional', label: 'Operasional', icon: CalendarClock, permission: 'complaint.assign' },
+  { to: '/admin/surat', label: 'Kelola surat', icon: FileSignature },
+  { to: '/admin/voting', label: 'Musyawarah', icon: Vote },
+  { to: '/admin/fasilitas', label: 'Fasilitas', icon: Home },
+  { to: '/admin/program', label: 'Program', icon: HardHat },
+  { to: '/admin/layanan', label: 'Layanan', icon: Store },
   { to: '/admin/dokumen', label: 'Dokumen', icon: FileText, permission: 'document.manage' },
   { to: '/admin/audit', label: 'Audit log', icon: ClipboardList, permission: 'audit_log.read' },
   { to: '/admin/pengaturan', label: 'Pengaturan', icon: Settings, permission: 'settings.manage' },
@@ -66,7 +76,7 @@ const showAdmin = computed(() => props.variant !== 'app' && adminItems.some((ite
 .app-sidebar, .nav-group { display: grid; align-content: start; gap: .3rem; }
 .admin-group { margin-top: .9rem; padding-top: .9rem; border-top: 1px solid var(--line); }
 .nav-label { padding: .25rem .7rem; color: var(--ink-500); font-size: .65rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
-a { display: flex; min-height: 2.85rem; align-items: center; gap: .7rem; padding: .62rem .72rem; border-radius: .72rem; color: var(--ink-650); font-size: .88rem; font-weight: 720; text-decoration: none; }
+a { display: flex; min-height: 2.75rem; align-items: center; gap: .65rem; padding: .55rem .7rem; border-radius: .7rem; color: var(--ink-650); font-size: .85rem; font-weight: 720; text-decoration: none; }
 a:hover { background: var(--teal-50); color: var(--teal-800); }
 a.router-link-exact-active { background: var(--teal-100); color: var(--teal-800); font-weight: 820; }
 </style>
