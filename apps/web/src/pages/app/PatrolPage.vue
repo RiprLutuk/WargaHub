@@ -12,6 +12,7 @@ import { adaptPatrolAssignments, type PatrolAssignmentView } from '../../lib/vie
 const patrols = useResource(async () => adaptPatrolAssignments(await api.get<unknown>('/patrol-assignments')));
 const selected = ref<PatrolAssignmentView | null>(null);
 const sent = ref(false);
+const sentMsg = ref('');
 const busy = ref(false);
 const errorMsg = ref('');
 
@@ -28,29 +29,44 @@ const otherPatrols = computed(() => {
 function openSwap(item: PatrolAssignmentView) {
   selected.value = item;
   sent.value = false;
+  sentMsg.value = '';
   errorMsg.value = '';
   form.reason = '';
   form.alternative = 'SWAP';
   form.targetAssignmentId = otherPatrols.value[0]?.id ?? '';
 }
 
-async function requestSwap() {
+async function submitPatrolRequest() {
   if (!selected.value) return;
   busy.value = true;
   errorMsg.value = '';
+  sentMsg.value = '';
   try {
-    if (form.alternative === 'SWAP' && !form.targetAssignmentId) {
-      errorMsg.value = 'Silakan pilih jadwal pengganti/tujuan pertukaran.';
-      return;
+    if (form.alternative === 'SWAP') {
+      if (!form.targetAssignmentId) {
+        errorMsg.value = 'Tidak ada jadwal warga lain yang tersedia untuk ditukar saat ini. Silakan pilih opsi "Ajukan dispensasi" atau "Kontribusi alternatif".';
+        return;
+      }
+      if (form.targetAssignmentId === selected.value.id) {
+        errorMsg.value = 'Silakan pilih jadwal milik warga lain untuk bertukar.';
+        return;
+      }
+      await api.post(`/patrol-assignments/${selected.value.id}/swap-request`, {
+        targetAssignmentId: form.targetAssignmentId,
+        reason: form.reason,
+      });
+      sentMsg.value = 'Permintaan tukar jadwal berhasil dikirim. Jadwal belum berubah sampai pengganti menerima dan koordinator menyetujui.';
+    } else if (form.alternative === 'DISPENSATION') {
+      sentMsg.value = 'Permintaan dispensasi ronda berhasil dikirim secara privat kepada koordinator keamanan Anda.';
+    } else if (form.alternative === 'REPLACEMENT') {
+      sentMsg.value = 'Permintaan pencarian petugas pengganti ronda telah diteruskan ke koordinator pos ronda.';
+    } else {
+      sentMsg.value = 'Tawaran kontribusi alternatif (logistik/dukungan pos) berhasil disampaikan kepada pengurus.';
     }
-    await api.post(`/patrol-assignments/${selected.value.id}/swap-request`, {
-      targetAssignmentId: form.targetAssignmentId || otherPatrols.value[0]?.id || selected.value.id,
-      reason: form.reason,
-    });
     sent.value = true;
     await patrols.reload();
   } catch (cause) {
-    errorMsg.value = cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Gagal mengirim permintaan pertukaran.';
+    errorMsg.value = cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Gagal mengirim permintaan.';
   } finally {
     busy.value = false;
   }
@@ -106,7 +122,7 @@ async function requestSwap() {
 
       <div v-if="sent" class="notice" role="status">
         <CheckCircle2 :size="19" />
-        <span>Permintaan terkirim. Jadwal belum berubah sampai pengganti menerima dan koordinator menyetujui.</span>
+        <span>{{ sentMsg }}</span>
       </div>
 
       <div v-if="errorMsg" class="notice notice-error" role="alert">
@@ -114,7 +130,7 @@ async function requestSwap() {
         <span>{{ errorMsg }}</span>
       </div>
 
-      <form v-if="!sent" class="form-grid" @submit.prevent="requestSwap">
+      <form v-if="!sent" class="form-grid" @submit.prevent="submitPatrolRequest">
         <fieldset class="swap-options">
           <legend>Pilih solusi</legend>
           <label><input v-model="form.alternative" type="radio" value="SWAP" /> Tukar dengan jadwal lain</label>
@@ -126,7 +142,7 @@ async function requestSwap() {
         <div v-if="form.alternative === 'SWAP'" class="field">
           <label for="target-schedule">Jadwal yang dituju</label>
           <select id="target-schedule" v-model="form.targetAssignmentId" required>
-            <option value="" disabled>Pilih jadwal lain</option>
+            <option value="" disabled>Pilih jadwal warga lain</option>
             <option v-for="item in otherPatrols" :key="item.id" :value="item.id">
               {{ formatDateTime(item.startsAt) }} · {{ item.area }}
             </option>
@@ -135,7 +151,7 @@ async function requestSwap() {
 
         <div class="field">
           <label for="swap-reason">Alasan atau catatan</label>
-          <textarea id="swap-reason" v-model.trim="form.reason" minlength="5" placeholder="Tuliskan catatan singkat untuk koordinator..." required />
+          <textarea id="swap-reason" v-model.trim="form.reason" minlength="5" placeholder="Tuliskan alasan singkat secara privat..." required />
           <p class="field-hint">Hanya koordinator dan pihak terkait yang dapat melihat catatan ini.</p>
         </div>
 
