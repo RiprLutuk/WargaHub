@@ -150,6 +150,15 @@ bun run build
 - 💾 [Strategi Backup & Restore](docs/deployment/backup-restore.md)
 - 📋 [Spesifikasi PRD](PRD-WargaHub.md)
 
+## ❤️ Dukung Pengembangan WargaHub
+
+WargaHub dikembangkan sebagai proyek *open-source* nirlaba untuk membantu transparansi dan kerukunan warga di Indonesia. Jika proyek ini bermanfaat bagi lingkungan Anda, Anda dapat memberikan dukungan pengembangan via **GoPay / QRIS**:
+
+<div align="center">
+  <img src="docs/donation-qr.jpeg" alt="Dukungan WargaHub via GoPay / QRIS" width="280" style="border-radius: 12px; margin-block: 1rem;" />
+  <p><i>Scan kode QRIS / GoPay di atas untuk berkontribusi mendukung pemeliharaan & pengembangan fitur WargaHub. Terima kasih atas dukungan Anda! 🙏</i></p>
+</div>
+
 ---
 
 ## 📜 Lisensi
