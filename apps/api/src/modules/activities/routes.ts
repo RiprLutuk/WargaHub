@@ -165,14 +165,6 @@ export async function activityRoutes(app: FastifyInstance): Promise<void> {
       const { id } = request.params as { id: string };
       const input = activityResponseSchema.parse(request.body);
       await activityById(app, id, request.auth.organizationId);
-      const need = await app.database.query<{ contribution_type: string }>(
-        `SELECT contribution_type FROM activity_needs
-         WHERE activity_id = $1 AND organization_id = $2 AND contribution_type = $3`,
-        [id, request.auth.organizationId, input.contributionType],
-      );
-      if (!need.rows[0] && input.contributionType !== 'DISPENSASI') {
-        throw new AppError(422, 'CONTRIBUTION_NOT_NEEDED', 'Pilihan kontribusi tidak tersedia.');
-      }
       const result = await app.database.query<{
         contribution_type: string;
         quantity: number;
