@@ -32,6 +32,7 @@ import EmergencyPage from './pages/public/EmergencyPage.vue';
 import HomePage from './pages/public/HomePage.vue';
 import NotFoundPage from './pages/public/NotFoundPage.vue';
 import PublicBusinessesPage from './pages/public/PublicBusinessesPage.vue';
+import PublicComplaintsPage from './pages/public/PublicComplaintsPage.vue';
 import PublicFacilitiesPage from './pages/public/PublicFacilitiesPage.vue';
 import PublicProgramsPage from './pages/public/PublicProgramsPage.vue';
 import PublicVerifyLetterPage from './pages/public/PublicVerifyLetterPage.vue';
@@ -61,6 +62,7 @@ const router = createRouter({
       children: [
         { path: '', component: HomePage, meta: { title: 'Beranda' } },
         { path: 'pengumuman', component: AnnouncementsPage, meta: { title: 'Pengumuman' } },
+        { path: 'laporan', component: PublicComplaintsPage, meta: { title: 'Status Laporan Publik' } },
         { path: 'agenda', component: AgendaPage, meta: { title: 'Agenda' } },
         { path: 'transparansi', component: TransparencyPage, meta: { title: 'Transparansi' } },
         { path: 'fasilitas', component: PublicFacilitiesPage, meta: { title: 'Fasilitas publik' } },

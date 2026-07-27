@@ -40,6 +40,7 @@ function closeAll() {
             </button>
             <div class="dropdown-menu">
               <RouterLink to="/pengumuman" @click="closeAll">📢 Pengumuman Resmi</RouterLink>
+              <RouterLink to="/laporan" @click="closeAll">📋 Status Laporan Publik</RouterLink>
               <RouterLink to="/agenda" @click="closeAll">📅 Agenda & Kegiatan</RouterLink>
               <RouterLink to="/dokumen" @click="closeAll">📄 Dokumen Publik</RouterLink>
             </div>
@@ -78,6 +79,7 @@ function closeAll() {
         <div>
           <strong>Informasi Publik</strong>
           <RouterLink to="/pengumuman">Pengumuman</RouterLink>
+          <RouterLink to="/laporan">Laporan Publik</RouterLink>
           <RouterLink to="/agenda">Agenda Warga</RouterLink>
           <RouterLink to="/transparansi">Transparansi Keuangan</RouterLink>
           <RouterLink to="/fasilitas">Fasilitas Publik</RouterLink>

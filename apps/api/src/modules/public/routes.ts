@@ -284,4 +284,56 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? 0 },
     );
   });
+
+  app.get('/public/complaints', async (request) => {
+    const query = pageQuerySchema.parse(request.query);
+    const organization = await publicOrganization(app);
+    const params: unknown[] = [organization.id];
+    let search = '';
+    if (query.search) {
+      params.push(`%${query.search}%`);
+      search = ` AND (title ILIKE $2 OR description ILIKE $2 OR coalesce(location, '') ILIKE $2 OR category ILIKE $2)`;
+    }
+    const count = await app.database.query<{ total: number }>(
+      `SELECT count(*)::int AS total FROM complaints
+       WHERE organization_id = $1 AND visibility = 'PUBLIC'${search}`,
+      params,
+    );
+    params.push(query.pageSize, (query.page - 1) * query.pageSize);
+    const result = await app.database.query<{
+      id: string;
+      ticket_number: string;
+      category: string;
+      title: string;
+      description: string;
+      location: string | null;
+      priority: string;
+      status: string;
+      created_at: string | Date;
+      updated_at: string | Date;
+    }>(
+      `SELECT id, ticket_number, category, title, description, location, priority, status, created_at, updated_at
+       FROM complaints
+       WHERE organization_id = $1 AND visibility = 'PUBLIC'${search}
+       ORDER BY created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params,
+    );
+    return success(
+      request,
+      result.rows.map((row) => ({
+        id: row.id,
+        ticketNumber: row.ticket_number,
+        category: row.category,
+        title: row.title,
+        description: row.description,
+        location: row.location,
+        priority: row.priority,
+        status: row.status,
+        createdAt: new Date(row.created_at).toISOString(),
+        updatedAt: new Date(row.updated_at).toISOString(),
+      })),
+      { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? 0 },
+    );
+  });
 }
