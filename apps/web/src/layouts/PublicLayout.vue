@@ -9,6 +9,9 @@ const navItems = [
   { to: '/pengumuman', label: 'Pengumuman' },
   { to: '/agenda', label: 'Agenda' },
   { to: '/transparansi', label: 'Transparansi' },
+  { to: '/fasilitas', label: 'Fasilitas' },
+  { to: '/program', label: 'Program' },
+  { to: '/umkm', label: 'UMKM' },
   { to: '/dokumen', label: 'Dokumen' },
   { to: '/kontak', label: 'Kontak' },
 ];
@@ -46,16 +49,19 @@ const navItems = [
           <p>Informasi resmi lingkungan yang terbuka, privat seperlunya, dan tidak melelahkan secara sosial.</p>
         </div>
         <div>
-          <strong>Informasi</strong>
+          <strong>Informasi Publik</strong>
           <RouterLink to="/pengumuman">Pengumuman</RouterLink>
-          <RouterLink to="/transparansi">Transparansi</RouterLink>
-          <RouterLink to="/dokumen">Dokumen publik</RouterLink>
+          <RouterLink to="/transparansi">Transparansi Keuangan</RouterLink>
+          <RouterLink to="/fasilitas">Fasilitas Publik</RouterLink>
+          <RouterLink to="/program">Program Lingkungan</RouterLink>
+          <RouterLink to="/umkm">Direktori UMKM</RouterLink>
+          <RouterLink to="/dokumen">Dokumen Publik</RouterLink>
         </div>
         <div>
-          <strong>Bantuan</strong>
+          <strong>Bantuan & Layanan</strong>
           <RouterLink to="/kontak">Hubungi pengurus</RouterLink>
           <RouterLink to="/darurat">Nomor darurat</RouterLink>
-          <RouterLink to="/login">Masuk portal</RouterLink>
+          <RouterLink to="/login">Masuk portal warga</RouterLink>
         </div>
       </div>
       <div class="container footer-bottom">
@@ -72,7 +78,7 @@ const navItems = [
 .header-inner { display: flex; min-height: 4.75rem; align-items: center; justify-content: space-between; gap: 1rem; }
 .header-inner > a { text-decoration: none; }
 nav { display: flex; align-items: center; gap: 0.2rem; }
-nav > a:not(.button) { display: inline-flex; min-height: 2.75rem; align-items: center; padding: 0.5rem 0.68rem; border-radius: 0.65rem; color: var(--ink-800); font-size: 0.88rem; font-weight: 700; text-decoration: none; }
+nav > a:not(.button) { display: inline-flex; min-height: 2.75rem; align-items: center; padding: 0.5rem 0.58rem; border-radius: 0.65rem; color: var(--ink-800); font-size: 0.84rem; font-weight: 700; text-decoration: none; }
 nav > a:not(.button):hover, nav > a.router-link-exact-active:not(.button) { background: var(--teal-100); color: var(--teal-800); }
 nav .emergency-link { gap: 0.35rem; color: var(--coral-700) !important; }
 .menu-button { display: none; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid var(--line); border-radius: 0.7rem; background: var(--paper); color: var(--ink-950); }

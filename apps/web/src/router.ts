@@ -31,6 +31,10 @@ import DocumentsPage from './pages/public/DocumentsPage.vue';
 import EmergencyPage from './pages/public/EmergencyPage.vue';
 import HomePage from './pages/public/HomePage.vue';
 import NotFoundPage from './pages/public/NotFoundPage.vue';
+import PublicBusinessesPage from './pages/public/PublicBusinessesPage.vue';
+import PublicFacilitiesPage from './pages/public/PublicFacilitiesPage.vue';
+import PublicProgramsPage from './pages/public/PublicProgramsPage.vue';
+import PublicVerifyLetterPage from './pages/public/PublicVerifyLetterPage.vue';
 import TransparencyPage from './pages/public/TransparencyPage.vue';
 import { useSessionStore } from './stores/session';
 
@@ -59,9 +63,13 @@ const router = createRouter({
         { path: 'pengumuman', component: AnnouncementsPage, meta: { title: 'Pengumuman' } },
         { path: 'agenda', component: AgendaPage, meta: { title: 'Agenda' } },
         { path: 'transparansi', component: TransparencyPage, meta: { title: 'Transparansi' } },
+        { path: 'fasilitas', component: PublicFacilitiesPage, meta: { title: 'Fasilitas publik' } },
+        { path: 'program', component: PublicProgramsPage, meta: { title: 'Program & proyek' } },
+        { path: 'umkm', component: PublicBusinessesPage, meta: { title: 'Direktori UMKM' } },
         { path: 'dokumen', component: DocumentsPage, meta: { title: 'Dokumen' } },
         { path: 'kontak', component: ContactPage, meta: { title: 'Kontak' } },
         { path: 'darurat', component: EmergencyPage, meta: { title: 'Informasi darurat' } },
+        { path: 'surat/verifikasi/:token', component: PublicVerifyLetterPage, meta: { title: 'Verifikasi surat digital' } },
       ],
     },
     { path: '/accept-invitation', component: AcceptInvitationPage, meta: { title: 'Aktivasi akun' } },
