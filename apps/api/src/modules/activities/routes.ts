@@ -8,6 +8,17 @@ import { ulid } from 'ulidx';
 import { AppError, success } from '../../lib/http.js';
 import { recordAudit } from '../audit/service.js';
 
+const contributionLabels: Record<string, string> = {
+  HADIR: 'Hadir & tenaga',
+  KONSUMSI: 'Konsumsi',
+  ALAT: 'Pinjamkan alat',
+  DANA: 'Dana',
+  ADMINISTRASI: 'Administrasi',
+  DOKUMENTASI: 'Dokumentasi',
+  JARAK_JAUH: 'Bantuan jarak jauh',
+  DISPENSASI: 'Ajukan dispensasi',
+};
+
 type ActivityRow = {
   id: string;
   coordinator_id: string;
@@ -18,6 +29,7 @@ type ActivityRow = {
   ends_at: string | Date;
   capacity: number | null;
   status: string;
+  user_contribution?: string | null;
 };
 
 function mapActivity(row: ActivityRow) {
@@ -31,6 +43,7 @@ function mapActivity(row: ActivityRow) {
     endsAt: new Date(row.ends_at).toISOString(),
     capacity: row.capacity,
     status: row.status,
+    contribution: row.user_contribution ? (contributionLabels[row.user_contribution] ?? row.user_contribution) : 'Belum memilih',
   };
 }
 
@@ -52,11 +65,14 @@ export async function activityRoutes(app: FastifyInstance): Promise<void> {
     async (request) => {
       const page = pageQuerySchema.parse(request.query);
       const result = await app.database.query<ActivityRow & { total_count: number | string }>(
-        `SELECT id, coordinator_id, title, description, location, starts_at, ends_at,
-           capacity, status, COUNT(*) OVER() AS total_count
-         FROM activities WHERE organization_id = $1 AND status <> 'DRAFT'
-         ORDER BY starts_at ASC LIMIT $2 OFFSET $3`,
-        [request.auth?.organizationId, page.pageSize, (page.page - 1) * page.pageSize],
+        `SELECT a.id, a.coordinator_id, a.title, a.description, a.location, a.starts_at, a.ends_at,
+           a.capacity, a.status, ar.contribution_type AS user_contribution,
+           COUNT(*) OVER() AS total_count
+         FROM activities a
+         LEFT JOIN activity_responses ar ON ar.activity_id = a.id AND ar.organization_id = a.organization_id AND ar.user_id = $2
+         WHERE a.organization_id = $1 AND a.status <> 'DRAFT'
+         ORDER BY a.starts_at ASC LIMIT $3 OFFSET $4`,
+        [request.auth?.organizationId, request.auth?.id, page.pageSize, (page.page - 1) * page.pageSize],
       );
       return success(request, result.rows.map(mapActivity), {
         page: page.page,
