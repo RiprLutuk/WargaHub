@@ -2,6 +2,7 @@
 import { Ambulance, Flame, PhoneCall, ShieldAlert, TriangleAlert } from 'lucide-vue-next';
 import { computed } from 'vue';
 import StatePanel from '../../components/StatePanel.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
 import { adaptPublicSite } from '../../lib/view-models';
@@ -26,7 +27,7 @@ const contacts = computed(() => {
 
 <template>
   <div class="emergency-page">
-    <div class="container public-page-container">
+    <PublicPageShell>
       <header class="page-heading">
         <span class="emergency-eyebrow"><TriangleAlert :size="16" /> Informasi darurat</span>
         <h1>Bantuan cepat</h1>
@@ -52,13 +53,12 @@ const contacts = computed(() => {
       </div>
 
       <p class="disclaimer">Nomor dapat berbeda menurut wilayah. Pengurus instalasi WargaHub bertanggung jawab menjaga informasi ini tetap mutakhir.</p>
-    </div>
+    </PublicPageShell>
   </div>
 </template>
 
 <style scoped>
 .emergency-page { min-height: 75vh; background: linear-gradient(180deg, #fff4f0, var(--cream-50)); }
-.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); display: grid; gap: 1.25rem; }
 .page-heading { margin-bottom: .5rem; }
 .emergency-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .8rem; color: var(--coral-700); font-size: .8rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 .page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }

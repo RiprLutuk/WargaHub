@@ -14,6 +14,7 @@ import {
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
 import { useResource } from '../../composables/useResource';
@@ -73,7 +74,7 @@ function getCategoryIcon(category: string) {
 </script>
 
 <template>
-  <div class="container public-page-shell">
+  <PublicPageShell>
     <!-- Page Header -->
     <header class="page-header">
       <div class="header-badge">
@@ -156,11 +157,10 @@ function getCategoryIcon(category: string) {
         </article>
       </div>
     </template>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
   margin-bottom: 1.25rem;
@@ -399,9 +399,6 @@ function getCategoryIcon(category: string) {
 }
 
 @media (max-width: 640px) {
-  .public-page-shell {
-    padding: 2.25rem 1rem 4rem;
-  }
   .page-header {
     margin-bottom: 1.25rem;
   }

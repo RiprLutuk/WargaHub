@@ -4,6 +4,7 @@ import { getActivePinia } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -128,7 +129,7 @@ const cctvFeeds = [
 </script>
 
 <template>
-  <div class="container public-page-shell">
+  <PublicPageShell>
     <!-- Header Section -->
     <header class="page-header">
       <div class="header-badge">
@@ -321,11 +322,10 @@ const cctvFeeds = [
         </div>
       </div>
     </Teleport>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-shell { width: min(calc(100% - 2rem), var(--content)); padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
   margin-bottom: 1.25rem;

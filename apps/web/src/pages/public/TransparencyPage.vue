@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowDownRight, ArrowUpRight, CalendarDays, Landmark, ShieldCheck } from 'lucide-vue-next';
 import StatePanel from '../../components/StatePanel.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
 import { formatRupiah } from '../../lib/format';
@@ -18,7 +19,7 @@ function dateLabel(date: string): string {
 </script>
 
 <template>
-  <div class="container public-page-container">
+  <PublicPageShell>
     <header class="page-heading">
       <span class="eyebrow">Terbuka tanpa membuka data pribadi</span>
       <h1>Transparansi keuangan</h1>
@@ -93,11 +94,10 @@ function dateLabel(date: string): string {
         <p v-else class="card muted empty-detail">Belum ada rincian terpublikasi.</p>
       </section>
     </template>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); display: grid; gap: 1.25rem; }
 .page-heading { margin-bottom: 1rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
 .page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }

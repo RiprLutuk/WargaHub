@@ -2,6 +2,7 @@
 import { Search } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import SmartSelect from '../../components/SmartSelect.vue';
 import { useResource } from '../../composables/useResource';
@@ -22,7 +23,7 @@ const filtered = computed(() => (announcements.data.value ?? []).filter((item) =
 </script>
 
 <template>
-  <div class="container page-stack">
+  <PublicPageShell>
     <header class="page-heading">
       <span class="eyebrow">Sumber resmi</span>
       <h1>Pengumuman lingkungan</h1>
@@ -48,7 +49,7 @@ const filtered = computed(() => (announcements.data.value ?? []).filter((item) =
         <span v-if="item.urgency !== 'NORMAL'" class="priority">Penting</span>
       </article>
     </div>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>

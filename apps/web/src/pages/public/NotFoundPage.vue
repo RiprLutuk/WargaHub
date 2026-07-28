@@ -1,3 +1,12 @@
-<script setup lang="ts">import { ArrowLeft } from 'lucide-vue-next';import { RouterLink } from 'vue-router';</script>
-<template><div class="container not-found"><span>404</span><h1>Halaman tidak ditemukan</h1><p>Tautan mungkin sudah berubah atau informasi telah diarsipkan.</p><RouterLink class="button" to="/"><ArrowLeft :size="17"/> Kembali ke beranda</RouterLink></div></template>
+<script setup lang="ts">
+import { ArrowLeft } from 'lucide-vue-next';
+import { RouterLink } from 'vue-router';
+import PublicPageShell from '../../components/PublicPageShell.vue';
+</script>
+<template>
+  <PublicPageShell class="not-found">
+    <span>404</span><h1>Halaman tidak ditemukan</h1><p>Tautan mungkin sudah berubah atau informasi telah diarsipkan.</p>
+    <RouterLink class="button" to="/"><ArrowLeft :size="17"/> Kembali ke beranda</RouterLink>
+  </PublicPageShell>
+</template>
 <style scoped>.not-found{display:grid;min-height:60vh;place-content:center;justify-items:center;text-align:center}.not-found>span{color:var(--teal-700);font-family:var(--font-display);font-size:5rem;line-height:1}.not-found h1{margin:.5rem 0;font-size:clamp(2rem,5vw,3.5rem)}.not-found p{color:var(--ink-650)}</style>

@@ -18,6 +18,7 @@ import {
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -127,7 +128,7 @@ const adminCapabilities = [
 </script>
 
 <template>
-  <div class="container public-page-shell" :class="{ 'app-structure-shell': route.path.startsWith('/app/') }">
+  <PublicPageShell :class="{ 'app-structure-shell': route.path.startsWith('/app/') }">
     <!-- Page Header -->
     <header class="page-header">
       <div class="header-badge">
@@ -213,11 +214,10 @@ const adminCapabilities = [
         </div>
       </section>
     </template>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 .app-structure-shell { width: 100%; max-width: var(--content); margin-top: 0; padding-block: 0 3rem; }
 .app-structure-shell .page-header { max-width: 76rem; margin-bottom: 1.25rem; }
 .app-structure-shell .officers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

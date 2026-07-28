@@ -3,6 +3,7 @@ import { CheckCircle2, QrCode, ShieldCheck, XCircle } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import StatePanel from '../../components/StatePanel.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import { api, ApiClientError } from '../../lib/api';
 import { formatDate } from '../../lib/format';
 
@@ -38,7 +39,7 @@ onMounted(verify);
 </script>
 
 <template>
-  <div class="container public-page-container">
+  <PublicPageShell>
     <header class="page-heading">
       <span class="eyebrow">Autentikasi Dokumen Resmi</span>
       <h1>Verifikasi keabsahan surat</h1>
@@ -67,11 +68,10 @@ onMounted(verify);
 
       <div class="stamp-chip"><ShieldCheck :size="16" /> Tanda Tangan Digital RT/RW Sah</div>
     </div>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); }
 .page-heading { margin-bottom: 3rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
 .page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }

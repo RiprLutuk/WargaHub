@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Download, FileText } from 'lucide-vue-next';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -11,7 +12,7 @@ const documents = useResource(async () => adaptPublicDocuments(await api.get<unk
 </script>
 
 <template>
-  <div class="container public-page-container">
+  <PublicPageShell>
     <header class="page-heading">
       <span class="eyebrow">Arsip publik</span>
       <h1>Dokumen lingkungan</h1>
@@ -34,11 +35,10 @@ const documents = useResource(async () => adaptPublicDocuments(await api.get<unk
         <span v-else class="muted small">Tanpa lampiran</span>
       </article>
     </div>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); }
 .page-heading { margin-bottom: 1.25rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
 .page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }

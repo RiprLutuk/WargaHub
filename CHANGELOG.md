@@ -14,6 +14,7 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Changed
 - Preview UI di README diperbarui menggunakan screenshot portal publik production terbaru.
+- Seluruh halaman publik non-beranda kini memakai `PublicPageShell` reusable dengan lebar, spacing, dan breakpoint yang konsisten.
 
 ## [0.6.0] - 2026-07-28
 

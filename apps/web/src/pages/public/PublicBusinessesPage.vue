@@ -3,6 +3,7 @@ import { ArrowUpRight, CheckCircle2, MessageCircle, Phone, Search, ShoppingBag, 
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -60,7 +61,7 @@ watch(() => route.query, (query) => {
 </script>
 
 <template>
-  <div class="container public-page-shell">
+  <PublicPageShell>
     <!-- Header Section -->
     <header class="page-header">
       <div class="header-badge">
@@ -134,14 +135,10 @@ watch(() => route.query, (query) => {
         </article>
       </div>
     </template>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-shell {
-  width: min(calc(100% - 3rem), 92rem);
-  padding-block: clamp(2rem, 4vw, 3.5rem);
-}
 
 .page-header {
   margin-bottom: 2rem;
@@ -400,10 +397,6 @@ watch(() => route.query, (query) => {
 }
 
 @media (max-width: 700px) {
-  .public-page-shell {
-    width: min(calc(100% - 1.25rem), 92rem);
-  }
-
   .category-pills { flex-wrap: nowrap; margin-inline: -.625rem; padding-inline: .625rem; overflow-x: auto; scrollbar-width: none; }
   .category-pills::-webkit-scrollbar { display: none; }
   .pill-btn { flex: 0 0 auto; white-space: nowrap; }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { MapPin, PhoneCall, ShieldCheck } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
+import PublicPageShell from '../../components/PublicPageShell.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -10,7 +11,7 @@ const site = useResource(async () => adaptPublicSite(await api.get<unknown>('/pu
 </script>
 
 <template>
-  <div class="container public-page-container">
+  <PublicPageShell>
     <header class="page-heading">
       <span class="eyebrow">Kami siap membantu</span>
       <h1>Hubungi pengurus</h1>
@@ -53,11 +54,10 @@ const site = useResource(async () => adaptPublicSite(await api.get<unknown>('/pu
         </div>
       </aside>
     </div>
-  </div>
+  </PublicPageShell>
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); }
 .page-heading { margin-bottom: 1.25rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
 .page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }
