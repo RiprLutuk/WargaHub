@@ -4,6 +4,28 @@ Semua perubahan penting WargaHub dicatat di file ini. Format mengikuti
 [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan versi release
 mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [0.5.0] - 2026-07-28
+
+### Added
+- **Pemantauan Live Stream CCTV Lingkungan**:
+  - Tab pemantauan CCTV publik di `PublicFacilitiesPage.vue` (`/fasilitas?tab=cctv`) yang menampilkan 4 kamera siaga publik (Gerbang Utama RT, Pos Ronda Central, Taman Warga, Pertigaan Gang Utama).
+  - Integrasi arsitektur gateway RTSP/HLS/WebRTC berlatensi rendah (<1 detik) untuk pemantauan keamanan warga 24/7.
+- **Panduan Kapabilitas & Tugas Pengurus RT/RW**:
+  - Penjelasan visual 6 pilar wewenang & fungsi pengurus RT/RW di `PublicStructurePage.vue` (`/struktur`) meliputi Pendataan Warga, Keuangan Kas, Operasional/Ronda, Surat Digital, Musyawarah/Voting, dan WA Broadcast.
+- **Sinkronisasi Tab dengan URL Query Parameter**:
+  - Status aktif tab (seperti `?tab=cctv` atau `?tab=facilities`) kini tersinkronisasi otomatis dengan parameter URL router sehingga pilihan tab tidak pernah kembali ke nilai awal (*default*) ketika halaman di-reload.
+
+### Changed
+- **Pembaruan Tipografi & Sistem Estetika**:
+  - Mengganti font aplikasi ke **Outfit** (Display/Judul) dan **DM Sans** (Body/UI) untuk tampilan modern, *ultra-clean*, dan berkelas.
+  - Penyesuaian kontras teks tombol navigasi (*Portal Warga*), eliminasi garis bawah (*underline*), dan *border-radius* konsisten (`0.75rem`).
+- **Lencana Sinyal Darurat Pulsing Beacon**:
+  - Animasi *beacon ping* berdenyut pada menu navigasi `Darurat` dengan ikon `PhoneCall`.
+- **Inovasi Desain Footer Publik**:
+  - Footer baru berdesain *civic platform* dengan *Top Status Bar*, 3 kolom navigasi modular terstruktur, serta kartu akses cepat portal warga.
+- **Pemetaan Bidang Program Publik (`PublicProgramsPage.vue`)**:
+  - Perbaikan parser properti API (`budget`/`spent`/`startsAt`) sehingga data proyek pembangunan dan posyandu ter-render sempurna secara serentak.
+
 ## [0.4.0] - 2026-07-28
 
 ### Added
