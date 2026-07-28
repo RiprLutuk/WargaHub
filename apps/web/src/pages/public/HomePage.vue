@@ -253,14 +253,14 @@ onMounted(() => {
 }
 .announcement-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--teal-600);
+  box-shadow: 0 8px 24px rgba(16, 43, 39, 0.06);
+  border-color: rgba(13, 148, 136, 0.25);
 }
 .announcement-card.featured {
   background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
   color: #ffffff;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  box-shadow: 0 12px 30px rgba(6, 78, 59, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 12px 30px rgba(6, 78, 59, 0.2);
 }
 .announcement-meta {
   display: flex;
@@ -269,7 +269,7 @@ onMounted(() => {
   gap: .5rem;
   margin-bottom: 1.3rem;
   font-size: .75rem;
-  font-weight: 850;
+  font-weight: 600;
   letter-spacing: .04em;
   text-transform: uppercase;
 }
@@ -287,8 +287,8 @@ onMounted(() => {
 .announcement-meta time { color: var(--ink-500); }
 .featured .announcement-meta time { color: rgba(255, 255, 255, 0.7); }
 
-.announcement-card h3 { font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--ink-950); }
-.featured h3 { color: #ffffff; }
+.announcement-card h3 { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.6rem; color: var(--ink-950); }
+.featured h3 { color: #ffffff; font-weight: 500; }
 
 .announcement-card p { color: var(--ink-650); font-size: 0.95rem; }
 .featured p { color: rgba(255, 255, 255, 0.85); }
@@ -298,7 +298,7 @@ onMounted(() => {
   align-items: center;
   gap: .35rem;
   margin-top: auto;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.9rem;
   color: var(--teal-700);
   text-decoration: none !important;
