@@ -95,8 +95,8 @@ async function logout() { await session.logout(); await router.push('/login'); }
   gap: 1.1rem;
   padding: 1.1rem 1rem;
   overflow-y: auto;
-  background: var(--ink-950);
-  color: white;
+  background: #0f172a; /* High contrast dark background */
+  color: #ffffff;
   transition: padding 0.2s ease;
 }
 
@@ -123,15 +123,15 @@ async function logout() { await session.logout(); await router.push('/login'); }
   height: 2.2rem;
   place-items: center;
   border-radius: 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .sidebar-toggle-btn:hover, .topbar-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   color: white;
 }
 
@@ -145,25 +145,31 @@ async function logout() { await session.logout(); await router.push('/login'); }
   display: grid;
   gap: 0.25rem;
   padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .organization span {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.63rem;
-  font-weight: 800;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  font-weight: 850;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .organization strong {
-  color: white;
-  font-size: 0.8rem;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
 }
 
-.admin-sidebar :deep(.nav-label) {
-  color: rgba(255, 255, 255, 0.4);
+.admin-sidebar :deep(.nav-label),
+.admin-sidebar :deep(.section-title) {
+  color: #94a3b8 !important;
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.05em !important;
 }
 
 .admin-sidebar :deep(.admin-group) {
@@ -173,17 +179,21 @@ async function logout() { await session.logout(); await router.push('/login'); }
 }
 
 .admin-sidebar :deep(.app-sidebar a) {
-  color: rgba(255, 255, 255, 0.64);
+  color: #e2e8f0 !important; /* Crisp high contrast text */
+  font-size: 0.85rem !important;
+  font-weight: 750 !important;
 }
 
 .admin-sidebar :deep(.app-sidebar a:hover) {
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
 }
 
 .admin-sidebar :deep(.app-sidebar a.router-link-exact-active) {
-  background: var(--teal-600);
-  color: white;
+  background: #0d9488 !important; /* High contrast active teal */
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35) !important;
 }
 
 .back-portal {
@@ -193,15 +203,16 @@ async function logout() { await session.logout(); await router.push('/login'); }
   gap: 0.5rem;
   margin-top: auto;
   padding: 0.5rem 0.6rem;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.78rem;
+  color: #cbd5e1 !important;
+  font-size: 0.8rem;
+  font-weight: 750;
   text-decoration: none;
   border-radius: var(--radius-md);
 }
 
 .back-portal:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff !important;
 }
 
 .admin-main {
