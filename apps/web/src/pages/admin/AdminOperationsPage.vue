@@ -223,11 +223,22 @@ function onGenerated() {
               <td><span class="status-online">● ONLINE (60 FPS)</span></td>
               <td>
                 <div class="row-actions">
-                  <button class="button button-secondary button-sm" type="button" @click="togglePublicVisibility(cam)">
-                    <Eye v-if="!cam.publicVisible" :size="14" /> Ubah Akses
+                  <button
+                    class="button button-secondary button-sm icon-button-sm"
+                    type="button"
+                    :title="cam.publicVisible ? 'Sembunyikan dari Publik / Warga' : 'Tampilkan ke Publik / Warga'"
+                    @click="togglePublicVisibility(cam)"
+                  >
+                    <EyeOff v-if="cam.publicVisible" :size="15" />
+                    <Eye v-else :size="15" />
                   </button>
-                  <button class="button button-danger button-sm" type="button" @click="deleteCctv(cam.id)">
-                    <Trash2 :size="14" />
+                  <button
+                    class="button button-danger button-sm icon-button-sm"
+                    type="button"
+                    title="Hapus Kamera CCTV"
+                    @click="deleteCctv(cam.id)"
+                  >
+                    <Trash2 :size="15" />
                   </button>
                 </div>
               </td>
@@ -458,7 +469,8 @@ function onGenerated() {
 .operation-list small { color: var(--teal-700); font-weight: 750; }
 .operation-list h3 { margin: 0.1rem 0; font-size: 0.95rem; }
 .operation-list p { margin: 0; color: var(--ink-650); font-size: 0.75rem; }
-.row-actions { display: flex; gap: 0.4rem; }
+.row-actions { display: flex; align-items: center; gap: 0.4rem; flex-wrap: nowrap; white-space: nowrap; }
+.icon-button-sm { width: 2.35rem !important; height: 2.35rem !important; min-height: 2.35rem !important; padding: 0 !important; display: inline-grid !important; place-items: center !important; flex: none !important; }
 .activity-admin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
 .activity-admin-grid h3 { margin: 0.1rem 0; }
 .activity-admin-grid p { color: var(--ink-650); }
