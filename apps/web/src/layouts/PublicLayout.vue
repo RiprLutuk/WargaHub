@@ -189,8 +189,8 @@ nav .emergency-link {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.42rem 0.8rem;
-  border-radius: 999px;
+  padding: 0.52rem 0.95rem;
+  border-radius: 0.75rem !important;
   background: rgba(225, 29, 72, 0.08);
   border: 1px solid rgba(225, 29, 72, 0.28);
   color: #e11d48 !important;
@@ -214,22 +214,24 @@ nav .emergency-beacon {
   justify-content: center;
   width: 0.55rem;
   height: 0.55rem;
+  flex-shrink: 0;
 }
 
 .beacon-ring {
   position: absolute;
-  inset: -3px;
+  inset: -2px;
   border-radius: 50%;
-  background: #e11d48;
-  opacity: 0.75;
+  background: rgba(225, 29, 72, 0.6);
   animation: beacon-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 .beacon-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 50%;
   background: #e11d48;
+  position: relative;
+  z-index: 2;
 }
 
 nav .emergency-link:hover .beacon-ring,
@@ -241,11 +243,11 @@ nav .emergency-link.router-link-active .beacon-dot {
 
 @keyframes beacon-ping {
   0% {
-    transform: scale(0.8);
-    opacity: 0.9;
+    transform: scale(0.9);
+    opacity: 0.8;
   }
   75%, 100% {
-    transform: scale(2.4);
+    transform: scale(2.2);
     opacity: 0;
   }
 }
