@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, ChevronDown, Menu, PhoneCall, User, X } from 'lucide-vue-next';
+import { ArrowRight, CheckCircle2, ChevronDown, Lock, Menu, PhoneCall, ShieldCheck, User, X } from 'lucide-vue-next';
 import { getActivePinia } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
@@ -102,28 +102,91 @@ function closeAll() {
     </main>
 
     <footer class="site-footer">
-      <div class="container footer-grid">
-        <div>
-          <BrandMark inverse />
-          <p>Informasi resmi lingkungan yang terbuka, privat seperlunya, dan tidak melelahkan secara sosial.</p>
+      <div class="container footer-stack">
+        <!-- Top Status Banner -->
+        <div class="footer-status-bar">
+          <div class="status-indicator">
+            <span class="status-dot" />
+            <span>Sistem Informasi RT/RW Aktif & Terbuka</span>
+          </div>
+          <div class="footer-quick-contacts">
+            <RouterLink to="/darurat" class="footer-emergency-chip">
+              <PhoneCall :size="13" />
+              <span>Posko Siaga Darurat</span>
+            </RouterLink>
+          </div>
         </div>
-        <div>
-          <h3>Layanan Publik</h3>
-          <ul>
-            <li><RouterLink to="/pengumuman">Pengumuman</RouterLink></li>
-            <li><RouterLink to="/struktur">Struktur Pengurus</RouterLink></li>
-            <li><RouterLink to="/laporan">Status Laporan</RouterLink></li>
-            <li><RouterLink to="/agenda">Agenda Warga</RouterLink></li>
-            <li><RouterLink to="/transparansi">Transparansi Keuangan</RouterLink></li>
-            <li><RouterLink to="/dokumen">Dokumen Publik</RouterLink></li>
-          </ul>
+
+        <!-- Main Footer Grid -->
+        <div class="footer-main-grid">
+          <!-- Col 1: Brand & Identity -->
+          <div class="footer-brand-col">
+            <BrandMark inverse />
+            <p class="brand-desc">
+              Platform digital gotong-royong lingkungan. Menyajikan pengumuman resmi, transparansi kas, dan layanan warga tanpa menambah beban percakapan sosial.
+            </p>
+            <div class="community-tags">
+              <span>#TransparansiKas</span>
+              <span>#GotongRoyong</span>
+              <span>#PrivatSeperlunya</span>
+            </div>
+          </div>
+
+          <!-- Col 2: Navigation Groups -->
+          <div class="footer-nav-col">
+            <div class="footer-nav-group">
+              <h4>Informasi & Pengaduan</h4>
+              <ul>
+                <li><RouterLink to="/pengumuman">Pengumuman Resmi</RouterLink></li>
+                <li><RouterLink to="/struktur">Struktur Pengurus RT/RW</RouterLink></li>
+                <li><RouterLink to="/laporan">Status Laporan Publik</RouterLink></li>
+                <li><RouterLink to="/agenda">Agenda & Kegiatan Warga</RouterLink></li>
+                <li><RouterLink to="/dokumen">Dokumen Publik</RouterLink></li>
+              </ul>
+            </div>
+            <div class="footer-nav-group">
+              <h4>Fasilitas & Lingkungan</h4>
+              <ul>
+                <li><RouterLink to="/transparansi">Transparansi Keuangan Kas</RouterLink></li>
+                <li><RouterLink to="/fasilitas">Fasilitas & Peminjaman</RouterLink></li>
+                <li><RouterLink to="/program">Program Pembangunan</RouterLink></li>
+                <li><RouterLink to="/umkm">Direktori UMKM Warga</RouterLink></li>
+                <li><RouterLink to="/verifikasi">Verifikasi Surat</RouterLink></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Col 3: Portal Access Card -->
+          <div class="footer-portal-card">
+            <div class="portal-card-header">
+              <ShieldCheck :size="20" class="shield-icon" />
+              <span>Portal Penghuni & Pengurus</span>
+            </div>
+            <p>Akses tagihan rumah, konfirmasi jadwal ronda, dan pengajuan layanan lingkungan secara privat.</p>
+            <RouterLink
+              v-if="session?.isAuthenticated && session?.user"
+              class="portal-action-btn"
+              :to="session.isAdmin ? '/admin' : '/app'"
+            >
+              <span>Buka Portal {{ session.user.name }}</span>
+              <ArrowRight :size="15" />
+            </RouterLink>
+            <RouterLink v-else class="portal-action-btn" to="/login">
+              <span>Masuk Portal Warga</span>
+              <ArrowRight :size="15" />
+            </RouterLink>
+          </div>
         </div>
-        <div>
-          <h3>Akses Pengurus</h3>
-          <ul>
-            <li><RouterLink to="/login">Masuk Portal Admin</RouterLink></li>
-            <li><RouterLink to="/darurat">Panggilan Darurat</RouterLink></li>
-          </ul>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom-bar">
+          <div class="bottom-copy">
+            © 2026 WargaHub · Rukun dalam Satu Ruang Lingkungan RT/RW
+          </div>
+          <div class="bottom-badges">
+            <span class="badge-item"><Lock :size="12" /> Data Terenkripsi</span>
+            <span class="badge-item"><CheckCircle2 :size="12" /> Sistem Siaga 24/7</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -344,46 +407,236 @@ nav .button:hover {
 main {
   flex: 1;
 }
+
+/* Redesigned Innovative Civic Footer */
 .site-footer {
-  margin-top: 4rem;
-  padding-block: 4rem;
-  background: #091e1a;
+  margin-top: 5rem;
+  padding-block: 4.5rem 2.5rem;
+  background: linear-gradient(180deg, #09201b 0%, #04120f 100%);
   color: #e2e8f0;
+  border-top: 1px solid rgba(20, 184, 166, 0.18);
 }
-.footer-grid {
+
+.footer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+/* Status Bar */
+.footer-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.4rem;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 118, 110, 0.14);
+  border: 1px solid rgba(20, 184, 166, 0.22);
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: #5eead4;
+}
+
+.status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+.footer-emergency-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(225, 29, 72, 0.15);
+  border: 1px solid rgba(225, 29, 72, 0.32);
+  color: #f43f5e !important;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+}
+
+.footer-emergency-chip:hover {
+  background: #e11d48;
+  color: #ffffff !important;
+}
+
+/* Main Grid */
+.footer-main-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 1.5fr 2fr 1.3fr;
+  gap: 3rem;
+  align-items: start;
 }
-.footer-grid p {
-  max-width: 24rem;
-  margin-top: 1rem;
+
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.brand-desc {
   color: #94a3b8;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin: 0;
 }
-.footer-grid h3 {
-  margin-bottom: 1.1rem;
-  font-size: 0.88rem;
+
+.community-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.community-tags span {
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+/* Nav Col */
+.footer-nav-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.footer-nav-group h4 {
+  font-size: 0.85rem;
   font-weight: 850;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #5eead4;
+  color: #2dd4bf;
+  margin-bottom: 1.2rem;
 }
-.footer-grid ul {
-  display: grid;
+
+.footer-nav-group ul {
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
-.footer-grid a {
+
+.footer-nav-group a {
   color: #cbd5e1;
+  font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none !important;
-  transition: color 0.15s;
+  transition: color 0.15s ease, transform 0.15s ease;
+  display: inline-block;
 }
-.footer-grid a:hover {
+
+.footer-nav-group a:hover {
   color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* Portal Card */
+.footer-portal-card {
+  padding: 1.6rem;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.22) 0%, rgba(6, 78, 59, 0.35) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.portal-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #5eead4;
+  font-weight: 850;
+  font-size: 0.95rem;
+}
+
+.shield-icon {
+  color: #2dd4bf;
+}
+
+.footer-portal-card p {
+  color: #94a3b8;
+  font-size: 0.86rem;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.portal-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.15rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 0.88rem;
   text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+  transition: all 0.2s ease;
+}
+
+.portal-action-btn:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Bottom Bar */
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.bottom-badges {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.badge-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .footer-main-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .footer-status-bar, .footer-bottom-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 @media (max-width: 880px) {
   .menu-button {
