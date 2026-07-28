@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Calendar, CheckCircle2, HardHat, ShieldAlert, Sparkles, TrendingUp } from 'lucide-vue-next';
+import { ArrowRight, Calendar, CheckCircle2, HardHat, HeartPulse, ShieldAlert, Sparkles, TrendingUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
@@ -12,12 +12,17 @@ import { formatDate, formatRupiah } from '../../lib/format';
 interface PublicProgram {
   id: string;
   title: string;
+  category?: string;
   description: string;
-  targetBudget: number;
-  currentBudget: number;
+  targetBudget?: number | string;
+  currentBudget?: number | string;
+  budget?: number | string;
+  spent?: number | string;
   status: string;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
+  startsAt?: string;
+  endsAt?: string;
 }
 
 const filterStatus = ref('SEMUA');
@@ -26,11 +31,35 @@ const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'))
 const filteredPrograms = computed(() => {
   const list = programs.data.value ?? [];
   if (filterStatus.value === 'SEMUA') return list;
-  return list.filter((p) => p.status === filterStatus.value);
+  return list.filter((p) => p.status === filterStatus.value || (filterStatus.value === 'IN_PROGRESS' && p.status === 'PUBLISHED'));
 });
 
-function calculatePercentage(current: number, target: number): number {
-  if (!target || target <= 0) return 0;
+function parseNum(val: unknown): number {
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') return Number.parseFloat(val) || 0;
+  return 0;
+}
+
+function getTargetBudget(item: PublicProgram): number {
+  return parseNum(item.targetBudget ?? item.budget);
+}
+
+function getCurrentBudget(item: PublicProgram): number {
+  return parseNum(item.currentBudget ?? item.spent);
+}
+
+function getStartDate(item: PublicProgram): string {
+  return item.startDate ?? item.startsAt ?? new Date().toISOString();
+}
+
+function getEndDate(item: PublicProgram): string {
+  return item.endDate ?? item.endsAt ?? new Date().toISOString();
+}
+
+function calculatePercentage(item: PublicProgram): number {
+  const target = getTargetBudget(item);
+  const current = getCurrentBudget(item);
+  if (!target || target <= 0) return 100;
   return Math.min(100, Math.round((current / target) * 100));
 }
 </script>
@@ -41,11 +70,11 @@ function calculatePercentage(current: number, target: number): number {
     <header class="page-header">
       <div class="header-badge">
         <HardHat :size="14" class="badge-icon" />
-        <span>Inisiatif Pembangunan RT/RW</span>
+        <span>Inisiatif Pembangunan & Kesehatan RT/RW</span>
       </div>
       <h1>Program & Proyek Warga</h1>
       <p class="header-desc">
-        Rencana pembangunan fasilitas, revitalisasi lingkungan, dan proyek fisik yang dikerjakan secara terbuka demi kemajuan bersama.
+        Rencana pembangunan fasilitas, posyandu balita & lansia, revitalisasi lingkungan, dan proyek fisik yang dikerjakan secara terbuka demi kemajuan bersama.
       </p>
     </header>
 
@@ -63,12 +92,12 @@ function calculatePercentage(current: number, target: number): number {
           :class="{ active: filterStatus === 'SEMUA' }"
           @click="filterStatus = 'SEMUA'"
         >
-          Semua Proyek
+          Semua Program & Proyek
         </button>
         <button
           type="button"
           class="pill-btn"
-          :class="{ active: filterStatus === 'IN_PROGRESS' || filterStatus === 'PLANNED' }"
+          :class="{ active: filterStatus === 'IN_PROGRESS' }"
           @click="filterStatus = 'IN_PROGRESS'"
         >
           Sedang Berjalan
@@ -89,11 +118,12 @@ function calculatePercentage(current: number, target: number): number {
           <div class="card-main">
             <div class="card-header-row">
               <div class="icon-avatar">
-                <HardHat :size="22" />
+                <HeartPulse v-if="item.category?.toLowerCase().includes('kesehatan') || item.category?.toLowerCase().includes('posyandu')" :size="22" />
+                <HardHat v-else :size="22" />
               </div>
               <div class="header-content">
                 <div class="meta-row">
-                  <span class="dates"><Calendar :size="13" /> {{ formatDate(item.startDate) }} — {{ formatDate(item.endDate) }}</span>
+                  <span class="dates"><Calendar :size="13" /> {{ formatDate(getStartDate(item)) }} — {{ formatDate(getEndDate(item)) }}</span>
                   <StatusBadge :status="item.status === 'PUBLISHED' ? 'IN_PROGRESS' : item.status" />
                 </div>
                 <h2 class="program-title">{{ item.title }}</h2>
@@ -103,28 +133,28 @@ function calculatePercentage(current: number, target: number): number {
             <p class="program-desc">{{ item.description }}</p>
 
             <!-- Budget Metric & Progress Bar -->
-            <div v-if="item.targetBudget > 0" class="budget-box">
+            <div v-if="getTargetBudget(item) > 0" class="budget-box">
               <div class="budget-header">
                 <div class="budget-col">
-                  <span class="label">Dana Terkumpul</span>
-                  <span class="amount primary">{{ formatRupiah(item.currentBudget ?? 0) }}</span>
+                  <span class="label">Dana Realisasi / Terkumpul</span>
+                  <span class="amount primary">{{ formatRupiah(getCurrentBudget(item)) }}</span>
                 </div>
                 <div class="budget-col align-right">
                   <span class="label">Target Anggaran</span>
-                  <span class="amount">{{ formatRupiah(item.targetBudget) }}</span>
+                  <span class="amount">{{ formatRupiah(getTargetBudget(item)) }}</span>
                 </div>
               </div>
 
               <div class="progress-track">
                 <div
                   class="progress-fill"
-                  :style="{ width: `${calculatePercentage(item.currentBudget, item.targetBudget)}%` }"
+                  :style="{ width: `${calculatePercentage(item)}%` }"
                 />
               </div>
 
               <div class="progress-footer">
-                <span>Capaian dana: <strong>{{ calculatePercentage(item.currentBudget, item.targetBudget) }}%</strong></span>
-                <span v-if="item.currentBudget >= item.targetBudget" class="success-note">
+                <span>Capaian dana: <strong>{{ calculatePercentage(item) }}%</strong></span>
+                <span v-if="getCurrentBudget(item) >= getTargetBudget(item)" class="success-note">
                   <CheckCircle2 :size="13" /> Target Terpenuhi
                 </span>
               </div>
