@@ -12,6 +12,9 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Seeder demo bulk yang idempotent: 100 warga/rumah tambahan, 120 tagihan bulanan, dan 240 transaksi kas untuk mengisi dashboard serta laporan.
 - Koleksi konten publik demo yang idempotent: 24 pengumuman, 24 laporan warga, 18 agenda, 20 dokumen, 12 fasilitas, 12 program lingkungan, dan 24 UMKM.
 
+### Changed
+- Preview UI di README diperbarui menggunakan screenshot portal publik production terbaru.
+
 ## [0.6.0] - 2026-07-28
 
 ### Added
