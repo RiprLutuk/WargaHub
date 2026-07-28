@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight, CalendarDays, CheckCircle2, Megaphone, ShieldCheck, WalletCards } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { getActivePinia } from 'pinia';
+import { computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
@@ -8,10 +9,16 @@ import { api } from '../../lib/api';
 import type { Announcement } from '../../lib/demo';
 import { formatDate } from '../../lib/format';
 import { adaptPublicSite } from '../../lib/view-models';
+import { useSessionStore } from '../../stores/session';
 
+const session = computed(() => (getActivePinia() ? useSessionStore() : null));
 const site = useResource(async () => adaptPublicSite(await api.get<unknown>('/public/site')));
 const announcements = useResource(() => api.get<Announcement[]>('/public/announcements'));
 const visibleAnnouncements = computed(() => announcements.data.value?.slice(0, 3) ?? []);
+
+onMounted(() => {
+  session.value?.ensureSession();
+});
 </script>
 
 <template>
@@ -25,7 +32,18 @@ const visibleAnnouncements = computed(() => announcements.data.value?.slice(0, 3
         <p class="hero-description">Informasi resmi, layanan warga, dan transparansi lingkungan—rapi dalam satu tempat, tanpa menambah tekanan sosial.</p>
         <div class="hero-actions">
           <RouterLink class="button" to="/pengumuman">Lihat informasi terbaru <ArrowRight :size="17" aria-hidden="true" /></RouterLink>
-          <RouterLink class="button button-secondary" to="/login">Masuk sebagai warga</RouterLink>
+
+          <!-- Dynamic Hero Secondary Action -->
+          <RouterLink
+            v-if="session?.isAuthenticated && session?.user"
+            class="button button-secondary"
+            :to="session.isAdmin ? '/admin' : '/app'"
+          >
+            Buka Portal {{ session.user.name }}
+          </RouterLink>
+          <RouterLink v-else class="button button-secondary" to="/login">
+            Masuk sebagai warga
+          </RouterLink>
         </div>
         <div class="trust-row" aria-label="Prinsip WargaHub">
           <span><ShieldCheck :size="17" aria-hidden="true" /> Privat seperlunya</span>
@@ -88,13 +106,29 @@ const visibleAnnouncements = computed(() => announcements.data.value?.slice(0, 3
     </div>
   </section>
 
+  <!-- Dynamic Bottom CTA Card -->
   <section class="container invitation">
-    <div>
+    <div v-if="session?.isAuthenticated && session?.user">
+      <span class="eyebrow">Sesi aktif: {{ session.user.roles?.[0] ?? 'Warga' }}</span>
+      <h2>Selamat datang kembali, {{ session.user.name }}!</h2>
+      <p>Akses cepat ke tagihan rumah Anda, pengaduan, giliran ronda, dan pengumuman warga.</p>
+    </div>
+    <div v-else>
       <span class="eyebrow">Khusus penghuni</span>
       <h2>Selesaikan kebutuhan warga tanpa percakapan panjang.</h2>
       <p>Lihat tagihan rumah, laporkan masalah, pilih kontribusi kegiatan, dan kelola jadwal ronda dari portal privat.</p>
     </div>
-    <RouterLink class="button" to="/login">Buka portal warga <ArrowRight :size="17" aria-hidden="true" /></RouterLink>
+
+    <RouterLink
+      v-if="session?.isAuthenticated && session?.user"
+      class="button"
+      :to="session.isAdmin ? '/admin' : '/app'"
+    >
+      Buka portal {{ session.user.name }} <ArrowRight :size="17" aria-hidden="true" />
+    </RouterLink>
+    <RouterLink v-else class="button" to="/login">
+      Buka portal warga <ArrowRight :size="17" aria-hidden="true" />
+    </RouterLink>
   </section>
 </template>
 

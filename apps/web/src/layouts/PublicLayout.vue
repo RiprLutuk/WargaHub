@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { ArrowRight, ChevronDown, Menu, Phone, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ArrowRight, ChevronDown, Menu, Phone, User, X } from 'lucide-vue-next';
+import { getActivePinia } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import BrandMark from '../components/BrandMark.vue';
+import { useSessionStore } from '../stores/session';
 
 const menuOpen = ref(false);
 const openGroup = ref<string | null>(null);
+
+const session = computed(() => (getActivePinia() ? useSessionStore() : null));
+
+onMounted(() => {
+  session.value?.ensureSession();
+});
 
 function toggleGroup(name: string) {
   openGroup.value = openGroup.value === name ? null : name;
@@ -61,7 +69,22 @@ function closeAll() {
 
           <RouterLink to="/kontak" @click="closeAll">Kontak</RouterLink>
           <RouterLink class="emergency-link" to="/darurat" @click="closeAll">Darurat</RouterLink>
-          <RouterLink class="button button-sm" to="/login" @click="closeAll">Portal warga <ArrowRight :size="15" aria-hidden="true" /></RouterLink>
+
+          <!-- Dynamic User Portal Button -->
+          <RouterLink
+            v-if="session?.isAuthenticated && session?.user"
+            class="button button-sm user-portal-btn"
+            :to="session.isAdmin ? '/admin' : '/app'"
+            @click="closeAll"
+          >
+            <User :size="15" aria-hidden="true" />
+            <span>Portal {{ session.user.name }}</span>
+            <ArrowRight :size="14" aria-hidden="true" />
+          </RouterLink>
+
+          <RouterLink v-else class="button button-sm" to="/login" @click="closeAll">
+            Portal warga <ArrowRight :size="15" aria-hidden="true" />
+          </RouterLink>
         </nav>
       </div>
     </header>
@@ -91,7 +114,8 @@ function closeAll() {
           <strong>Bantuan & Layanan</strong>
           <RouterLink to="/kontak">Hubungi pengurus</RouterLink>
           <RouterLink to="/darurat">Nomor darurat</RouterLink>
-          <RouterLink to="/login">Masuk portal warga</RouterLink>
+          <RouterLink v-if="session?.isAuthenticated" :to="session.isAdmin ? '/admin' : '/app'">Portal {{ session.user?.name ?? 'warga' }}</RouterLink>
+          <RouterLink v-else to="/login">Masuk portal warga</RouterLink>
         </div>
       </div>
       <div class="container footer-bottom">
@@ -124,6 +148,7 @@ nav { display: flex; align-items: center; gap: 0.35rem; }
 nav > a:not(.button) { display: inline-flex; min-height: 2.75rem; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.65rem; color: var(--ink-800); font-size: 0.88rem; font-weight: 750; text-decoration: none; }
 nav > a:not(.button):hover, nav > a.router-link-exact-active:not(.button) { background: var(--teal-100); color: var(--teal-800); }
 nav .emergency-link { gap: 0.35rem; color: var(--coral-700) !important; }
+.user-portal-btn { gap: 0.4rem; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .menu-button { display: none; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid var(--line); border-radius: 0.7rem; background: var(--paper); color: var(--ink-950); }
 
 .site-footer { padding-block: 3.2rem 1.2rem; background: var(--ink-950); color: white; }
