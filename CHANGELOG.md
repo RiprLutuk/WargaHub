@@ -7,8 +7,11 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [0.5.0] - 2026-07-28
 
 ### Added
-- **Tombol Hide & Show Sidebar Navigasi (Collapsible Sidebar)**:
-  - Tombol sakelar bilah sisi (`PanelLeftClose` / `PanelLeftOpen`) di topbar dan sidebar pada `AdminLayout.vue` dan `AppLayout.vue`. Mode *collapsed* mengecilkan sidebar menjadi *icon-only mode* sehingga menghemat ruang layar secara signifikan.
+- **Refactoring Clean Design & Kontras Kartu Terangkat (Elevated Cards)**:
+  - Penyesuaian warna dasar *surface* aplikasi ke `#f1f5f9` (Neutral Slate Grey) yang nyaman di mata, dipadukan dengan *white paper card container* (`#ffffff`), bingkai tegas (`1px solid #cbd5e1`), dan bayangan bertingkat (*drop shadow & hover elevation*) sehingga seluruh kartu informasi terlihat kontras dan terpisah dari latar belakang.
+- **Penyempurnaan Responsif & Tata Letak Sidebar**:
+  - Penataan tata letak vertikal logo dan tombol toggle pada mode *collapsed sidebar* untuk mencegah tumpang tindih (*overlap*).
+
 - **Komponen Select Dropdown Modern (`AppSelect.vue`)**:
   - Komponen *custom select* dengan pencarian otomatis (*search filter*), penyesuaian ikon, dan desain ringkas.
 - **Penyempurnaan Lay-out DataTable & Toolbar Ringkas**:
