@@ -19,26 +19,32 @@ interface PublicFacility {
   requiresApproval?: boolean;
 }
 
+const props = defineProps<{ defaultTab?: string }>();
 const route = useRoute();
 const router = useRouter();
 
-const initialTab = (route.query.tab as string)?.toUpperCase() === 'CCTV' ? 'CCTV' : 'FACILITIES';
-const activeTab = ref<'FACILITIES' | 'CCTV'>(initialTab);
+const getInitialTab = (): 'FACILITIES' | 'CCTV' => {
+  if (props.defaultTab?.toUpperCase() === 'CCTV') return 'CCTV';
+  if (route.path.endsWith('/cctv')) return 'CCTV';
+  if ((route.query.tab as string)?.toUpperCase() === 'CCTV') return 'CCTV';
+  return 'FACILITIES';
+};
+
+const activeTab = ref<'FACILITIES' | 'CCTV'>(getInitialTab());
 const selectedCategory = ref('SEMUA');
 const facilities = useResource(() => api.get<PublicFacility[]>('/public/facilities'));
 
-watch(() => route.query.tab, (newTabQuery) => {
-  if (newTabQuery) {
-    const tabUpper = (newTabQuery as string).toUpperCase();
-    if (tabUpper === 'CCTV' || tabUpper === 'FACILITIES') {
-      activeTab.value = tabUpper as 'FACILITIES' | 'CCTV';
-    }
-  }
+watch(() => [route.path, route.query.tab], () => {
+  activeTab.value = getInitialTab();
 });
 
 function switchTab(tab: 'FACILITIES' | 'CCTV') {
   activeTab.value = tab;
-  router.replace({ query: { ...route.query, tab: tab.toLowerCase() } });
+  if (tab === 'CCTV') {
+    router.replace({ path: '/fasilitas/cctv' });
+  } else {
+    router.replace({ path: '/fasilitas' });
+  }
 }
 
 const categories = computed(() => ['SEMUA', ...new Set(facilities.data.value?.map((f) => f.category) ?? [])]);
@@ -654,7 +660,7 @@ const cctvFeeds = [
 
 .status-online {
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 850;
   color: var(--success-700);
 }
 
