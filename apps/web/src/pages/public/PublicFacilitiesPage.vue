@@ -448,7 +448,7 @@ const cctvFeeds = [
   display: flex;
   flex-direction: column;
   align-self: start;
-  padding: 1.35rem;
+  padding: 1.1rem;
   border-radius: var(--radius-xl);
   border: 1px solid #cbd5e1;
   background: #ffffff;
@@ -927,7 +927,7 @@ const cctvFeeds = [
   .facilities-grid, .cctv-grid { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .facilities-grid::-webkit-scrollbar, .cctv-grid::-webkit-scrollbar { display: none; }
   .facility-card, .cctv-card { flex: 0 0 min(84vw, 24rem); scroll-snap-align: start; }
-  .facility-card { padding: 1rem; border-radius: 1rem; }
+  .facility-card { padding: .85rem; border-radius: 1rem; }
   .facility-card .card-header { display: block; margin-bottom: .85rem; }
   .facility-card .icon-avatar { width: 2.8rem; height: 2.8rem; margin-bottom: .65rem; border-radius: .8rem; }
   .facility-card .header-tags { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: .35rem; }
