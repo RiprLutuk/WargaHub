@@ -199,12 +199,12 @@ const nextActivity = computed(() => activities.data.value?.[0]);
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 1.1rem;
-  padding: 1.25rem 1.4rem;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-lg);
+  padding: 1.3rem 1.45rem;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 1.5rem);
   background: #ffffff;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s ease;
 }
 
 .attention-card:hover {
