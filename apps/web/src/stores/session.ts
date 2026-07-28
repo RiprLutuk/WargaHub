@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { api } from '../lib/api';
 
-interface LoginResult { user: SafeUser }
+interface LoginResult { user: SafeUser; csrfToken?: string }
 
 export const useSessionStore = defineStore('session', () => {
   const user = ref<SafeUser | null>(null);

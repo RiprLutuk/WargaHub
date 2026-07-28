@@ -47,7 +47,10 @@ export class ApiUnavailableError extends ApiClientError {
   }
 }
 
+let csrfTokenValue: string | undefined;
+
 function csrfToken(): string | undefined {
+  if (csrfTokenValue) return csrfTokenValue;
   if (typeof document === 'undefined') return undefined;
   const token = document.cookie
     .split('; ')
@@ -117,6 +120,14 @@ export function createApiClient(options: ApiClientOptions = {}) {
     const payload = contentType.includes('application/json')
       ? ((await response.json()) as ApiEnvelope<T> & ApiErrorEnvelope)
       : undefined;
+
+    const responseCsrfToken = payload && 'data' in payload && payload.data && typeof payload.data === 'object'
+      ? (payload.data as { csrfToken?: unknown }).csrfToken
+      : undefined;
+    if (typeof responseCsrfToken === 'string' && responseCsrfToken.length > 0) {
+      csrfTokenValue = responseCsrfToken;
+    }
+    if (path === '/auth/logout' && response.ok) csrfTokenValue = undefined;
 
     if (!response.ok) {
       throw new ApiClientError(

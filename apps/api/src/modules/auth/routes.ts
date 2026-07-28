@@ -270,8 +270,12 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   );
 
   app.get('/me', { preHandler: app.authenticate }, async (request) => {
-    const { sessionId: _sessionId, csrfToken: _csrfToken, ...user } = request.auth!;
-    return success(request, { user });
+    const { sessionId: _sessionId, csrfToken, ...user } = request.auth!;
+    // The portal may be hosted on a different subdomain than the API, which
+    // means its JavaScript cannot read the API's CSRF cookie. Returning the
+    // non-secret token here lets the client keep mutation requests protected
+    // after a page reload.
+    return success(request, { user, csrfToken });
   });
 
   app.post(
