@@ -348,6 +348,154 @@ export async function seedDemoData(
   return demoIds;
 }
 
+/**
+ * Adds a larger, deterministic dataset for local/demo environments.
+ *
+ * This is deliberately separate from the small workflow fixture above so
+ * feature tests can continue to seed only the minimum records they need.
+ * Every record uses a stable id and ON CONFLICT, making the operation safe to
+ * run repeatedly against an existing demo database.
+ */
+export async function seedExpandedDemoData(database: Database): Promise<void> {
+  const passwordHash = await hashPassword('WargaHub123!');
+  const residentRole = await database.query<{ id: string }>(
+    `SELECT id FROM roles WHERE organization_id = $1 AND code = 'RESIDENT'`,
+    [demoIds.organization],
+  );
+  if (!residentRole.rows[0]) {
+    throw new Error('Demo resident role is missing; run seedDemoData first.');
+  }
+
+  // One hundred additional households and residents, split between the two
+  // demo blocks so lists and filters have realistic variety.
+  for (let index = 1; index <= 100; index += 1) {
+    const suffix = String(index).padStart(3, '0');
+    const householdId = `house_demo_bulk_${suffix}`;
+    const userId = `user_demo_resident_bulk_${suffix}`;
+    const memberId = `member_demo_bulk_${suffix}`;
+    const userRoleId = `user_role_demo_bulk_${suffix}`;
+    const blockId = index % 2 === 0 ? demoIds.blockB : demoIds.blockA;
+    const blockCode = index % 2 === 0 ? 'B' : 'A';
+    const ownership = index % 3 === 0 ? 'RENTED' : 'OWNER_OCCUPIED';
+
+    await database.query(
+      `INSERT INTO households
+        (id, organization_id, rt_id, block_id, code, address,
+         occupancy_status, ownership_status)
+       VALUES ($1, $2, $3, $4, $5, $6, 'OCCUPIED', $7)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        householdId,
+        demoIds.organization,
+        demoIds.rt,
+        blockId,
+        `${blockCode}-${suffix}`,
+        `Jl. Harmoni Blok ${blockCode} No. ${index + 2}`,
+        ownership,
+      ],
+    );
+
+    await database.query(
+      `INSERT INTO users
+        (id, organization_id, email, phone, password_hash, name, status,
+         privacy_consent_at)
+       VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', CURRENT_TIMESTAMP)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        userId,
+        demoIds.organization,
+        `warga${suffix}@demo.wargahub.id`,
+        `+62812${String(10000000 + index).slice(-8)}`,
+        passwordHash,
+        `Warga Demo ${suffix}`,
+      ],
+    );
+
+    await database.query(
+      `INSERT INTO household_members
+        (id, organization_id, household_id, user_id, relationship, can_manage)
+       VALUES ($1, $2, $3, $4, 'HEAD', TRUE)
+       ON CONFLICT (id) DO NOTHING`,
+      [memberId, demoIds.organization, householdId, userId],
+    );
+
+    await database.query(
+      `INSERT INTO user_roles
+        (id, organization_id, user_id, role_id, scope_type, scope_id)
+       VALUES ($1, $2, $3, $4, 'ORGANIZATION', $2)
+       ON CONFLICT (id) DO NOTHING`,
+      [userRoleId, demoIds.organization, userId, residentRole.rows[0].id],
+    );
+  }
+
+  // Twelve monthly bills for ten households per month (120 total). The mix
+  // of paid, partially-paid, and open records exercises dashboard filters.
+  for (let index = 1; index <= 120; index += 1) {
+    const householdNumber = ((index - 1) % 100) + 1;
+    const householdId = `house_demo_bulk_${String(householdNumber).padStart(3, '0')}`;
+    const month = ((index - 1) % 12) + 1;
+    const monthText = String(month).padStart(2, '0');
+    const billId = `bill_demo_bulk_${String(index).padStart(3, '0')}`;
+    const amount = index % 2 === 0 ? 50000 : 150000;
+    const status = index % 5 === 0 ? 'PAID' : index % 3 === 0 ? 'PARTIALLY_PAID' : 'OPEN';
+    const amountPaid = status === 'PAID' ? amount : status === 'PARTIALLY_PAID' ? Math.floor(amount / 2) : 0;
+
+    await database.query(
+      `INSERT INTO bills
+        (id, organization_id, household_id, created_by, title, description,
+         period, kind, recurrence, amount, amount_paid, due_at, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'MANDATORY', 'MONTHLY', $8, $9, $10, $11)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        billId,
+        demoIds.organization,
+        householdId,
+        demoIds.treasurer,
+        `Iuran lingkungan ${monthText}/2026`,
+        'Iuran keamanan, kebersihan, dan operasional lingkungan.',
+        `2026-${monthText}`,
+        amount,
+        amountPaid,
+        `2026-${monthText}-28T16:59:59.000Z`,
+        status,
+      ],
+    );
+  }
+
+  // Two hundred and forty posted cash movements, balanced across income and
+  // expense categories for transparency/reporting screens.
+  const incomeCategories = ['Iuran warga', 'Donasi warga', 'Sewa fasilitas'];
+  const expenseCategories = ['Keamanan', 'Kebersihan', 'Perawatan fasilitas', 'Kegiatan warga'];
+  for (let index = 1; index <= 240; index += 1) {
+    const transactionId = `finance_demo_bulk_${String(index).padStart(3, '0')}`;
+    const isIncome = index % 2 === 1;
+    const categoryList = isIncome ? incomeCategories : expenseCategories;
+    const category = categoryList[(index - 1) % categoryList.length];
+    const amount = isIncome ? 75000 + (index % 6) * 25000 : 40000 + (index % 8) * 30000;
+    const month = ((index - 1) % 12) + 1;
+    const day = ((index - 1) % 27) + 1;
+
+    await database.query(
+      `INSERT INTO finance_transactions
+        (id, organization_id, cash_account_id, created_by, reviewed_by, kind,
+         category, description, amount, status, occurred_at)
+       VALUES ($1, $2, $3, $4, $4, $5, $6, $7, $8, 'POSTED', $9)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        transactionId,
+        demoIds.organization,
+        demoIds.cashAccount,
+        demoIds.treasurer,
+        isIncome ? 'INCOME' : 'EXPENSE',
+        category,
+        `${category} demo ${String(index).padStart(3, '0')}`,
+        amount,
+        `2026-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T08:00:00.000Z`,
+      ],
+    );
+  }
+}
+
 async function main(): Promise<void> {
   const config = loadConfig();
   const database = await createDatabase({
@@ -357,6 +505,7 @@ async function main(): Promise<void> {
   try {
     await runMigrations(database);
     await seedDemoData(database);
+    await seedExpandedDemoData(database);
     process.stdout.write('Demo data ready.\n');
   } finally {
     await database.close();
