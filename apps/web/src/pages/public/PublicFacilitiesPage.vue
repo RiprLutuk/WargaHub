@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ArrowRight, Building2, Camera, CheckCircle2, Clock, Dumbbell, Home, Info, Package, ShieldCheck, Sparkles, Video } from 'lucide-vue-next';
+import { ArrowRight, Building2, Camera, CheckCircle2, Clock, Dumbbell, Home, Info, Maximize2, MoveDown, MoveLeft, MoveRight, MoveUp, Package, ShieldCheck, Sparkles, Video, X } from 'lucide-vue-next';
+import { getActivePinia } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
@@ -7,6 +8,7 @@ import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
 import { formatRupiah } from '../../lib/format';
+import { useSessionStore } from '../../stores/session';
 
 interface PublicFacility {
   id: string;
@@ -22,6 +24,7 @@ interface PublicFacility {
 const props = defineProps<{ defaultTab?: string }>();
 const route = useRoute();
 const router = useRouter();
+const session = computed(() => (getActivePinia() ? useSessionStore() : null));
 
 const getInitialTab = (): 'FACILITIES' | 'CCTV' => {
   if (props.defaultTab?.toUpperCase() === 'CCTV') return 'CCTV';
@@ -33,6 +36,7 @@ const getInitialTab = (): 'FACILITIES' | 'CCTV' => {
 const activeTab = ref<'FACILITIES' | 'CCTV'>(getInitialTab());
 const selectedCategory = ref('SEMUA');
 const facilities = useResource(() => api.get<PublicFacility[]>('/public/facilities'));
+const activeCctvModal = ref<any | null>(null);
 
 watch(() => [route.path, route.query.tab], () => {
   activeTab.value = getInitialTab();
@@ -46,6 +50,16 @@ function switchTab(tab: 'FACILITIES' | 'CCTV') {
     router.replace({ path: '/fasilitas' });
   }
 }
+
+function handleExpandCctv(cam: any) {
+  if (session.value?.isAuthenticated) {
+    activeCctvModal.value = cam;
+  } else {
+    router.push({ path: '/login', query: { redirect: '/fasilitas/cctv' } });
+  }
+}
+
+const portalTarget = computed(() => (session.value?.isAuthenticated ? '/app/fasilitas' : '/login'));
 
 const categories = computed(() => ['SEMUA', ...new Set(facilities.data.value?.map((f) => f.category) ?? [])]);
 
@@ -70,6 +84,7 @@ const cctvFeeds = [
     location: 'Akses Keluar-Masuk Utama Warga',
     status: 'ONLINE',
     quality: '1080p Full HD',
+    fps: '60 FPS',
     thumbnail: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
   },
   {
@@ -78,6 +93,7 @@ const cctvFeeds = [
     location: 'Pusat Keamanan & Siskamling',
     status: 'ONLINE',
     quality: '1080p Full HD',
+    fps: '60 FPS',
     thumbnail: 'linear-gradient(135deg, #064e3b 0%, #0f172a 100%)',
   },
   {
@@ -86,6 +102,7 @@ const cctvFeeds = [
     location: 'Fasilitas Terbuka & Balai Pertemuan',
     status: 'ONLINE',
     quality: '1080p Full HD',
+    fps: '60 FPS',
     thumbnail: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
   },
   {
@@ -94,6 +111,7 @@ const cctvFeeds = [
     location: 'Simpang Perlintasan Kendaraan Warga',
     status: 'ONLINE',
     quality: '1080p Full HD',
+    fps: '60 FPS',
     thumbnail: 'linear-gradient(135deg, #312e81 0%, #0f172a 100%)',
   },
 ];
@@ -200,7 +218,7 @@ const cctvFeeds = [
                 <Clock :size="14" />
                 <span>Perlu reservasi via portal</span>
               </div>
-              <RouterLink to="/login" class="book-link">
+              <RouterLink :to="portalTarget" class="book-link">
                 Pinjam <ArrowRight :size="15" />
               </RouterLink>
             </div>
@@ -215,7 +233,7 @@ const cctvFeeds = [
         <ShieldCheck :size="22" class="shield-icon" />
         <div>
           <h3>Pemantauan CCTV Lingkungan 24 Jam</h3>
-          <p>Akses siaran langsung CCTV titik publik dipasang untuk menjaga ketertiban, memantau keamanan pos ronda, dan keselamatan warga. Akses privat beresolusi tinggi tersedia di portal warga.</p>
+          <p>Akses siaran langsung CCTV titik publik dipasang untuk menjaga ketertiban, memantau keamanan pos ronda, dan keselamatan warga. Sesi warga terdaftar dapat membuka mode Layar Penuh HD.</p>
         </div>
       </div>
 
@@ -236,12 +254,63 @@ const cctvFeeds = [
             <p>{{ cam.location }}</p>
             <div class="cctv-status-row">
               <span class="status-online">● Stream Siaga Normal</span>
-              <RouterLink to="/login" class="expand-btn">Buka Layar Penuh →</RouterLink>
+              <button type="button" class="expand-btn" @click="handleExpandCctv(cam)">
+                Buka Layar Penuh <Maximize2 :size="13" />
+              </button>
             </div>
           </div>
         </article>
       </div>
     </div>
+
+    <!-- Fullscreen CCTV Stream Modal for Authenticated Residents -->
+    <Teleport to="body">
+      <div v-if="activeCctvModal" class="cctv-modal-overlay" @click.self="activeCctvModal = null">
+        <div class="cctv-modal-card">
+          <header class="modal-header">
+            <div class="modal-title-wrap">
+              <span class="live-badge"><span class="pulse-dot" /> STREAM LIVE 1080P</span>
+              <h2>{{ activeCctvModal.name }}</h2>
+            </div>
+            <button type="button" class="close-modal-btn" aria-label="Tutup Layar Penuh" @click="activeCctvModal = null">
+              <X :size="22" />
+            </button>
+          </header>
+
+          <div class="modal-video-viewport" :style="{ background: activeCctvModal.thumbnail }">
+            <div class="viewport-hud">
+              <div class="hud-top">
+                <span>REC ● {{ new Date().toLocaleTimeString('id-ID') }}</span>
+                <span>{{ activeCctvModal.quality }} · {{ activeCctvModal.fps }}</span>
+              </div>
+              <div class="hud-center">
+                <Video :size="48" class="hud-cam-icon" />
+                <span>Siaran Langsung Terenkripsi RT/RW</span>
+              </div>
+              <div class="hud-bottom">
+                <span>{{ activeCctvModal.location }}</span>
+                <span class="ptz-active">PTZ ACTIVE</span>
+              </div>
+            </div>
+          </div>
+
+          <footer class="modal-footer">
+            <div class="ptz-controls">
+              <span class="ptz-label">Kontrol PTZ (Kamera):</span>
+              <button type="button" class="ptz-btn" title="Geser Atas"><MoveUp :size="15" /></button>
+              <button type="button" class="ptz-btn" title="Geser Bawah"><MoveDown :size="15" /></button>
+              <button type="button" class="ptz-btn" title="Geser Kiri"><MoveLeft :size="15" /></button>
+              <button type="button" class="ptz-btn" title="Geser Kanan"><MoveRight :size="15" /></button>
+            </div>
+            <div class="modal-actions">
+              <RouterLink to="/app/fasilitas" class="button button-sm">
+                Lihat di Portal Warga →
+              </RouterLink>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -665,9 +734,169 @@ const cctvFeeds = [
 }
 
 .expand-btn {
-  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 0.84rem;
   font-weight: 800;
   color: var(--teal-700);
-  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.expand-btn:hover {
+  color: var(--teal-800);
+}
+
+/* CCTV Modal Overlay */
+.cctv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.cctv-modal-card {
+  width: min(100%, 56rem);
+  border-radius: var(--radius-xl);
+  background: #0f172a;
+  color: white;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 850;
+  color: #f43f5e;
+}
+
+.modal-title-wrap h2 {
+  font-size: 1.3rem;
+  margin: 0;
+  color: white;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  transition: color 0.15s, background 0.15s;
+}
+
+.close-modal-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-video-viewport {
+  height: clamp(18rem, 40vh, 28rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.2rem;
+}
+
+.viewport-hud {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hud-top, .hud-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hud-cam-icon {
+  color: #2dd4bf;
+}
+
+.ptz-active {
+  color: #34d399;
+  font-weight: bold;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #091222;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ptz-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ptz-label {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+}
+
+.ptz-btn {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ptz-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 </style>
