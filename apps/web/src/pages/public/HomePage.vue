@@ -59,13 +59,6 @@ onMounted(() => {
           <div class="community-address">{{ site.data.value?.address ?? 'Kelurahan Sukamaju, Indonesia' }}</div>
         </div>
 
-        <template v-if="site.data.value">
-          <div class="meta-strip card">
-            <div><small>Lingkungan</small><strong>{{ site.data.value.shortName }}</strong></div>
-            <div><small>Alamat</small><strong>{{ site.data.value.address }}</strong></div>
-            <div><small>Kontak Siaga</small><strong>{{ site.data.value.emergencyPhone }}</strong></div>
-          </div>
-        </template>
       </aside>
     </div>
   </section>
