@@ -229,6 +229,7 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
 }
+.meta-strip > div { min-width: 0; }
 .meta-strip small { display: block; color: var(--ink-500); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
 .meta-strip strong { display: block; color: var(--ink-950); font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 
@@ -472,10 +473,12 @@ onMounted(() => {
   .cta-primary-btn, .cta-secondary-btn { flex: 1; text-align: center; justify-content: center; }
 }
 @media (min-width: 651px) and (max-width: 1100px) {
-  .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(18rem, .85fr); gap: 1.5rem; padding-block: 2.75rem; }
+  .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(15rem, .85fr); gap: 1rem; padding-block: 2.5rem; }
   .hero-lead { font-size: 1rem; }
   .hero-sidebar { gap: .8rem; }
   .community-card { padding: 1.35rem; }
+  .meta-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: .75rem .85rem; }
+  .meta-strip > div:last-child { grid-column: 1 / -1; }
   .announcement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .announcement-card.featured { grid-column: span 2; }
   .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

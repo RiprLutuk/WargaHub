@@ -638,7 +638,7 @@ main {
     align-items: flex-start;
   }
 }
-@media (max-width: 880px) {
+@media (max-width: 960px) {
   .menu-button {
     display: grid;
   }
