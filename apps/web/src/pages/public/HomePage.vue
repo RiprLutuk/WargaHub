@@ -52,13 +52,11 @@ onMounted(() => {
 
       <aside class="hero-sidebar" aria-label="Informasi lingkungan singkat">
         <div class="community-card">
-          <span class="card-kicker">Prinsip dasar</span>
-          <h2>Tenang, transparan, dan tidak memaksa.</h2>
-          <ul>
-            <li>Privasi warga terjaga dan data tidak dijual.</li>
-            <li>Pengumuman resmi tidak tertumpuk di obrolan grup.</li>
-            <li>Iuran dan tagihan tercatat terbuka untuk audit.</li>
-          </ul>
+          <span class="community-source"><i /> Sumber informasi resmi</span>
+          <span class="card-kicker">Lingkungan kita</span>
+          <h2>{{ site.data.value?.name ?? 'Warga Harmoni' }}</h2>
+          <p>{{ site.data.value?.description ?? 'Lingkungan yang aman, terbuka, dan saling menjaga tanpa tekanan sosial.' }}</p>
+          <div class="community-address">{{ site.data.value?.address ?? 'Kelurahan Sukamaju, Indonesia' }}</div>
         </div>
 
         <template v-if="site.data.value">
@@ -219,16 +217,19 @@ onMounted(() => {
   gap: 0.6rem;
   padding: 1.75rem;
   border-radius: var(--radius-xl);
-  background: #ffffff;
+  background: #fffdf7;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   transform: rotate(-1deg);
   transition: transform 0.25s ease;
 }
 .community-card:hover { transform: rotate(0deg) translateY(-2px); }
+.community-source { display: inline-flex; align-items: center; gap: .45rem; color: var(--success-700); font-size: .86rem; font-weight: 800; }
+.community-source i { width: .7rem; height: .7rem; border-radius: 50%; background: #42ad73; box-shadow: 0 0 0 .35rem #dff2e5; }
 .card-kicker { font-size: 0.75rem; font-weight: 600; color: var(--teal-700); text-transform: uppercase; letter-spacing: 0.05em; }
-.community-card h2 { font-size: 1.25rem; margin: 0; font-weight: 500; }
-.community-card ul { margin: 0; padding-left: 1.1rem; color: var(--ink-650); font-size: 0.9rem; display: grid; gap: 0.4rem; }
+.community-card h2 { margin: .45rem 0 .55rem; font-family: var(--font-display); font-size: clamp(2rem, 3.2vw, 3.2rem); font-weight: 500; line-height: 1.05; }
+.community-card p { margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
+.community-address { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--line-strong); color: var(--ink-700); font-size: .9rem; font-weight: 600; }
 
 .meta-strip {
   display: grid;
