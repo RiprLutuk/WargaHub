@@ -472,8 +472,10 @@ onMounted(() => {
   .cta-primary-btn, .cta-secondary-btn { flex: 1; text-align: center; justify-content: center; }
 }
 @media (min-width: 651px) and (max-width: 1100px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 2rem; padding-block: 3.5rem; }
-  .hero-sidebar { grid-template-columns: minmax(0, 1.15fr) minmax(17rem, .85fr); align-items: start; }
+  .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(18rem, .85fr); gap: 1.5rem; padding-block: 2.75rem; }
+  .hero-lead { font-size: 1rem; }
+  .hero-sidebar { gap: .8rem; }
+  .community-card { padding: 1.35rem; }
   .announcement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .announcement-card.featured { grid-column: span 2; }
   .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
