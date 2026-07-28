@@ -325,11 +325,11 @@ const cctvFeeds = [
 </template>
 
 <style scoped>
-.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
+.public-page-shell { width: min(calc(100% - 2rem), 96rem); padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
   margin-bottom: 1.25rem;
-  max-width: 56rem;
+  max-width: 82rem;
 }
 
 .header-badge {
