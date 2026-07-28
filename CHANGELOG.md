@@ -7,8 +7,13 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [0.5.0] - 2026-07-28
 
 ### Added
-- **Panel Konfigurasi CCTV di Portal Admin Operasional**:
-  - Tab baru **Konfigurasi CCTV** di `/admin/operasional` (`AdminOperationsPage.vue`) untuk menambah, mengelola alamat RTSP/HLS stream IP Camera, mengatur resolusi & dukungan PTZ, serta mengontrol visibilitas tayangan publik/internal.
+- **Tombol Hide & Show Sidebar Navigasi (Collapsible Sidebar)**:
+  - Tombol sakelar bilah sisi (`PanelLeftClose` / `PanelLeftOpen`) di topbar dan sidebar pada `AdminLayout.vue` dan `AppLayout.vue`. Mode *collapsed* mengecilkan sidebar menjadi *icon-only mode* sehingga menghemat ruang layar secara signifikan.
+- **Komponen Select Dropdown Modern (`AppSelect.vue`)**:
+  - Komponen *custom select* dengan pencarian otomatis (*search filter*), penyesuaian ikon, dan desain ringkas.
+- **Penyempurnaan Lay-out DataTable & Toolbar Ringkas**:
+  - Gaya tabel modern (*sticky header*, *zebra stripe*, *row hover highlight*) serta tombol aksi berlabel pendek dengan ikon presisi.
+
 - **Sinkronisasi Rute Bersih & Modal Layar Penuh CCTV**:
   - Dukungan Rute Bersih (*Clean Path Routes*) `/fasilitas/cctv` dan `/cctv` serta modal interaktif *Fullscreen Live Stream* 1080p 60fps dengan tombol kontrol arah PTZ untuk warga yang sudah login.
 
