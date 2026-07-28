@@ -188,25 +188,25 @@ function onGenerated() {
           <thead>
             <tr>
               <th>Kamera & Lokasi</th>
-              <th>Stream URL / IP</th>
+              <th>Stream RTSP / IP</th>
               <th>Resolusi</th>
               <th>Fitur PTZ</th>
-              <th>Visibilitas Portal Warga</th>
-              <th>Status Stream</th>
-              <th>Aksi Pengurus</th>
+              <th>Visibilitas</th>
+              <th>Status</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="cam in cctvFeeds.filter(c => `${c.name} ${c.location} ${c.rtspUrl}`.toLowerCase().includes(search.toLowerCase()))" :key="cam.id">
               <td>
-                <strong>{{ cam.name }}</strong>
-                <div class="muted small">{{ cam.location }}</div>
+                <strong class="nowrap-text">{{ cam.name }}</strong>
+                <div class="muted small nowrap-text">{{ cam.location }}</div>
               </td>
               <td><code>{{ cam.rtspUrl }}</code></td>
-              <td><span class="badge-quality">{{ cam.quality }}</span></td>
+              <td><span class="badge-quality">1080p FHD</span></td>
               <td>
-                <span v-if="cam.ptzSupport" class="ptz-chip">Ya (PTZ Aktif)</span>
-                <span v-else class="muted small">Statis</span>
+                <span v-if="cam.ptzSupport" class="ptz-chip">PTZ Aktif</span>
+                <span v-else class="muted small nowrap-text">Statis</span>
               </td>
               <td>
                 <button
@@ -217,10 +217,10 @@ function onGenerated() {
                 >
                   <Eye v-if="cam.publicVisible" :size="13" />
                   <EyeOff v-else :size="13" />
-                  {{ cam.publicVisible ? 'Publik / Warga' : 'Khusus Admin' }}
+                  {{ cam.publicVisible ? 'Publik' : 'Khusus Admin' }}
                 </button>
               </td>
-              <td><span class="status-online">● ONLINE (60 FPS)</span></td>
+              <td><span class="status-online">● ONLINE 60FPS</span></td>
               <td>
                 <div class="row-actions">
                   <button
@@ -452,11 +452,12 @@ function onGenerated() {
 .toolbar label { display: flex; max-width: 32rem; flex: 1; align-items: center; gap: 0.4rem; padding-inline: 0.65rem; border: 1px solid var(--line-strong); border-radius: 0.65rem; color: var(--ink-500); }
 .toolbar input { width: 100%; min-height: 2.5rem; border: 0; outline: 0; }
 .request-id { color: var(--ink-500); font-family: monospace; }
-.badge-quality { padding: 0.2rem 0.5rem; border-radius: 0.35rem; background: var(--teal-100); color: var(--teal-800); font-size: 0.72rem; font-weight: 800; }
-.ptz-chip { display: inline-flex; padding: 0.2rem 0.5rem; border-radius: 0.35rem; background: var(--amber-100); color: var(--amber-700); font-size: 0.72rem; font-weight: 800; }
-.badge-public { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--success-100); color: var(--success-700); font-size: 0.72rem; font-weight: 800; }
-.badge-private { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--cream-100); color: var(--ink-800); font-size: 0.72rem; font-weight: 800; }
-.status-online { color: var(--teal-700); font-weight: 800; font-size: 0.76rem; }
+.nowrap-text { white-space: nowrap !important; word-break: keep-all !important; }
+.badge-quality { padding: 0.2rem 0.5rem; border-radius: 0.35rem; background: var(--teal-100); color: var(--teal-800); font-size: 0.72rem; font-weight: 800; white-space: nowrap !important; word-break: keep-all !important; flex: none !important; }
+.ptz-chip { display: inline-flex; padding: 0.2rem 0.5rem; border-radius: 0.35rem; background: var(--amber-100); color: var(--amber-700); font-size: 0.72rem; font-weight: 800; white-space: nowrap !important; word-break: keep-all !important; flex: none !important; }
+.badge-public { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--success-100); color: var(--success-700); font-size: 0.72rem; font-weight: 800; white-space: nowrap !important; word-break: keep-all !important; flex: none !important; }
+.badge-private { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--cream-100); color: var(--ink-800); font-size: 0.72rem; font-weight: 800; white-space: nowrap !important; word-break: keep-all !important; flex: none !important; }
+.status-online { color: var(--teal-700); font-weight: 800; font-size: 0.76rem; white-space: nowrap !important; word-break: keep-all !important; flex: none !important; }
 .operation-tabs { display: flex; gap: 0.35rem; overflow-x: auto; padding: 0.35rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); }
 .operation-tabs button { display: flex; min-height: 2.75rem; align-items: center; gap: 0.4rem; padding: 0.55rem 0.75rem; border: 0; border-radius: 0.65rem; background: transparent; color: var(--ink-650); font-size: 0.8rem; font-weight: 750; white-space: nowrap; cursor: pointer; }
 .operation-tabs button.active { background: var(--teal-100); color: var(--teal-800); }
