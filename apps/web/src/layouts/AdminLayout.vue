@@ -68,9 +68,11 @@ async function logout() { await session.logout(); await router.push('/login'); }
 
         <div class="admin-actions">
           <button class="icon-button" type="button" aria-label="Notifikasi operasional"><Bell :size="19" /><i /></button>
-          <span class="admin-avatar">{{ initials }}</span>
-          <span class="admin-name">{{ session.user?.name }}</span>
-          <button class="logout-button" type="button" aria-label="Keluar" @click="logout"><LogOut :size="18" /></button>
+          <div class="user-pill">
+            <span class="avatar-badge">{{ initials }}</span>
+            <span class="user-name">{{ session.user?.name }}</span>
+          </div>
+          <button class="icon-button logout-button" type="button" title="Keluar dari akun" aria-label="Keluar" @click="logout"><LogOut :size="18" /></button>
         </div>
       </header>
       <main id="admin-content" tabindex="-1"><RouterView /></main>
@@ -107,11 +109,13 @@ async function logout() { await session.logout(); await router.push('/login'); }
 .topbar-toggle-btn:hover { background: var(--teal-50); border-color: var(--teal-600); color: var(--teal-800); }
 .admin-topbar strong { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; display: block; }
 .admin-topbar span { color: var(--ink-650); font-size: 0.78rem; display: block; }
-.admin-actions { display: flex; align-items: center; gap: 0.55rem; }
-.icon-button, .logout-button { position: relative; display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid var(--line); border-radius: 0.7rem; background: var(--paper); color: var(--ink-650); cursor: pointer; }
+.admin-actions { display: flex; align-items: center; gap: 0.75rem; }
+.user-pill { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0.85rem 0.3rem 0.35rem; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03); }
+.avatar-badge { display: inline-flex; align-items: center; justify-content: center; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: var(--amber-100); color: var(--amber-700); font-size: 0.78rem; font-weight: 700; line-height: 1; text-align: center; }
+.user-name { color: var(--ink-950); font-size: 0.88rem; font-weight: 600; max-width: 10rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-button, .logout-button { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--line); border-radius: 0.75rem; background: var(--paper); color: var(--ink-800); cursor: pointer; transition: all 0.15s ease; }
+.icon-button:hover, .logout-button:hover { background: var(--teal-50); border-color: var(--teal-600); color: var(--teal-800); }
 .icon-button i { position: absolute; top: 0.55rem; right: 0.55rem; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--coral-700); }
-.admin-avatar { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: 0.65rem; background: var(--amber-100); color: var(--amber-700) !important; font-size: 0.74rem !important; font-weight: 800; }
-.admin-name { max-width: 9rem; overflow: hidden; color: var(--ink-950) !important; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 #admin-content { padding: clamp(1rem, 2.5vw, 2rem); }
 @media (max-width: 900px) { .admin-shell { grid-template-columns: 4.5rem minmax(0, 1fr); } .admin-sidebar { padding-inline: 0.5rem; } .admin-brand :deep(.brand-copy), .organization, .back-portal span { display: none; } .admin-sidebar :deep(a) { justify-content: center; } }
 </style>
