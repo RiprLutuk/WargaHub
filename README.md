@@ -18,11 +18,19 @@
 
 <br/>
 
-[Fitur Utama](#-fitur-unggulan) • [Cara Jalankan](#-menjalankan-secara-lokal) • [Akun Demo](#-akun-demo) • [Prinsip Privasi](#-prinsip-privasi) • [Dokumentasi](#-dokumentasi)
+[Demo Online](#-demo-online) • [Fitur Utama](#-fitur-unggulan) • [Cara Jalankan](#-menjalankan-secara-lokal) • [Akun Demo](#-akun-demo) • [Prinsip Privasi](#-prinsip-privasi) • [Dokumentasi](#-dokumentasi)
 
 ---
 
 </div>
+
+## 🌐 Demo Online
+
+- **Portal publik:** [wargahub.demo.pandanteknik.com](https://wargahub.demo.pandanteknik.com)
+- **Alias Vercel:** [wargahub.vercel.app](https://wargahub.vercel.app)
+- **API health check:** [api.wargahub.pandanteknik.com/health](https://api.wargahub.pandanteknik.com/health)
+
+Gunakan kredensial pada bagian [Akun Demo](#-akun-demo) untuk mencoba portal privat. Dataset demo berisi 100+ warga, tagihan bulanan, dan ratusan transaksi kas. Jangan gunakan akun demo untuk data warga sungguhan.
 
 ## 🌟 Fitur Unggulan
 
