@@ -1,26 +1,30 @@
 /* Base Design System Tokens & Base Rules */
 :root {
   --content: 84rem;
-  --font-display: 'Outfit', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Universal Typography Enforcement - Bulletproof Non-Serif Stack */
+/* Universal Typography Enforcement - Clean, Airy Plus Jakarta Sans Stack */
 * {
-  font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  letter-spacing: 0.008em;
 }
 
 h1, h2, h3, h4, h5, h6, .page-heading h1, .brand-copy strong {
-  font-family: 'Outfit', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-  letter-spacing: -0.015em;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.005em !important;
+  line-height: 1.3 !important;
+  color: #0f172a;
 }
 
 html {
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   color-scheme: light;
   scroll-behavior: smooth;
   background: var(--surface, #f1f5f9);
@@ -30,7 +34,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--surface, #f1f5f9);
   color: var(--ink-900);
 }
@@ -70,7 +74,7 @@ img, video {
   margin-inline: auto;
 }
 
-.page-heading h1 { margin-bottom: 0.55rem; font-size: clamp(2.2rem, 5vw, 3.6rem); }
+.page-heading h1 { margin-bottom: 0.55rem; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 700 !important; letter-spacing: -0.01em !important; }
 .page-heading p { max-width: 43rem; color: var(--ink-650); font-size: 1.06rem; }
 .eyebrow {
   display: inline-flex;
@@ -78,7 +82,7 @@ img, video {
   gap: 0.5rem;
   margin-bottom: 0.8rem;
   color: var(--teal-700);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -134,7 +138,7 @@ img, video {
   border-radius: 0.95rem;
   background: #0f766e !important;
   color: #ffffff !important;
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
   font-weight: 600 !important;
   font-size: 0.88rem;
   line-height: 1.2;
@@ -199,7 +203,7 @@ img, video {
   border-radius: 0.95rem;
   background: #ffffff;
   color: var(--ink-950);
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .field textarea { min-height: 7rem; resize: vertical; border-radius: 1rem; }
@@ -239,7 +243,7 @@ img, video {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.88rem;
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
 .data-table th, .data-table td {
@@ -295,7 +299,7 @@ img, video {
   background: #fef3c7 !important;
   border: 1px solid #fde68a !important;
   color: #92400e !important;
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
   font-size: 0.8rem !important;
   font-weight: 700 !important;
   white-space: nowrap !important;
