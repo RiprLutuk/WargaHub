@@ -184,11 +184,11 @@ onMounted(() => {
   overflow: hidden;
   border-bottom: 1px solid var(--line);
   background:
-    linear-gradient(rgba(11, 120, 108, .075) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(11, 120, 108, .075) 1px, transparent 1px),
+    linear-gradient(rgba(11, 120, 108, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 120, 108, .045) 1px, transparent 1px),
     radial-gradient(ellipse at 85% 15%, rgba(20, 184, 166, 0.18) 0%, transparent 35rem),
     linear-gradient(170deg, #f0fdf4 0%, #ffffff 50%, #f8faf9 100%);
-  background-size: 48px 48px, 48px 48px, auto, auto;
+  background-size: 56px 56px, 56px 56px, auto, auto;
 }
 .hero-pattern {
   position: absolute;
@@ -503,7 +503,7 @@ onMounted(() => {
   .service-card:last-child { grid-column: span 2; }
 }
 @media (min-width: 1101px) {
-  .hero-grid { min-height: min(42rem, calc(100vh - 4.6rem)); align-items: center; padding-block: clamp(4.5rem, 7vw, 7rem); }
+  .hero-grid { min-height: 34rem; align-items: center; padding-block: 4rem; }
   .hero-content { gap: 1rem; }
   .display-title { font-size: clamp(3.8rem, 6.3vw, 6.25rem); }
   .hero-lead { max-width: 44rem; font-size: 1.2rem; }
