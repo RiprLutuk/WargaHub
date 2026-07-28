@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { Activity, CheckCircle2, ClipboardCheck, Clock3, FileClock, Plus, Search, ShieldCheck, UserCheck } from 'lucide-vue-next';
+import { Activity, CheckCircle2, ClipboardCheck, Clock3, FileClock, Plus, Search, ShieldCheck, Sparkles, UserCheck, Wand2 } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
+import AutomatedRosterModal from '../../components/AutomatedRosterModal.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
+import WhatsAppImportModal from '../../components/WhatsAppImportModal.vue';
 import { useResource } from '../../composables/useResource';
 import { api, ApiClientError } from '../../lib/api';
 import type { Complaint } from '../../lib/demo';
@@ -20,6 +22,9 @@ const tab = ref<'complaints' | 'activities' | 'patrol' | 'notifications'>('compl
 const message = ref('');
 const search = ref('');
 const panelOpen = ref(false);
+const waModalOpen = ref(false);
+const rosterModalOpen = ref(false);
+
 const panelMode = ref<'activity' | 'patrol' | 'assign'>('activity');
 const busy = ref(false);
 const selectedComplaintId = ref('');
@@ -61,6 +66,20 @@ function openAssignModal(complaint: Complaint) {
 function openCreateModal(mode: 'activity' | 'patrol') {
   panelMode.value = mode;
   panelOpen.value = true;
+}
+
+async function onImported() {
+  waModalOpen.value = false;
+  message.value = 'Data jadwal dan jimpitan WhatsApp berhasil diimpor ke sistem.';
+  await activities.reload();
+  await patrols.reload();
+}
+
+async function onGenerated() {
+  rosterModalOpen.value = false;
+  message.value = 'Giliran & jadwal otomatis berhasil diterbitkan ke sistem WargaHub!';
+  await activities.reload();
+  await patrols.reload();
 }
 
 async function resolve(item: Complaint) {
@@ -144,10 +163,22 @@ async function createPatrol() {
       <div>
         <span class="eyebrow">{{ section === 'audit' ? 'Jejak tindakan sensitif' : 'Koordinasi layanan' }}</span>
         <h1>{{ section === 'audit' ? 'Audit log' : 'Operasional warga' }}</h1>
-        <p>{{ section === 'audit' ? 'Audit log hanya dapat dibaca role berizin dan tidak boleh memuat rahasia, token, atau alasan dispensasi mentah.' : 'Kelola pengaduan, kebutuhan kegiatan, jadwal ronda, dan notifikasi dari satu antrean terukur.' }}</p>
+        <p>{{ section === 'audit' ? 'Audit log hanya dapat dibaca role berizin dan tidak boleh memuat rahasia, token, atau alasan dispensasi mentah.' : 'Kelola pengaduan, giliran otomatis (sodakoh/ronda), jadwal kegiatan, dan notifikasi warga.' }}</p>
       </div>
-      <span v-if="section === 'operations'" class="sla-chip"><Clock3 :size="15" /> {{ openComplaints.length }} laporan terbuka</span>
+
+      <div v-if="section === 'operations'" class="heading-actions">
+        <button class="button button-sm" type="button" @click="rosterModalOpen = true">
+          <Wand2 :size="16" /> Susun Giliran Otomatis
+        </button>
+        <button class="button button-secondary button-sm" type="button" @click="waModalOpen = true">
+          <Sparkles :size="16" /> Impor Teks WA
+        </button>
+        <span class="sla-chip"><Clock3 :size="15" /> {{ openComplaints.length }} laporan terbuka</span>
+      </div>
     </header>
+
+    <WhatsAppImportModal :open="waModalOpen" @close="waModalOpen = false" @imported="onImported" />
+    <AutomatedRosterModal :open="rosterModalOpen" @close="rosterModalOpen = false" @generated="onGenerated" />
 
     <div v-if="message" class="notice" role="status"><CheckCircle2 :size="18" />{{ message }}</div>
 
@@ -192,8 +223,8 @@ async function createPatrol() {
     <template v-else>
       <nav class="operation-tabs" aria-label="Jenis operasional">
         <button :class="{ active: tab === 'complaints' }" type="button" @click="tab = 'complaints'"><ClipboardCheck :size="17" /> Pengaduan <span>{{ openComplaints.length }}</span></button>
-        <button :class="{ active: tab === 'activities' }" type="button" @click="tab = 'activities'"><Activity :size="17" /> Kegiatan</button>
-        <button :class="{ active: tab === 'patrol' }" type="button" @click="tab = 'patrol'"><ShieldCheck :size="17" /> Ronda</button>
+        <button :class="{ active: tab === 'activities' }" type="button" @click="tab = 'activities'"><Activity :size="17" /> Giliran & Kegiatan</button>
+        <button :class="{ active: tab === 'patrol' }" type="button" @click="tab = 'patrol'"><ShieldCheck :size="17" /> Jadwal Ronda</button>
         <button :class="{ active: tab === 'notifications' }" type="button" @click="tab = 'notifications'"><FileClock :size="17" /> Notifikasi</button>
       </nav>
 
@@ -225,10 +256,13 @@ async function createPatrol() {
       <section v-else-if="tab === 'activities'" class="operation-section">
         <div class="section-heading">
           <div>
-            <h2>Kebutuhan kontribusi</h2>
-            <p class="muted">Kelola jadwal kegiatan dan kebutuhan relawan/perlengkapan warga.</p>
+            <h2>Giliran sodakoh & kegiatan warga</h2>
+            <p class="muted">Kelola giliran konsumsi tukang dan kebutuhan kegiatan warga secara otomatis.</p>
           </div>
-          <button class="button button-sm" type="button" @click="openCreateModal('activity')"><Plus :size="15" /> Buat kegiatan</button>
+          <div class="heading-actions">
+            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><Wand2 :size="15" /> Generate Giliran Otomatis</button>
+            <button class="button button-secondary button-sm" type="button" @click="openCreateModal('activity')"><Plus :size="15" /> Buat manual</button>
+          </div>
         </div>
         <StatePanel v-if="activities.loading.value" state="loading" />
         <div v-else class="activity-admin-grid">
@@ -238,9 +272,9 @@ async function createPatrol() {
             <p>{{ item.location }}</p>
             <div class="need-meter">
               <span><i style="width: 50%" /></span>
-              <strong>Kontribusi: {{ item.contribution }}</strong>
+              <strong>Status: {{ item.contribution }}</strong>
             </div>
-            <button class="button button-secondary button-sm" type="button">Lihat kebutuhan</button>
+            <button class="button button-secondary button-sm" type="button">Detail giliran</button>
           </article>
         </div>
       </section>
@@ -248,10 +282,13 @@ async function createPatrol() {
       <section v-else-if="tab === 'patrol'" class="operation-section">
         <div class="section-heading">
           <div>
-            <h2>Jadwal & pertukaran ronda</h2>
-            <p class="muted">Jadwal berubah hanya setelah pihak pengganti menerima dan koordinator menyetujui.</p>
+            <h2>Jadwal & rotasi ronda malam</h2>
+            <p class="muted">Rotasi ronda disusun otomatis dan dapat ditukar antar warga langsung dari aplikasi.</p>
           </div>
-          <button class="button button-sm" type="button" @click="openCreateModal('patrol')"><Plus :size="15" /> Susun jadwal</button>
+          <div class="heading-actions">
+            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><Wand2 :size="15" /> Generate Rotasi Ronda</button>
+            <button class="button button-secondary button-sm" type="button" @click="openCreateModal('patrol')"><Plus :size="15" /> Manual</button>
+          </div>
         </div>
         <StatePanel v-if="patrols.loading.value" state="loading" />
         <div v-else class="operation-list">
@@ -347,6 +384,7 @@ async function createPatrol() {
 <style scoped>
 .admin-page{display:grid;max-width:88rem;gap:1.2rem;margin-inline:auto}
 .admin-heading{display:flex;align-items:end;justify-content:space-between;gap:1rem}
+.heading-actions{display:flex;align-items:center;gap:.6rem}
 .admin-heading h1{margin-bottom:.4rem;font-size:clamp(2rem,4vw,3rem)}
 .admin-heading p{max-width:52rem;margin:0;color:var(--ink-650)}
 .sla-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .65rem;border-radius:999px;background:var(--amber-100);color:var(--amber-700);font-size:.75rem;font-weight:800}
