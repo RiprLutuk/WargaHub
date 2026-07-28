@@ -38,6 +38,7 @@ const residentGroups: NavigationGroup[] = [
       { to: '/app/ronda', label: 'Jadwal Ronda', icon: ShieldCheck, permission: 'patrol.schedule.read' },
       { to: '/app/voting', label: 'Musyawarah & Voting', icon: Vote },
       { to: '/app/program', label: 'Program Lingkungan', icon: HardHat },
+      { to: '/app/struktur', label: 'Struktur Pengurus RT/RW', icon: Users },
     ],
   },
   {

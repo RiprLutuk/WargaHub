@@ -100,6 +100,8 @@ const router = createRouter({
         { path: 'program', component: ProgramsPage, meta: { title: 'Program Lingkungan' } },
         { path: 'layanan', component: ServicesPage, meta: { title: 'Layanan & UMKM Warga' } },
         { path: 'dokumen', component: ResidentDocumentsPage, meta: { title: 'Dokumen warga', permission: 'document.read' } },
+        { path: 'struktur', component: PublicStructurePage, meta: { title: 'Struktur Pengurus RT/RW' } },
+        { path: 'organisasi', redirect: '/app/struktur' },
         { path: 'notifikasi', component: NotificationsPage, meta: { title: 'Notifikasi', permission: 'notification.read' } },
         { path: 'pengaturan', component: SettingsPage, meta: { title: 'Pengaturan' } },
       ],

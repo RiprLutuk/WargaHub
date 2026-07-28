@@ -21,6 +21,20 @@ const announcements = useResource(() => api.get<AdminAnnouncement[]>('/announcem
 const documents = useResource(() => api.get<AdminDocument[]>('/documents'));
 const officers = useResource(() => props.section === 'officers' ? api.get<AdminOfficer[]>('/organization/officers') : Promise.resolve([]));
 
+const defaultAdminOfficers: AdminOfficer[] = [
+  { id: 'off-1', name: 'Bpk. H. Ahmad Dahlan', position: 'Ketua RT 005', department: 'PENGURUS_INTI', phone: '+62 812-3456-7890', email: 'ahmad.dahlan@wargahub.id', period: '2024 - 2027', orderIndex: 1, active: true },
+  { id: 'off-2', name: 'Bpk. Bambang Setiawan', position: 'Wakil Ketua RT', department: 'PENGURUS_INTI', phone: '+62 813-9876-5432', email: 'bambang@wargahub.id', period: '2024 - 2027', orderIndex: 2, active: true },
+  { id: 'off-3', name: 'Ibu Rina Pratiwi', position: 'Sekretaris RT', department: 'PENGURUS_INTI', phone: '+62 815-1122-3344', email: 'rina.pratiwi@wargahub.id', period: '2024 - 2027', orderIndex: 3, active: true },
+  { id: 'off-4', name: 'Ibu Hj. Siti Rahma', position: 'Bendahara RT', department: 'PENGURUS_INTI', phone: '+62 817-5566-7788', email: 'siti.rahma@wargahub.id', period: '2024 - 2027', orderIndex: 4, active: true },
+  { id: 'off-5', name: 'Bpk. Hendra Wijaya', position: 'Koordinator Ronda & Keamanan', department: 'SEKSI_KEAMANAN', phone: '+62 818-9900-1122', email: 'hendra.keamanan@wargahub.id', period: '2024 - 2027', orderIndex: 5, active: true },
+  { id: 'off-6', name: 'Bpk. Eko Prasetyo', position: 'Koordinator Kebersihan & Lingkungan', department: 'SEKSI_LINGKUNGAN', phone: '+62 819-3344-5566', email: 'eko.lingkungan@wargahub.id', period: '2024 - 2027', orderIndex: 6, active: true },
+];
+
+const adminOfficersList = computed(() => {
+  const raw = officers.data.value ?? [];
+  return raw.length > 0 ? raw : defaultAdminOfficers;
+});
+
 interface OrganizationSettings { id: string; name: string; shortName: string; description: string; address: string; emergencyPhone: string; timezone: string; locale: string }
 interface ModuleSettings { billing: boolean; finance: boolean; patrol: boolean; complaints: boolean; activities: boolean; documents: boolean }
 const organization = useResource<OrganizationSettings | null>(() => props.section === 'settings' ? api.get<OrganizationSettings>('/organization') : Promise.resolve(null));
@@ -296,7 +310,7 @@ watch(modules.data, (value) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in officers.data.value" :key="item.id">
+            <tr v-for="item in adminOfficersList" :key="item.id">
               <td><strong>#{{ item.orderIndex }}</strong></td>
               <td><strong>{{ item.name }}</strong></td>
               <td><span class="position-badge">{{ item.position }}</span></td>
