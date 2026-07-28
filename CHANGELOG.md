@@ -10,6 +10,7 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Konfigurasi deployment gratis untuk Vercel (`vercel.json`) dan Render (`render.yaml`), plus panduan PostgreSQL eksternal di `docs/DEPLOYMENT.md`.
 - Integrasi Vercel Web Analytics untuk pemantauan page view portal publik dan privat.
 - Seeder demo bulk yang idempotent: 100 warga/rumah tambahan, 120 tagihan bulanan, dan 240 transaksi kas untuk mengisi dashboard serta laporan.
+- Koleksi konten publik demo yang idempotent: 24 pengumuman, 24 laporan warga, 18 agenda, 20 dokumen, 12 fasilitas, 12 program lingkungan, dan 24 UMKM.
 
 ## [0.6.0] - 2026-07-28
 

@@ -52,11 +52,13 @@ onMounted(() => {
 
       <aside class="hero-sidebar" aria-label="Informasi lingkungan singkat">
         <div class="community-card">
-          <span class="community-source"><i /> Sumber informasi resmi</span>
-          <span class="card-kicker">Lingkungan kita</span>
-          <h2>{{ site.data.value?.name ?? 'Warga Harmoni' }}</h2>
-          <p>{{ site.data.value?.description ?? 'Lingkungan yang aman, terbuka, dan saling menjaga tanpa tekanan sosial.' }}</p>
-          <div class="community-address">{{ site.data.value?.address ?? 'Kelurahan Sukamaju, Indonesia' }}</div>
+          <span class="card-kicker">Prinsip dasar</span>
+          <h2>Tenang, transparan, dan tidak memaksa.</h2>
+          <ul class="principle-list">
+            <li>Privasi warga terjaga dan data tidak dijual.</li>
+            <li>Pengumuman resmi tidak tertumpuk di obrolan grup.</li>
+            <li>Iuran dan tagihan tercatat terbuka untuk audit.</li>
+          </ul>
         </div>
 
       </aside>
@@ -197,7 +199,9 @@ onMounted(() => {
   padding-block: clamp(4rem, 6vw, 5.5rem);
 }
 .hero-content { display: grid; gap: 0.8rem; }
-.display-title { font-size: clamp(2.8rem, 5.5vw, 4.5rem); }
+.hero-content .display-title { margin: 0; }
+.hero-content .hero-lead { margin: 0; }
+.display-title { font-size: clamp(2.75rem, 4.8vw, 5.2rem); }
 .hero-lead { max-width: 38rem; color: var(--ink-650); font-size: 1.12rem; line-height: 1.6; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.8rem; }
 .hero-trust { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: .55rem; color: var(--ink-700); font-size: .88rem; font-weight: 700; }
@@ -223,6 +227,7 @@ onMounted(() => {
 .community-card h2 { margin: .45rem 0 .55rem; font-family: var(--font-display); font-size: clamp(2rem, 3.2vw, 3.2rem); font-weight: 500; line-height: 1.05; }
 .community-card p { margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
 .community-address { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--line-strong); color: var(--ink-700); font-size: .9rem; font-weight: 600; }
+.principle-list { display: grid; gap: .7rem; margin: .4rem 0 0; padding-left: 1.15rem; color: var(--ink-650); line-height: 1.5; }
 
 .meta-strip {
   display: grid;
@@ -499,7 +504,7 @@ onMounted(() => {
 @media (min-width: 1101px) {
   .hero-grid { min-height: 34rem; align-items: center; padding-block: 4rem; }
   .hero-content { gap: 1rem; }
-  .display-title { font-size: clamp(3.8rem, 6.3vw, 6.25rem); }
+  .display-title { font-size: clamp(3.6rem, 5vw, 5.2rem); }
   .hero-lead { max-width: 44rem; font-size: 1.2rem; }
   .community-card { padding: 2.1rem; }
 }

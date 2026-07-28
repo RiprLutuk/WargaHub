@@ -494,6 +494,180 @@ export async function seedExpandedDemoData(database: Database): Promise<void> {
       ],
     );
   }
+
+  // Public content collections used by the landing pages and filters.
+  const announcementCategories = ['KEGIATAN', 'KEAMANAN', 'AIR_LISTRIK', 'LINGKUNGAN'];
+  for (let index = 1; index <= 24; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    const category = announcementCategories[(index - 1) % announcementCategories.length];
+    const publishedAt = `2026-${String(((index - 1) % 8) + 1).padStart(2, '0')}-${String(((index - 1) % 27) + 1).padStart(2, '0')}T01:00:00.000Z`;
+    await database.query(
+      `INSERT INTO announcements
+        (id, organization_id, author_id, category, title, slug, summary, content,
+         visibility, urgency, status, pinned, publish_at, published_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'PUBLIC', $9, 'PUBLISHED', $10, $11, $11)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `announcement_demo_bulk_${suffix}`,
+        demoIds.organization,
+        index % 2 === 0 ? demoIds.coordinator : demoIds.admin,
+        category,
+        `${category.replaceAll('_', ' ')} warga ${suffix}`,
+        `demo-pengumuman-${suffix}`,
+        `Informasi terbaru lingkungan untuk warga blok ${index % 2 === 0 ? 'B' : 'A'}.`,
+        `Pengurus menyampaikan pembaruan resmi terkait ${category.toLowerCase().replaceAll('_', ' ')}. Silakan periksa detail dan jadwal yang berlaku untuk lingkungan kita.`,
+        index % 7 === 0 ? 'IMPORTANT' : 'NORMAL',
+        index % 8 === 0,
+        publishedAt,
+      ],
+    );
+  }
+
+  const complaintCategories = ['FASILITAS', 'KEBERSIHAN', 'KEAMANAN', 'LINGKUNGAN'];
+  const complaintStatuses = ['SUBMITTED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
+  for (let index = 1; index <= 24; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    await database.query(
+      `INSERT INTO complaints
+        (id, organization_id, ticket_number, reporter_id, assigned_to, category,
+         title, description, visibility, location, priority, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'PUBLIC', $9, $10, $11)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `complaint_demo_bulk_${suffix}`,
+        demoIds.organization,
+        `WH-2026-${String(200 + index).padStart(4, '0')}`,
+        `user_demo_resident_bulk_${String(((index - 1) % 100) + 1).padStart(3, '0')}`,
+        demoIds.coordinator,
+        complaintCategories[(index - 1) % complaintCategories.length],
+        `Laporan warga demo ${suffix}`,
+        'Laporan publik demo untuk membantu warga memantau tindak lanjut pengurus.',
+        `Blok ${index % 2 === 0 ? 'B' : 'A'}`,
+        index % 6 === 0 ? 'HIGH' : 'NORMAL',
+        complaintStatuses[(index - 1) % complaintStatuses.length],
+      ],
+    );
+  }
+
+  const activityTitles = ['Kerja bakti taman', 'Rembuk warga', 'Posyandu balita', 'Pelatihan keamanan'];
+  for (let index = 1; index <= 18; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    const month = String(((index - 1) % 8) + 1).padStart(2, '0');
+    const day = String(((index - 1) % 20) + 1).padStart(2, '0');
+    await database.query(
+      `INSERT INTO activities
+        (id, organization_id, coordinator_id, title, description, location,
+         starts_at, ends_at, capacity, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'PUBLISHED')
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `activity_demo_bulk_${suffix}`,
+        demoIds.organization,
+        demoIds.coordinator,
+        `${activityTitles[(index - 1) % activityTitles.length]} ${suffix}`,
+        'Kegiatan warga yang terbuka untuk partisipasi sesuai waktu dan kemampuan masing-masing.',
+        index % 2 === 0 ? 'Balai Warga' : 'Taman RW',
+        `2026-${month}-${day}T00:00:00.000Z`,
+        `2026-${month}-${day}T03:00:00.000Z`,
+        20 + (index % 4) * 10,
+      ],
+    );
+  }
+
+  const documentCategories = ['Peraturan', 'Notulen', 'Panduan', 'Formulir'];
+  for (let index = 1; index <= 20; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    await database.query(
+      `INSERT INTO documents
+        (id, organization_id, owner_id, title, slug, description, category,
+         visibility, current_version, published_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'PUBLIC', 1, $8)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `document_demo_bulk_${suffix}`,
+        demoIds.organization,
+        demoIds.admin,
+        `${documentCategories[(index - 1) % documentCategories.length]} warga ${suffix}`,
+        `dokumen-warga-demo-${suffix}`,
+        'Dokumen informasi lingkungan yang dapat dibaca dan dibagikan oleh warga.',
+        documentCategories[(index - 1) % documentCategories.length],
+        `2026-${String(((index - 1) % 8) + 1).padStart(2, '0')}-10T01:00:00.000Z`,
+      ],
+    );
+  }
+
+  const facilityNames = ['Balai warga', 'Lapangan serbaguna', 'Tenda kegiatan', 'Kursi lipat', 'Sound system', 'Pos ronda'];
+  for (let index = 1; index <= 12; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    await database.query(
+      `INSERT INTO facilities
+        (id, organization_id, name, description, category, fee, deposit, requires_approval, active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, TRUE)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `facility_demo_bulk_${suffix}`,
+        demoIds.organization,
+        `${facilityNames[(index - 1) % facilityNames.length]} ${suffix}`,
+        'Fasilitas bersama yang dapat dipinjam untuk kegiatan warga dan keluarga.',
+        index % 2 === 0 ? 'OUTDOOR' : 'GENERAL',
+        index % 3 === 0 ? 50000 : 0,
+        index % 3 === 0 ? 100000 : 0,
+      ],
+    );
+  }
+
+  const programTitles = ['Pemasangan CCTV lingkungan', 'Pavingisasi gang', 'Perbaikan saluran air', 'Renovasi pos ronda'];
+  for (let index = 1; index <= 12; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    const budget = 5000000 + (index % 5) * 2500000;
+    const status = index % 5 === 0 ? 'COMPLETED' : index % 3 === 0 ? 'PLANNED' : 'IN_PROGRESS';
+    const spent = status === 'COMPLETED' ? budget : status === 'IN_PROGRESS' ? Math.floor(budget * (0.35 + (index % 4) * 0.1)) : 0;
+    await database.query(
+      `INSERT INTO programs
+        (id, organization_id, pic_id, title, description, category, budget, spent,
+         status, starts_at, ends_at, public_updates)
+       VALUES ($1, $2, $3, $4, $5, 'INFRASTRUCTURE', $6, $7, $8, $9, $10, $11)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `program_demo_bulk_${suffix}`,
+        demoIds.organization,
+        demoIds.coordinator,
+        `${programTitles[(index - 1) % programTitles.length]} ${suffix}`,
+        'Program pembangunan lingkungan dengan pembaruan progres dan penggunaan anggaran secara terbuka.',
+        budget,
+        spent,
+        status,
+        `2026-${String(((index - 1) % 8) + 1).padStart(2, '0')}-01T00:00:00.000Z`,
+        `2026-${String(((index - 1) % 8) + 2).padStart(2, '0')}-28T16:59:59.000Z`,
+        `Pembaruan progres program ${suffix}: pekerjaan dan penggunaan anggaran dicatat oleh pengurus.`,
+      ],
+    );
+  }
+
+  const businessNames = ['Warung Sembako', 'Katering Rumahan', 'Servis AC & Elektronik', 'Laundry Warga', 'Jasa Fotokopi', 'Bengkel Motor'];
+  const businessCategories = ['KULINER_SEMBAKO', 'KULINER', 'JASA_PERBAIKAN'];
+  for (let index = 1; index <= 24; index += 1) {
+    const suffix = String(index).padStart(2, '0');
+    const ownerId = `user_demo_resident_bulk_${String(((index - 1) % 100) + 1).padStart(3, '0')}`;
+    await database.query(
+      `INSERT INTO umkms
+        (id, organization_id, owner_id, name, category, description, contact_phone,
+         operating_hours, verified, active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, TRUE)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        `umkm_demo_bulk_${suffix}`,
+        demoIds.organization,
+        ownerId,
+        `${businessNames[(index - 1) % businessNames.length]} ${suffix}`,
+        businessCategories[(index - 1) % businessCategories.length],
+        'Usaha warga lokal untuk kebutuhan harian dan layanan lingkungan sekitar.',
+        `+62813${String(20000000 + index).slice(-8)}`,
+        index % 2 === 0 ? '07.00 - 18.00 WIB' : '08.00 - 21.00 WIB',
+        index % 4 !== 0,
+      ],
+    );
+  }
 }
 
 async function main(): Promise<void> {
