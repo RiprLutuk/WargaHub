@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight, Building2, Camera, CheckCircle2, Clock, Dumbbell, Home, Info, Package, ShieldCheck, Sparkles, Video } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
@@ -19,9 +19,27 @@ interface PublicFacility {
   requiresApproval?: boolean;
 }
 
-const activeTab = ref<'FACILITIES' | 'CCTV'>('FACILITIES');
+const route = useRoute();
+const router = useRouter();
+
+const initialTab = (route.query.tab as string)?.toUpperCase() === 'CCTV' ? 'CCTV' : 'FACILITIES';
+const activeTab = ref<'FACILITIES' | 'CCTV'>(initialTab);
 const selectedCategory = ref('SEMUA');
 const facilities = useResource(() => api.get<PublicFacility[]>('/public/facilities'));
+
+watch(() => route.query.tab, (newTabQuery) => {
+  if (newTabQuery) {
+    const tabUpper = (newTabQuery as string).toUpperCase();
+    if (tabUpper === 'CCTV' || tabUpper === 'FACILITIES') {
+      activeTab.value = tabUpper as 'FACILITIES' | 'CCTV';
+    }
+  }
+});
+
+function switchTab(tab: 'FACILITIES' | 'CCTV') {
+  activeTab.value = tab;
+  router.replace({ query: { ...route.query, tab: tab.toLowerCase() } });
+}
 
 const categories = computed(() => ['SEMUA', ...new Set(facilities.data.value?.map((f) => f.category) ?? [])]);
 
@@ -94,7 +112,7 @@ const cctvFeeds = [
           type="button"
           class="tab-btn"
           :class="{ active: activeTab === 'FACILITIES' }"
-          @click="activeTab = 'FACILITIES'"
+          @click="switchTab('FACILITIES')"
         >
           <Building2 :size="16" />
           <span>Fasilitas & Inventaris</span>
@@ -103,7 +121,7 @@ const cctvFeeds = [
           type="button"
           class="tab-btn"
           :class="{ active: activeTab === 'CCTV' }"
-          @click="activeTab = 'CCTV'"
+          @click="switchTab('CCTV')"
         >
           <Camera :size="16" />
           <span>CCTV Lingkungan (Live)</span>
