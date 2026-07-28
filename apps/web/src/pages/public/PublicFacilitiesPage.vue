@@ -447,7 +447,8 @@ const cctvFeeds = [
 .facility-card {
   display: flex;
   flex-direction: column;
-  padding: 1.8rem;
+  align-self: start;
+  padding: 1.35rem;
   border-radius: var(--radius-xl);
   border: 1px solid #cbd5e1;
   background: #ffffff;
@@ -466,7 +467,7 @@ const cctvFeeds = [
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.9rem;
 }
 
 .icon-avatar {
@@ -519,7 +520,7 @@ const cctvFeeds = [
 }
 
 .card-body {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1rem;
 }
 
 .facility-title {
@@ -545,8 +546,8 @@ const cctvFeeds = [
   border-radius: var(--radius-md);
   background: var(--cream-50);
   border: 1px solid var(--line);
-  margin-top: auto;
-  margin-bottom: 1.25rem;
+  margin-top: .25rem;
+  margin-bottom: .9rem;
 }
 
 .spec-item {
