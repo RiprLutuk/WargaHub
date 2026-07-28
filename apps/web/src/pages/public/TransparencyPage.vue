@@ -69,18 +69,28 @@ function dateLabel(date: string): string {
             <p class="muted">Sumber pemasukan dan tujuan pengeluaran yang sudah disahkan.</p>
           </div>
         </div>
-        <div class="detail-grid">
-          <div v-for="kind in ['INCOME', 'EXPENSE']" :key="kind" class="card detail-card" :class="kind === 'INCOME' ? 'income-card' : 'expense-card'">
-            <h3><ArrowUpRight v-if="kind === 'INCOME'" :size="18" /><ArrowDownRight v-else :size="18" />{{ kind === 'INCOME' ? 'Pemasukan dari' : 'Pengeluaran untuk' }}</h3>
-            <div v-if="report.data.value.entries.filter((entry) => entry.kind === kind).length" class="entry-list">
-              <div v-for="(entry, index) in report.data.value.entries.filter((item) => item.kind === kind)" :key="`${entry.occurredAt}-${entry.category}-${index}`" class="entry-row">
-                <div><strong>{{ entry.category }}</strong><small><CalendarDays :size="13" />{{ dateLabel(entry.occurredAt) }}</small></div>
-                <strong>{{ formatRupiah(entry.amount) }}</strong>
-              </div>
-            </div>
-            <p v-else class="muted">Belum ada rincian terpublikasi.</p>
-          </div>
+        <div v-if="report.data.value.entries.length" class="table-wrap cash-table-wrap">
+          <table class="data-table cash-table">
+            <thead>
+              <tr><th scope="col">Arus</th><th scope="col">Kategori</th><th scope="col">Tanggal</th><th scope="col" class="amount-cell">Nominal</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(entry, index) in report.data.value.entries" :key="`${entry.occurredAt}-${entry.category}-${index}`">
+                <td>
+                  <span class="flow-badge" :class="entry.kind === 'INCOME' ? 'income-badge' : 'expense-badge'">
+                    <ArrowUpRight v-if="entry.kind === 'INCOME'" :size="14" />
+                    <ArrowDownRight v-else :size="14" />
+                    {{ entry.kind === 'INCOME' ? 'Masuk' : 'Keluar' }}
+                  </span>
+                </td>
+                <td><strong>{{ entry.category }}</strong></td>
+                <td><span class="date-cell"><CalendarDays :size="14" />{{ dateLabel(entry.occurredAt) }}</span></td>
+                <td class="amount-cell" :class="entry.kind === 'INCOME' ? 'income-text' : 'expense-text'">{{ formatRupiah(entry.amount) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p v-else class="card muted empty-detail">Belum ada rincian terpublikasi.</p>
       </section>
     </template>
   </div>
@@ -114,19 +124,15 @@ function dateLabel(date: string): string {
 .income-text { color: var(--success-700); }
 .expense-text { color: var(--coral-700); }
 .report-detail { display: grid; gap: 1rem; }
-.detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
-.detail-card { padding: 1.5rem; border-radius: var(--radius-lg); }
-.detail-card h3 { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: 1.05rem; }
-.income-card h3 { color: var(--success-700); }
-.expense-card h3 { color: var(--coral-700); }
-.entry-list { display: grid; gap: .2rem; margin-top: 1rem; }
-.entry-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .8rem 0; border-top: 1px solid var(--line); }
-.entry-row > div { display: grid; gap: .25rem; }
-.entry-row small { display: inline-flex; align-items: center; gap: .3rem; color: var(--ink-650); font-size: .78rem; }
-.entry-row > strong { white-space: nowrap; font-size: .9rem; }
-.income-card .entry-row > strong { color: var(--success-700); }
-.expense-card .entry-row > strong { color: var(--coral-700); }
+.cash-table-wrap { max-height: 32rem; overflow: auto; }
+.cash-table th { position: sticky; top: 0; z-index: 1; }
+.cash-table td { padding-block: .65rem; }
+.cash-table .amount-cell { text-align: right; white-space: nowrap; font-weight: 750; }
+.flow-badge { display: inline-flex; align-items: center; gap: .25rem; padding: .25rem .5rem; border-radius: .45rem; font-size: .75rem; font-weight: 750; }
+.income-badge { color: var(--success-700); background: var(--success-100); }
+.expense-badge { color: var(--coral-700); background: var(--coral-100); }
+.date-cell { display: inline-flex; align-items: center; gap: .35rem; color: var(--ink-650); white-space: nowrap; }
+.empty-detail { padding: 1.25rem; }
 @media (max-width: 850px) { .finance-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
-@media (max-width: 520px) { .report-meta { align-items: flex-start; flex-direction: column; } .finance-grid { grid-template-columns: 1fr; } .detail-card, .monthly-card { padding: 1.1rem; } .entry-row { align-items: flex-start; } }
+@media (max-width: 520px) { .report-meta { align-items: flex-start; flex-direction: column; } .finance-grid { grid-template-columns: 1fr; } .monthly-card { padding: 1.1rem; } }
 </style>
