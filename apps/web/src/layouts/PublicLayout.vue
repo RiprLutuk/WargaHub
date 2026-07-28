@@ -133,7 +133,7 @@ function closeAll() {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -161,28 +161,28 @@ nav {
   align-items: center;
   gap: 1.25rem;
 }
-nav a, .nav-link {
+nav a:not(.button), .nav-link:not(.button) {
   color: var(--ink-800);
   font-weight: 750;
   font-size: 0.92rem;
   text-decoration: none !important;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 0.65rem;
   border-radius: 0.5rem;
   transition: color 0.15s, background 0.15s;
 }
-nav a:hover,
-nav a.router-link-active {
+nav a:not(.button):hover,
+nav a:not(.button).router-link-active {
   color: var(--teal-700);
   background: var(--teal-50);
   text-decoration: none !important;
 }
 nav .emergency-link {
-  color: #e11d48;
+  color: #e11d48 !important;
   font-weight: 800;
 }
 nav .emergency-link:hover {
-  background: #ffe4e6;
-  color: #be123c;
+  background: #ffe4e6 !important;
+  color: #be123c !important;
 }
 
 /* Nav Dropdown Styles */
@@ -258,19 +258,20 @@ nav .emergency-link:hover {
   text-decoration: none !important;
 }
 
-.user-portal-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+nav .button {
+  color: #ffffff !important;
   background: linear-gradient(135deg, var(--teal-700), var(--teal-800)) !important;
-  color: white !important;
-  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25) !important;
+  padding: 0.55rem 1.1rem !important;
+  border-radius: 0.75rem !important;
   text-decoration: none !important;
 }
-
-.user-portal-btn:hover {
+nav .button *, nav .button svg {
+  color: #ffffff !important;
+}
+nav .button:hover {
+  color: #ffffff !important;
   background: linear-gradient(135deg, var(--teal-600), var(--teal-700)) !important;
-  color: white !important;
 }
 
 main {
