@@ -11,6 +11,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@wargahub/contracts": "workspace:*",
     "lucide-vue-next": "^0.525.0",
     "pinia": "^3.0.3",
