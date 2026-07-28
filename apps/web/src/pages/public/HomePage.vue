@@ -25,7 +25,7 @@ onMounted(() => {
       <div class="hero-content">
         <span class="eyebrow hero-badge">Ruang bersama yang lebih ringan</span>
         <h1 id="hero-title" class="display-title">WargaHub</h1>
-        <h2 class="hero-tagline">Gotong royong tanpa mengorbankan kekarasan.</h2>
+        <p class="hero-tagline">Gotong royong tanpa mengorbankan kewarasan.</p>
         <p class="hero-lead">Informasi resmi, layanan warga, dan transparansi lingkungan—rapi dalam satu tempat, tanpa menambah tekanan sosial.</p>
 
         <div class="hero-actions">
@@ -161,6 +161,7 @@ onMounted(() => {
 .hero {
   position: relative;
   overflow: hidden;
+  font-family: Inter, Aptos, "Segoe UI", system-ui, -apple-system, sans-serif;
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(rgba(11, 120, 108, .045) 1px, transparent 1px),
@@ -185,10 +186,10 @@ onMounted(() => {
   padding-block: clamp(4rem, 6vw, 5.5rem);
 }
 .hero-content { display: grid; gap: 0.8rem; }
-.hero-content .display-title { margin: 0; }
+.hero-content .display-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 700 !important; letter-spacing: -.035em; }
 .hero-content .hero-lead { margin: 0; }
 .hero-badge { width: fit-content; margin-bottom: .35rem; padding: .45rem .8rem; border: 1px solid var(--teal-200); border-radius: 999px; background: rgba(255,255,255,.72); }
-.hero-tagline { max-width: 48rem; margin: -.1rem 0 .35rem; color: var(--teal-700); font-family: var(--font-display); font-size: clamp(1.75rem, 3vw, 3rem); font-weight: 500 !important; line-height: 1.1; }
+.hero-tagline { max-width: 48rem; margin: -.1rem 0 .35rem; color: var(--teal-700); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.45rem, 3vw, 2.25rem); font-weight: 400; letter-spacing: -.035em; line-height: 1.18; }
 .display-title { font-size: clamp(2.75rem, 4.8vw, 5.2rem); }
 .hero-lead { max-width: 38rem; color: var(--ink-650); font-size: 1.12rem; line-height: 1.6; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.8rem; }
@@ -212,7 +213,7 @@ onMounted(() => {
 .community-source { display: inline-flex; align-items: center; gap: .45rem; color: var(--success-700); font-size: .86rem; font-weight: 800; }
 .community-source i { width: .7rem; height: .7rem; border-radius: 50%; background: #42ad73; box-shadow: 0 0 0 .35rem #dff2e5; }
 .card-kicker { font-size: 0.75rem; font-weight: 600; color: var(--teal-700); text-transform: uppercase; letter-spacing: 0.05em; }
-.community-card h2 { margin: .45rem 0 .55rem; font-family: var(--font-display); font-size: clamp(2rem, 3.2vw, 3.2rem); font-weight: 500; line-height: 1.05; }
+.community-card h2 { margin: .45rem 0 .55rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 3.2vw, 3.2rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.05; }
 .community-card p { margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
 .community-address { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--line-strong); color: var(--ink-700); font-size: .9rem; font-weight: 600; }
 
