@@ -66,7 +66,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   }
 
   await app.register(cors, {
-    origin: config.WEB_ORIGIN,
+    origin: config.WEB_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean),
     credentials: true,
     allowedHeaders: ['content-type', 'x-csrf-token', 'x-request-id', 'idempotency-key'],
   });

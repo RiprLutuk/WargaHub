@@ -3,7 +3,10 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { api } from '../lib/api';
 
-interface LoginResult { user: SafeUser }
+interface LoginResult {
+  user: SafeUser;
+  csrfToken?: string;
+}
 
 export const useSessionStore = defineStore('session', () => {
   const user = ref<SafeUser | null>(null);
@@ -17,6 +20,12 @@ export const useSessionStore = defineStore('session', () => {
     'resident.read', 'billing.create', 'finance.read', 'complaint.assign', 'settings.manage',
   ].includes(permission)));
 
+  function saveCsrfToken(token?: string) {
+    if (token && typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('wargahub_csrf', token);
+    }
+  }
+
   async function ensureSession(): Promise<void> {
     if (initialized.value) return;
     if (sessionRequest) return sessionRequest;
@@ -25,6 +34,9 @@ export const useSessionStore = defineStore('session', () => {
       try {
         const result = await api.get<LoginResult>('/auth/me');
         user.value = result.user;
+        if (result.csrfToken) {
+          saveCsrfToken(result.csrfToken);
+        }
       } catch {
         // A 401 on a public page means simply “not signed in”, not a page error.
         user.value = null;
@@ -42,6 +54,9 @@ export const useSessionStore = defineStore('session', () => {
     try {
       const result = await api.post<LoginResult>('/auth/login', { email, password });
       user.value = result.user;
+      if (result.csrfToken) {
+        saveCsrfToken(result.csrfToken);
+      }
       initialized.value = true;
       return result.user;
     } finally {
@@ -55,6 +70,9 @@ export const useSessionStore = defineStore('session', () => {
     } finally {
       user.value = null;
       initialized.value = true;
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('wargahub_csrf');
+      }
     }
   }
 

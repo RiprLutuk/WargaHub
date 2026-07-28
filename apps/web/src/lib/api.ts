@@ -49,11 +49,21 @@ export class ApiUnavailableError extends ApiClientError {
 
 function csrfToken(): string | undefined {
   if (typeof document === 'undefined') return undefined;
-  const token = document.cookie
+  
+  // 1. Try reading from cookie first
+  const cookieToken = document.cookie
     .split('; ')
     .find((cookie) => cookie.startsWith('wargahub_csrf='))
     ?.split('=')[1];
-  return token ? decodeURIComponent(token) : undefined;
+  if (cookieToken) return decodeURIComponent(cookieToken);
+
+  // 2. Fallback to session storage if blocked by cross-subdomain boundaries
+  if (typeof sessionStorage !== 'undefined') {
+    const sessionToken = sessionStorage.getItem('wargahub_csrf');
+    if (sessionToken) return sessionToken;
+  }
+  
+  return undefined;
 }
 
 function dispatchDemoMode(): void {
