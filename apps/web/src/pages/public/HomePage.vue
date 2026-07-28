@@ -338,10 +338,10 @@ onMounted(() => {
   overflow: hidden;
   padding: clamp(2.2rem, 5vw, 3.5rem);
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #094b43 0%, #063731 60%, #0d5f55 100%);
-  border: 1px solid rgba(45, 212, 191, 0.25);
-  box-shadow: 0 20px 45px -10px rgba(6, 55, 49, 0.35);
-  color: #ffffff;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 100%);
+  border: 1px solid #f59e0b;
+  box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.22);
+  color: #78350f;
 }
 .cta-banner::before {
   content: '';
@@ -351,7 +351,7 @@ onMounted(() => {
   width: 25rem;
   height: 25rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
   pointer-events: none;
 }
 .cta-content {
@@ -369,9 +369,9 @@ onMounted(() => {
   gap: 0.45rem;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  background: rgba(45, 212, 191, 0.15);
-  border: 1px solid rgba(45, 212, 191, 0.3);
-  color: #5eead4;
+  background: rgba(180, 83, 9, 0.12);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+  color: #92400e;
   font-size: 0.76rem;
   font-weight: 600;
   margin-bottom: 0.9rem;
@@ -381,18 +381,18 @@ onMounted(() => {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
-  background: #2dd4bf;
-  box-shadow: 0 0 10px #2dd4bf;
+  background: #d97706;
+  box-shadow: 0 0 10px #d97706;
 }
 .cta-banner h2 {
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 500;
-  color: #ffffff;
+  color: #78350f;
   margin-bottom: 0.65rem;
   line-height: 1.2;
 }
 .cta-banner p {
-  color: #cbd5e1;
+  color: #92400e;
   font-size: 1.02rem;
   margin-bottom: 1.25rem;
   line-height: 1.55;
@@ -408,11 +408,11 @@ onMounted(() => {
   gap: 0.35rem;
   padding: 0.3rem 0.65rem;
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(180, 83, 9, 0.18);
+  color: #78350f;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 .cta-actions {
   display: flex;
@@ -427,18 +427,18 @@ onMounted(() => {
   gap: 0.6rem;
   padding: 0.85rem 1.6rem;
   border-radius: 0.85rem;
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
   color: #ffffff !important;
   font-weight: 600;
   font-size: 0.95rem;
   text-decoration: none !important;
-  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.28);
   transition: all 0.2s ease;
 }
 .cta-primary-btn:hover {
-  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(45, 212, 191, 0.4);
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.38);
 }
 .cta-secondary-btn {
   display: inline-flex;
@@ -447,17 +447,17 @@ onMounted(() => {
   gap: 0.5rem;
   padding: 0.7rem 1.2rem;
   border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+  color: #78350f !important;
   font-size: 0.86rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none !important;
   transition: all 0.15s ease;
 }
 .cta-secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(180, 83, 9, 0.4);
 }
 
 @media (max-width: 900px) {
