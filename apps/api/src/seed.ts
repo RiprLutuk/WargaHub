@@ -499,7 +499,7 @@ export async function seedExpandedDemoData(database: Database): Promise<void> {
   const announcementCategories = ['KEGIATAN', 'KEAMANAN', 'AIR_LISTRIK', 'LINGKUNGAN'];
   for (let index = 1; index <= 24; index += 1) {
     const suffix = String(index).padStart(2, '0');
-    const category = announcementCategories[(index - 1) % announcementCategories.length];
+    const category = announcementCategories[(index - 1) % announcementCategories.length] ?? 'UMUM';
     const publishedAt = `2026-${String(((index - 1) % 8) + 1).padStart(2, '0')}-${String(((index - 1) % 27) + 1).padStart(2, '0')}T01:00:00.000Z`;
     await database.query(
       `INSERT INTO announcements

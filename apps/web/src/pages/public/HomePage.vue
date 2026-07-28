@@ -44,7 +44,7 @@ onMounted(() => {
           <span class="card-kicker">Lingkungan kita</span>
           <h2>Warga Harmoni</h2>
           <p>Lingkungan yang aman, terbuka, dan saling menjaga tanpa tekanan sosial.</p>
-          <div class="community-address">Kelurahan Sukamaju, Indonesia</div>
+          <div class="community-address">RT 03 / RW 05 · Kelurahan Sukamaju, Indonesia</div>
         </div>
 
       </aside>
