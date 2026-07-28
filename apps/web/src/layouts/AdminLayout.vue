@@ -143,10 +143,10 @@ async function logout() { await session.logout(); await router.push('/login'); }
 .organization {
   display: grid;
   gap: 0.2rem;
-  padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .organization span {

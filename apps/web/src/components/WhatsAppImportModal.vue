@@ -217,9 +217,9 @@ async function commitImport() {
   width: min(100%, 54rem);
   max-height: 90vh;
   padding: 1.8rem;
-  border-radius: var(--radius-xl);
+  border-radius: 1.75rem;
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 1px solid #e2e8f0;
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
 }
@@ -250,8 +250,8 @@ async function commitImport() {
   width: 2.4rem;
   height: 2.4rem;
   place-items: center;
-  border-radius: 0.6rem;
-  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
   background: var(--paper);
   color: var(--ink-650);
   cursor: pointer;
@@ -278,9 +278,9 @@ async function commitImport() {
 
 .wa-textarea {
   width: 100%;
-  padding: 0.9rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--line-strong);
+  padding: 0.95rem;
+  border-radius: 1.15rem;
+  border: 1px solid #e2e8f0;
   background: var(--cream-50);
   font-family: inherit;
   font-size: 0.88rem;
@@ -299,10 +299,10 @@ async function commitImport() {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  padding: 1rem;
-  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  border-radius: 1.25rem;
   background: var(--cream-50);
-  border: 1px solid var(--line);
+  border: 1px solid #e2e8f0;
 }
 
 .preview-header {

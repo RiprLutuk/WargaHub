@@ -673,18 +673,18 @@ async function createPatrol() {
 .admin-heading h1{margin-bottom:.4rem;font-size:clamp(2rem,4vw,3rem)}
 .admin-heading p{max-width:52rem;margin:0;color:var(--ink-650)}
 .sla-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .85rem;border-radius:999px;background:var(--amber-100);color:var(--amber-700);font-size:.78rem;font-weight:800;white-space:nowrap !important}
-.toolbar{display:flex;gap:.6rem;padding:.7rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper)}
-.toolbar label{display:flex;max-width:32rem;flex:1;align-items:center;gap:.4rem;padding-inline:.65rem;border:1px solid var(--line-strong);border-radius:.65rem;color:var(--ink-500)}
+.toolbar{display:flex;gap:.6rem;padding:.7rem;border:1px solid #e2e8f0;border-radius:1.25rem;background:var(--paper)}
+.toolbar label{display:flex;max-width:32rem;flex:1;align-items:center;gap:.4rem;padding-inline:.75rem;border:1px solid #e2e8f0;border-radius:.85rem;color:var(--ink-500)}
 .toolbar input{width:100%;min-height:2.5rem;border:0;outline:0}
 .request-id{color:var(--ink-500);font-family:monospace}
-.operation-tabs{display:flex;gap:.35rem;overflow-x:auto;padding:.35rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper)}
-.operation-tabs button{display:flex;min-height:2.75rem;align-items:center;gap:.4rem;padding:.55rem .75rem;border:0;border-radius:.65rem;background:transparent;color:var(--ink-650);font-size:.8rem;font-weight:750;white-space:nowrap;cursor:pointer}
+.operation-tabs{display:flex;gap:.35rem;overflow-x:auto;padding:.35rem;border:1px solid #e2e8f0;border-radius:1.25rem;background:var(--paper)}
+.operation-tabs button{display:flex;min-height:2.75rem;align-items:center;gap:.4rem;padding:.55rem .85rem;border:0;border-radius:.85rem;background:transparent;color:var(--ink-650);font-size:.8rem;font-weight:750;white-space:nowrap;cursor:pointer}
 .operation-tabs button.active{background:var(--teal-100);color:var(--teal-800)}
-.operation-tabs button span{padding:.08rem .35rem;border-radius:99px;background:var(--amber-100);color:var(--amber-700);font-size:.65rem}
+.operation-tabs button span{padding:.08rem .45rem;border-radius:99px;background:var(--amber-100);color:var(--amber-700);font-size:.65rem}
 .operation-section{display:grid;gap:.8rem}
 .operation-list{display:grid;gap:.65rem}
 .operation-list article{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:.8rem}
-.operation-icon{display:grid;width:2.65rem;height:2.65rem;place-items:center;border-radius:.75rem;background:var(--blue-100);color:var(--blue-700)}
+.operation-icon{display:grid;width:2.65rem;height:2.65rem;place-items:center;border-radius:.85rem;background:var(--blue-100);color:var(--blue-700)}
 .operation-icon.green{background:var(--teal-100);color:var(--teal-700)}
 .operation-list small{color:var(--teal-700);font-weight:750}
 .operation-list h3{margin:.1rem 0;font-size:.95rem}
@@ -698,7 +698,7 @@ async function createPatrol() {
 .need-meter i{display:block;height:100%;border-radius:inherit;background:var(--teal-600)}
 .need-meter strong{color:var(--amber-700);font-size:.75rem}
 .waha-admin-section{display:grid;gap:1.2rem}
-.waha-status-card,.waha-test-card{padding:1.6rem;border-radius:var(--radius-lg)}
+.waha-status-card,.waha-test-card{padding:1.6rem;border-radius:1.5rem;border:1px solid #e2e8f0;background:#ffffff}
 .status-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem}
 .waha-icon{display:grid;width:3.2rem;height:3.2rem;place-items:center;border-radius:1rem;background:var(--teal-100);color:var(--teal-700);flex:none}
 .status-header h2{margin:0 0 .2rem;font-size:1.3rem}
@@ -707,7 +707,7 @@ async function createPatrol() {
 .waha-badge.offline{background:var(--cream-100);color:var(--ink-750)}
 .waha-badge .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--teal-600)}
 .waha-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0}
-.waha-metrics div{padding:1rem;border-radius:var(--radius-md);background:var(--cream-50);border:1px solid var(--line)}
+.waha-metrics div{padding:1rem;border-radius:1.15rem;background:var(--cream-50);border:1px solid #e2e8f0}
 .waha-metrics dt{font-size:.76rem;color:var(--ink-500);font-weight:750;text-transform:uppercase}
 .waha-metrics dd{margin:.3rem 0 0;font-size:1.05rem;font-weight:850}
 .highlight-text{color:var(--teal-700)}

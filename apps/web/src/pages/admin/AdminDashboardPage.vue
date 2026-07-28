@@ -219,12 +219,12 @@ function onImported() {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  padding: 1.2rem;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-lg);
+  padding: 1.2rem 1.35rem;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 1.5rem);
   background: #ffffff;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s ease;
 }
 
 .metric-card:hover {
@@ -354,16 +354,16 @@ function onImported() {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 1.2rem;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.4rem;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 1.5rem);
   background: #ffffff;
   color: var(--ink-950);
   text-decoration: none;
   text-align: left;
   cursor: pointer;
-  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.05);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s ease;
 }
 
 .action-card:hover {

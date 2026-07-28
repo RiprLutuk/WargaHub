@@ -185,11 +185,11 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
 
 .app-sidebar a {
   display: flex;
-  min-height: 2.35rem;
+  min-height: 2.45rem;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.45rem 0.75rem;
-  border-radius: var(--radius-md);
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.85rem;
   color: var(--ink-700);
   font-size: 0.84rem;
   font-weight: 700;
