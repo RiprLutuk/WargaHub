@@ -65,8 +65,20 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     app.addHook('onClose', async () => database.close());
   }
 
+  const allowedWebOrigins = new Set([
+    ...config.WEB_ORIGIN.split(',').map((origin) => origin.trim().replace(/\/$/, '')).filter(Boolean),
+    'https://wargahub.vercel.app',
+    'https://wargahub.demo.pandanteknik.com',
+  ]);
   await app.register(cors, {
-    origin: config.WEB_ORIGIN,
+    origin: (origin, callback) => {
+      // Non-browser requests do not include Origin and should remain allowed.
+      if (!origin || allowedWebOrigins.has(origin.replace(/\/$/, ''))) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('Origin tidak diizinkan oleh WargaHub.'), false);
+    },
     credentials: true,
     allowedHeaders: ['content-type', 'x-csrf-token', 'x-request-id', 'idempotency-key'],
   });
