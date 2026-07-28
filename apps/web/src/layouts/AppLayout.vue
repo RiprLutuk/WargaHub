@@ -128,6 +128,12 @@ async function logout() {
   width: 100%;
 }
 
+.portal-sidebar.collapsed .sidebar-top {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .sidebar-brand {
   text-decoration: none;
 }
@@ -143,6 +149,7 @@ async function logout() {
   color: var(--ink-700);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
+  flex: none;
 }
 
 .sidebar-toggle-btn:hover {

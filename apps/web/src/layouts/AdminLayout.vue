@@ -110,6 +110,12 @@ async function logout() { await session.logout(); await router.push('/login'); }
   width: 100%;
 }
 
+.admin-sidebar.collapsed .sidebar-top {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .admin-brand {
   width: fit-content;
   text-decoration: none;
@@ -126,6 +132,7 @@ async function logout() { await session.logout(); await router.push('/login'); }
   color: #ffffff;
   cursor: pointer;
   transition: background 0.15s;
+  flex: none;
 }
 
 .sidebar-toggle-btn:hover {
