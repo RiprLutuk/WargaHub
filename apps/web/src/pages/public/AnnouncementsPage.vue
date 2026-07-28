@@ -52,11 +52,6 @@ const filtered = computed(() => (announcements.data.value ?? []).filter((item) =
 </template>
 
 <style scoped>
-.page-stack { padding-block: clamp(3rem, 6vw, 5.5rem); display: grid; gap: 1.8rem; }
-.page-heading { margin-bottom: 1rem; }
-.page-heading .eyebrow { margin-bottom: .6rem; }
-.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
-.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
 .filter-bar { display: grid; grid-template-columns: 1fr minmax(12rem, .3fr); gap: clamp(.8rem, 2vw, 1.5rem); padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); }
 .search-box { display: flex; align-items: center; gap: .55rem; padding-inline: .85rem; border: 1px solid var(--line-strong); border-radius: .72rem; background: white; color: var(--ink-500); }
 .search-box:focus-within { border-color: var(--teal-600); box-shadow: 0 0 0 3px var(--teal-100); }

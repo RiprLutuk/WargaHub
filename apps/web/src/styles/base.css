@@ -44,9 +44,9 @@ h3 { font-size: 1.08rem; }
 
 .container { width: min(calc(100% - 2rem), var(--content)); margin-inline: auto; }
 .page-stack { display: grid; gap: 1.5rem; padding-block: clamp(1.5rem, 4vw, 3.5rem) 4rem; }
-.page-heading { max-width: 48rem; }
+.page-heading { max-width: var(--content); }
 .page-heading h1 { margin-bottom: 0.55rem; font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 500 !important; }
-.page-heading p { max-width: 43rem; color: var(--ink-650); font-size: 1.06rem; }
+.page-heading p { max-width: 64rem; color: var(--ink-650); font-size: 1.06rem; }
 .eyebrow {
   display: inline-flex;
   align-items: center;
