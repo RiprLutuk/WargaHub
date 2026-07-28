@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   Activity, Bell, BookOpen, CalendarClock, ClipboardList, FileSignature, FileText, Gauge,
-  HardHat, Home, Megaphone, ReceiptText, Settings, ShieldCheck, Store, Users, Vote, WalletCards,
+  HardHat, Home, Megaphone, ReceiptText, Settings, ShieldCheck, Store, Users, Video, Vote, WalletCards,
 } from 'lucide-vue-next';
 import { computed, type Component } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -41,8 +41,9 @@ const residentGroups: NavigationGroup[] = [
     ],
   },
   {
-    title: 'Layanan & Dokumentasi',
+    title: 'Layanan & Pemantauan',
     items: [
+      { to: '/fasilitas/cctv', label: 'CCTV Lingkungan (Live)', icon: Video },
       { to: '/app/surat', label: 'Surat Pengantar', icon: FileSignature },
       { to: '/app/fasilitas', label: 'Fasilitas & Peminjaman', icon: Home },
       { to: '/app/layanan', label: 'Layanan & UMKM', icon: Store },
@@ -73,8 +74,9 @@ const adminGroups: NavigationGroup[] = [
     ],
   },
   {
-    title: 'Fasilitas & Sistem',
+    title: 'Fasilitas & Pemantauan',
     items: [
+      { to: '/fasilitas/cctv', label: 'CCTV Stream 1080p', icon: Video },
       { to: '/admin/fasilitas', label: 'Kelola Fasilitas', icon: Home },
       { to: '/admin/program', label: 'Program Lingkungan', icon: HardHat },
       { to: '/admin/layanan', label: 'Direktori UMKM', icon: Store },
@@ -136,17 +138,17 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
 .app-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  transition: width 0.2s ease;
+  gap: 1.1rem;
 }
 
 .nav-tree {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.9rem;
 }
 
 .admin-group {
+  margin-top: 0.5rem;
   padding-top: 0.85rem;
   border-top: 1px solid var(--line);
 }
@@ -185,11 +187,11 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
 
 .app-sidebar a {
   display: flex;
-  min-height: 2.45rem;
+  min-height: 2.35rem;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.5rem 0.85rem;
-  border-radius: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-md);
   color: var(--ink-700);
   font-size: 0.84rem;
   font-weight: 700;
