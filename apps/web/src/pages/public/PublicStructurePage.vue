@@ -219,16 +219,16 @@ const adminCapabilities = [
 <style scoped>
 .public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 .app-structure-shell { width: 100%; max-width: var(--content); margin-top: 0; padding-block: 0 3rem; }
-.app-structure-shell .page-header { max-width: 56rem; margin-bottom: 1.25rem; }
+.app-structure-shell .page-header { max-width: 76rem; margin-bottom: 1.25rem; }
 .app-structure-shell .officers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .app-structure-shell .header-badge { display: inline-flex; padding: 0; margin-bottom: .7rem; border: 0; border-radius: 0; background: transparent; color: var(--teal-700); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
 .app-structure-shell .header-badge::before { width: 1.6rem; height: 2px; margin-right: .4rem; border-radius: 2px; background: var(--amber-500); content: ''; }
 .app-structure-shell .page-header h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: .6rem; }
-.app-structure-shell .header-desc { max-width: 52rem; font-size: 1rem; line-height: 1.55; }
+.app-structure-shell .header-desc { max-width: none; font-size: 1rem; line-height: 1.55; }
 
 .page-header {
   margin-bottom: 1.25rem;
-  max-width: 56rem;
+  max-width: 76rem;
 }
 
 .header-badge {
