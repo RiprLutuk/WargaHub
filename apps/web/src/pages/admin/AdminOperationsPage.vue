@@ -291,12 +291,12 @@ async function createPatrol() {
 
       <div v-if="section === 'operations'" class="heading-actions">
         <button class="button button-sm" type="button" @click="rosterModalOpen = true">
-          <CalendarClock :size="16" /> Susun Giliran Otomatis
+          <CalendarClock :size="15" /> Giliran Otomatis
         </button>
         <button class="button button-secondary button-sm" type="button" @click="waModalOpen = true">
-          <FileText :size="16" /> Impor Teks Pesan
+          <FileText :size="15" /> Impor Teks
         </button>
-        <span class="sla-chip"><Clock3 :size="15" /> {{ openComplaints.length }} laporan terbuka</span>
+        <span class="sla-chip"><Clock3 :size="15" /> {{ openComplaints.length }} Laporan</span>
       </div>
     </header>
 

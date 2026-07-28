@@ -9,9 +9,17 @@ import { RouterLink } from 'vue-router';
 interface NavigationItem { to: string; label: string; icon: Component; permission?: string }
 interface NavigationGroup { title: string; items: NavigationItem[] }
 
-const props = withDefaults(defineProps<{ permissions: string[]; variant?: 'app' | 'admin' | 'all' }>(), {
-  variant: 'all',
-});
+const props = withDefaults(
+  defineProps<{
+    permissions: string[];
+    variant?: 'app' | 'admin' | 'all';
+    collapsed?: boolean;
+  }>(),
+  {
+    variant: 'all',
+    collapsed: false,
+  }
+);
 
 const residentGroups: NavigationGroup[] = [
   {
@@ -48,7 +56,7 @@ const adminGroups: NavigationGroup[] = [
     title: 'Ikhtisar & Warga',
     items: [
       { to: '/admin', label: 'Ringkasan Dashboard', icon: Gauge },
-      { to: '/admin/warga', label: 'Kelola warga', icon: Users, permission: 'resident.read' },
+      { to: '/admin/warga', label: 'Kelola Warga', icon: Users, permission: 'resident.read' },
       { to: '/admin/organisasi', label: 'Struktur Pengurus', icon: Users, permission: 'organization.update' },
       { to: '/admin/pengumuman', label: 'Publikasi & Info', icon: Megaphone, permission: 'announcement.create' },
     ],
@@ -82,31 +90,41 @@ function allowed(item: NavigationItem): boolean {
 }
 
 const showResident = computed(() => props.variant !== 'admin');
-const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g => g.items.some(allowed)));
+const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g) => g.items.some(allowed)));
 </script>
 
 <template>
-  <nav class="app-sidebar" :aria-label="variant === 'admin' ? 'Navigasi CMS' : 'Navigasi portal warga'">
+  <nav class="app-sidebar" :class="{ collapsed: collapsed }" :aria-label="variant === 'admin' ? 'Navigasi CMS' : 'Navigasi portal warga'">
     <div v-if="showResident" class="nav-tree">
       <div v-for="group in residentGroups" :key="group.title" class="nav-section">
-        <span class="section-title">{{ group.title }}</span>
+        <span v-if="!collapsed" class="section-title">{{ group.title }}</span>
         <div class="section-items">
-          <RouterLink v-for="item in group.items.filter(allowed)" :key="item.to" :to="item.to">
-            <component :is="item.icon" :size="18" aria-hidden="true" />
-            <span>{{ item.label }}</span>
+          <RouterLink
+            v-for="item in group.items.filter(allowed)"
+            :key="item.to"
+            :to="item.to"
+            :title="collapsed ? item.label : undefined"
+          >
+            <component :is="item.icon" :size="18" aria-hidden="true" class="nav-icon" />
+            <span v-if="!collapsed">{{ item.label }}</span>
           </RouterLink>
         </div>
       </div>
     </div>
 
     <div v-if="showAdmin" class="nav-tree" :class="{ 'admin-group': variant === 'all' }">
-      <span v-if="variant === 'all'" class="nav-label">Area Pengurus</span>
+      <span v-if="variant === 'all' && !collapsed" class="nav-label">Area Pengurus</span>
       <div v-for="group in adminGroups" :key="group.title" class="nav-section">
-        <span class="section-title">{{ group.title }}</span>
+        <span v-if="!collapsed" class="section-title">{{ group.title }}</span>
         <div class="section-items">
-          <RouterLink v-for="item in group.items.filter(allowed)" :key="item.to" :to="item.to">
-            <component :is="item.icon" :size="18" aria-hidden="true" />
-            <span>{{ item.label }}</span>
+          <RouterLink
+            v-for="item in group.items.filter(allowed)"
+            :key="item.to"
+            :to="item.to"
+            :title="collapsed ? item.label : undefined"
+          >
+            <component :is="item.icon" :size="18" aria-hidden="true" class="nav-icon" />
+            <span v-if="!collapsed">{{ item.label }}</span>
           </RouterLink>
         </div>
       </div>
@@ -119,16 +137,20 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g =
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  transition: width 0.2s ease;
 }
+
 .nav-tree {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
 }
+
 .admin-group {
-  padding-top: 1rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--line);
 }
+
 .nav-label {
   display: block;
   margin-bottom: 0.5rem;
@@ -138,25 +160,29 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g =
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 .nav-section {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
+
 .section-title {
   padding-inline: 0.75rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
   color: var(--ink-500);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
 .section-items {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
 }
+
 .app-sidebar a {
   display: flex;
   min-height: 2.35rem;
@@ -168,14 +194,27 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g =
   font-size: 0.84rem;
   font-weight: 700;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, padding 0.15s;
 }
+
 .app-sidebar a:hover {
   background: var(--cream-100);
   color: var(--teal-800);
 }
+
 .app-sidebar a.router-link-exact-active {
   background: var(--teal-100);
   color: var(--teal-800);
+}
+
+/* Collapsed Icon-Only State */
+.app-sidebar.collapsed a {
+  justify-content: center;
+  padding-inline: 0;
+  min-height: 2.5rem;
+}
+
+.app-sidebar.collapsed .nav-icon {
+  flex: none;
 }
 </style>
