@@ -113,5 +113,5 @@ async function logout() { await session.logout(); await router.push('/login'); }
 .icon-button:hover, .logout-button:hover { background: var(--teal-50); border-color: var(--teal-600); color: var(--teal-800); }
 .icon-button i { position: absolute; top: 0.55rem; right: 0.55rem; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--coral-700); }
 #admin-content { padding: clamp(1rem, 2.5vw, 2rem); }
-@media (max-width: 900px) { .admin-shell { grid-template-columns: 4.5rem minmax(0, 1fr); } .admin-sidebar { padding-inline: 0.5rem; } .admin-brand :deep(.brand-copy), .organization, .back-portal span { display: none; } .admin-sidebar :deep(a) { justify-content: center; } }
+@media (max-width: 1100px) { .admin-shell { grid-template-columns: 4.5rem minmax(0, 1fr); } .admin-sidebar { padding-inline: 0.5rem; } .admin-brand :deep(.brand-copy), .organization, .back-portal span { display: none; } .admin-sidebar :deep(a) { justify-content: center; } }
 </style>

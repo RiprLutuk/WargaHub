@@ -233,7 +233,7 @@ onMounted(() => {
 .meta-strip strong { display: block; color: var(--ink-950); font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 
 .public-section { padding-block: clamp(3rem, 6vw, 5rem); }
-.announcement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.announcement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
 .announcement-card {
   display: flex;
   flex-direction: column;
@@ -470,6 +470,22 @@ onMounted(() => {
   .cta-content { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
   .cta-actions { width: 100%; flex-direction: row; }
   .cta-primary-btn, .cta-secondary-btn { flex: 1; text-align: center; justify-content: center; }
+}
+@media (min-width: 651px) and (max-width: 1100px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 2rem; padding-block: 3.5rem; }
+  .hero-sidebar { grid-template-columns: minmax(0, 1.15fr) minmax(17rem, .85fr); align-items: start; }
+  .announcement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .announcement-card.featured { grid-column: span 2; }
+  .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-card:last-child { grid-column: span 2; }
+}
+/* Tablet and small laptop widths: keep cards readable instead of forcing
+   three narrow columns with large equal-height gaps. */
+@media (min-width: 1101px) and (max-width: 1300px) {
+  .announcement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .announcement-card.featured { grid-column: span 2; }
+  .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-card:last-child { grid-column: span 2; }
 }
 @media (max-width: 650px) {
   .hero-grid { padding-block: 2.5rem; }

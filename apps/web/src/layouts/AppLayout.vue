@@ -131,7 +131,7 @@ async function logout() {
 .profile-popover a:hover, .profile-popover button:hover { background: var(--cream-100); color: var(--teal-800); }
 .mobile-nav { display: none; }
 #portal-content { padding: clamp(1rem, 2.5vw, 2rem); }
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .portal-shell { grid-template-columns: 1fr; }
   .portal-sidebar { display: none; }
   .mobile-nav { display: block; position: fixed; bottom: 0; left: 0; right: 0; background: var(--paper); border-top: 1px solid var(--line); z-index: 40; padding: 0.45rem 0.35rem; overflow-x: auto; }
