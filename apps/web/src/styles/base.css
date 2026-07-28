@@ -96,6 +96,8 @@ h3 { font-size: 1.12rem; }
   justify-content: center;
   gap: 0.5rem;
   padding: 0.7rem 1.2rem;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
   border: 1px solid transparent;
   border-radius: 0.85rem;
   background: linear-gradient(135deg, var(--teal-700), var(--teal-800));

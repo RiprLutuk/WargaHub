@@ -667,11 +667,12 @@ async function createPatrol() {
 
 <style scoped>
 .admin-page{display:grid;max-width:88rem;gap:1.2rem;margin-inline:auto}
-.admin-heading{display:flex;align-items:end;justify-content:space-between;gap:1rem}
-.heading-actions{display:flex;align-items:center;gap:.6rem}
+.admin-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.heading-actions{display:flex;align-items:center;gap:.6rem;flex-wrap:nowrap;flex:none}
+.heading-actions .button, .heading-actions .sla-chip{white-space:nowrap !important;word-break:keep-all !important;flex:none}
 .admin-heading h1{margin-bottom:.4rem;font-size:clamp(2rem,4vw,3rem)}
 .admin-heading p{max-width:52rem;margin:0;color:var(--ink-650)}
-.sla-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .65rem;border-radius:999px;background:var(--amber-100);color:var(--amber-700);font-size:.75rem;font-weight:800}
+.sla-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .85rem;border-radius:999px;background:var(--amber-100);color:var(--amber-700);font-size:.78rem;font-weight:800;white-space:nowrap !important}
 .toolbar{display:flex;gap:.6rem;padding:.7rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper)}
 .toolbar label{display:flex;max-width:32rem;flex:1;align-items:center;gap:.4rem;padding-inline:.65rem;border:1px solid var(--line-strong);border-radius:.65rem;color:var(--ink-500)}
 .toolbar input{width:100%;min-height:2.5rem;border:0;outline:0}
