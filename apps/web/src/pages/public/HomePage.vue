@@ -44,6 +44,10 @@ onMounted(() => {
           </RouterLink>
           <RouterLink class="button button-secondary button-lg" to="/transparansi">Lihat transparansi kas</RouterLink>
         </div>
+        <div class="hero-trust" aria-label="Prinsip WargaHub">
+          <span><ShieldCheck :size="17" aria-hidden="true" /> Privat seperlunya</span>
+          <span><CheckCircle2 :size="17" aria-hidden="true" /> Tanpa ranking warga</span>
+        </div>
       </div>
 
       <aside class="hero-sidebar" aria-label="Informasi lingkungan singkat">
@@ -179,8 +183,12 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
-  background: radial-gradient(ellipse at 85% 15%, rgba(20, 184, 166, 0.16) 0%, transparent 35rem),
-              linear-gradient(170deg, #f0fdf4 0%, #ffffff 50%, #f8faf9 100%);
+  background:
+    linear-gradient(rgba(11, 120, 108, .075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 120, 108, .075) 1px, transparent 1px),
+    radial-gradient(ellipse at 85% 15%, rgba(20, 184, 166, 0.18) 0%, transparent 35rem),
+    linear-gradient(170deg, #f0fdf4 0%, #ffffff 50%, #f8faf9 100%);
+  background-size: 48px 48px, 48px 48px, auto, auto;
 }
 .hero-pattern {
   position: absolute;
@@ -201,6 +209,8 @@ onMounted(() => {
 .display-title { font-size: clamp(2.8rem, 5.5vw, 4.5rem); }
 .hero-lead { max-width: 38rem; color: var(--ink-650); font-size: 1.12rem; line-height: 1.6; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.8rem; }
+.hero-trust { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: .55rem; color: var(--ink-700); font-size: .88rem; font-weight: 700; }
+.hero-trust span { display: inline-flex; align-items: center; gap: .4rem; }
 .text-link { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; font-size: 0.92rem; }
 
 .hero-sidebar { display: grid; gap: 1rem; }
@@ -491,6 +501,13 @@ onMounted(() => {
   .announcement-card.featured { grid-column: span 2; }
   .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .service-card:last-child { grid-column: span 2; }
+}
+@media (min-width: 1101px) {
+  .hero-grid { min-height: min(42rem, calc(100vh - 4.6rem)); align-items: center; padding-block: clamp(4.5rem, 7vw, 7rem); }
+  .hero-content { gap: 1rem; }
+  .display-title { font-size: clamp(3.8rem, 6.3vw, 6.25rem); }
+  .hero-lead { max-width: 44rem; font-size: 1.2rem; }
+  .community-card { padding: 2.1rem; }
 }
 @media (max-width: 650px) {
   .hero-grid { padding-block: 2.5rem; }
