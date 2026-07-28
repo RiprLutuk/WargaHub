@@ -76,7 +76,7 @@ const adminGroups: NavigationGroup[] = [
   {
     title: 'Fasilitas & Pemantauan',
     items: [
-      { to: '/fasilitas/cctv', label: 'CCTV Stream 1080p', icon: Video },
+      { to: '/admin/cctv', label: 'Kelola Kamera CCTV', icon: Video },
       { to: '/admin/fasilitas', label: 'Kelola Fasilitas', icon: Home },
       { to: '/admin/program', label: 'Program Lingkungan', icon: HardHat },
       { to: '/admin/layanan', label: 'Direktori UMKM', icon: Store },

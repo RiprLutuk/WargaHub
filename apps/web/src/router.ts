@@ -122,6 +122,7 @@ const router = createRouter({
         { path: 'pembayaran', component: AdminFinancePage, props: { section: 'payments' }, meta: { title: 'Verifikasi pembayaran', permission: 'billing.reconcile' } },
 
         { path: 'operasional', component: AdminOperationsPage, props: { section: 'operations' }, meta: { title: 'Operasional & ronda' } },
+        { path: 'cctv', component: AdminOperationsPage, props: { section: 'cctv' }, meta: { title: 'Kelola Kamera CCTV' } },
         { path: 'surat', component: AdminOperationsPage, props: { section: 'operations' }, meta: { title: 'Kelola surat' } },
         { path: 'voting', component: AdminOperationsPage, props: { section: 'operations' }, meta: { title: 'Musyawarah warga' } },
         { path: 'fasilitas', component: AdminOperationsPage, props: { section: 'operations' }, meta: { title: 'Kelola fasilitas' } },
