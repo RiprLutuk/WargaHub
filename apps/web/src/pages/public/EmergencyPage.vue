@@ -26,26 +26,51 @@ const contacts = computed(() => {
 
 <template>
   <div class="emergency-page">
-    <div class="container page-stack">
-      <header class="page-heading"><span class="emergency-eyebrow"><TriangleAlert :size="16" /> Informasi darurat</span><h1>Bantuan cepat</h1><p>Hubungi layanan yang sesuai secara langsung. Jangan mengirim pengaduan portal jika keselamatan seseorang sedang terancam.</p></header>
-      <div class="notice notice-warning"><TriangleAlert :size="22" aria-hidden="true" /><span>Pastikan Anda berada di tempat aman. Sampaikan lokasi, jenis kejadian, dan jumlah orang yang membutuhkan bantuan.</span></div>
+    <div class="container public-page-container">
+      <header class="page-heading">
+        <span class="emergency-eyebrow"><TriangleAlert :size="16" /> Informasi darurat</span>
+        <h1>Bantuan cepat</h1>
+        <p>Hubungi layanan yang sesuai secara langsung. Jangan mengirim pengaduan portal jika keselamatan seseorang sedang terancam.</p>
+      </header>
+
+      <div class="notice notice-warning">
+        <TriangleAlert :size="22" aria-hidden="true" />
+        <span>Pastikan Anda berada di tempat aman. Sampaikan lokasi, jenis kejadian, dan jumlah orang yang membutuhkan bantuan.</span>
+      </div>
+
       <StatePanel v-if="site.error.value" state="error" message="Nomor darurat lingkungan belum dapat dimuat. Nomor nasional tetap tersedia di bawah." @retry="site.reload" />
-      <div class="contact-cards"><article v-for="item in contacts" :key="item.number" class="emergency-card"><component :is="item.icon" :size="26" aria-hidden="true" /><div><h2>{{ item.label }}</h2><p>{{ item.note }}</p></div><a class="call-button" :href="`tel:${item.number}`" :aria-label="`Telepon ${item.label} di ${item.number}`">{{ item.number }}</a></article></div>
+
+      <div class="contact-cards">
+        <article v-for="item in contacts" :key="item.number" class="emergency-card">
+          <component :is="item.icon" :size="28" aria-hidden="true" />
+          <div class="card-info">
+            <h2>{{ item.label }}</h2>
+            <p>{{ item.note }}</p>
+          </div>
+          <a class="call-button" :href="`tel:${item.number}`" :aria-label="`Telepon ${item.label} di ${item.number}`">{{ item.number }}</a>
+        </article>
+      </div>
+
       <p class="disclaimer">Nomor dapat berbeda menurut wilayah. Pengurus instalasi WargaHub bertanggung jawab menjaga informasi ini tetap mutakhir.</p>
     </div>
   </div>
 </template>
 
 <style scoped>
-.emergency-page { min-height: 65vh; background: linear-gradient(180deg, #fff4f0, var(--cream-50)); }
-.emergency-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .8rem; color: var(--coral-700); font-size: .78rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.contact-cards { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
-.emergency-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; padding: 1.2rem; border: 1px solid var(--coral-100); border-radius: var(--radius-lg); background: var(--paper); }
+.emergency-page { min-height: 75vh; background: linear-gradient(180deg, #fff4f0, var(--cream-50)); }
+.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); display: grid; gap: 1.8rem; }
+.page-heading { margin-bottom: .5rem; }
+.emergency-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .8rem; color: var(--coral-700); font-size: .8rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
+.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
+.contact-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.emergency-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.2rem; padding: 1.6rem 1.8rem; border: 1px solid var(--coral-100); border-radius: var(--radius-lg); background: var(--paper); box-shadow: var(--shadow-sm); }
 .emergency-card > svg { color: var(--coral-700); }
-.emergency-card h2 { margin-bottom: .15rem; font-size: 1rem; }
-.emergency-card p { margin: 0; color: var(--ink-650); font-size: .82rem; }
-.call-button { min-width: 6.5rem; padding: .65rem .8rem; border-radius: .7rem; background: var(--coral-700); color: white; font-size: 1.05rem; font-weight: 850; text-align: center; text-decoration: none; }
-.disclaimer { color: var(--ink-650); font-size: .8rem; }
+.card-info h2 { margin-bottom: .2rem; font-size: 1.15rem; }
+.card-info p { margin: 0; color: var(--ink-650); font-size: .88rem; }
+.call-button { min-width: 7rem; padding: .75rem 1rem; border-radius: .8rem; background: var(--coral-700); color: white; font-size: 1.1rem; font-weight: 850; text-align: center; text-decoration: none; }
+.call-button:hover { background: #b83d29; }
+.disclaimer { color: var(--ink-650); font-size: .84rem; margin-top: .5rem; }
 @media (max-width: 700px) { .contact-cards { grid-template-columns: 1fr; } }
 @media (max-width: 450px) { .emergency-card { grid-template-columns: auto 1fr; } .call-button { grid-column: 1 / -1; } }
 </style>

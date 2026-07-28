@@ -22,7 +22,7 @@ const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'))
 </script>
 
 <template>
-  <div class="container section">
+  <div class="container public-page-container">
     <header class="page-heading">
       <span class="eyebrow">Pembangunan Lingkungan</span>
       <h1>Program & proyek warga</h1>
@@ -37,9 +37,9 @@ const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'))
       <article v-for="item in programs.data.value" :key="item.id" class="card program-card">
         <div class="card-top">
           <span class="icon-box"><HardHat :size="24" /></span>
-          <div>
+          <div class="header-info">
             <h2>{{ item.title }}</h2>
-            <p><Calendar :size="13" /> {{ formatDate(item.startDate) }} — {{ formatDate(item.endDate) }}</p>
+            <p><Calendar :size="14" /> {{ formatDate(item.startDate) }} — {{ formatDate(item.endDate) }}</p>
           </div>
           <StatusBadge :status="item.status === 'PUBLISHED' ? 'IN_PROGRESS' : item.status" />
         </div>
@@ -61,18 +61,21 @@ const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'))
 </template>
 
 <style scoped>
-.page-heading { margin-bottom: 2rem; }
-.page-heading h1 { margin-bottom: .45rem; font-size: clamp(2.2rem, 5vw, 3.2rem); }
-.page-heading p { max-width: 44rem; margin: 0; color: var(--ink-650); }
-.program-grid { display: grid; gap: 1rem; }
-.program-card { display: grid; gap: 1rem; padding: 1.4rem; }
-.card-top { display: flex; align-items: flex-start; gap: 1rem; }
-.icon-box { display: grid; width: 3.2rem; height: 3.2rem; flex: none; place-items: center; border-radius: .9rem; background: var(--amber-100); color: var(--amber-700); }
-.card-top h2 { margin: 0; font-size: 1.25rem; }
-.card-top p { display: flex; align-items: center; gap: .3rem; margin: .2rem 0 0; color: var(--ink-500); font-size: .8rem; }
-.program-desc { margin: 0; color: var(--ink-650); font-size: .88rem; line-height: 1.45; }
-.budget-tracker { display: grid; gap: .4rem; padding: .9rem; border-radius: var(--radius-md); background: var(--cream-50); }
-.budget-info { display: flex; justify-content: space-between; font-size: .8rem; color: var(--ink-700); }
-.progress-bar { height: .5rem; overflow: hidden; border-radius: 999px; background: var(--cream-100); }
+.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); }
+.page-heading { margin-bottom: 3rem; }
+.page-heading .eyebrow { margin-bottom: .6rem; }
+.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
+.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
+.program-grid { display: grid; gap: 1.4rem; }
+.program-card { display: grid; gap: 1.2rem; padding: 1.8rem; border-radius: var(--radius-lg); }
+.card-top { display: flex; align-items: flex-start; gap: 1.2rem; }
+.icon-box { display: grid; width: 3.4rem; height: 3.4rem; flex: none; place-items: center; border-radius: 1rem; background: var(--amber-100); color: var(--amber-700); }
+.header-info { flex: 1; display: grid; gap: .25rem; }
+.card-top h2 { margin: 0; font-size: 1.35rem; line-height: 1.3; }
+.card-top p { display: flex; align-items: center; gap: .4rem; margin: 0; color: var(--ink-500); font-size: .84rem; }
+.program-desc { margin: 0; color: var(--ink-650); font-size: .95rem; line-height: 1.6; }
+.budget-tracker { display: grid; gap: .6rem; padding: 1.1rem; border-radius: var(--radius-md); background: var(--cream-50); border: 1px solid var(--line); }
+.budget-info { display: flex; justify-content: space-between; font-size: .84rem; color: var(--ink-700); }
+.progress-bar { height: .55rem; overflow: hidden; border-radius: 999px; background: var(--cream-100); }
 .progress-bar i { display: block; height: 100%; border-radius: inherit; background: var(--teal-600); transition: width .3s; }
 </style>
