@@ -58,10 +58,6 @@ async function logout() {
     <div class="portal-main">
       <header class="portal-topbar">
         <div class="topbar-left">
-          <button type="button" class="topbar-toggle-btn" :title="isSidebarCollapsed ? 'Buka Sidebar' : 'Sembunyikan Sidebar'" @click="toggleSidebar">
-            <PanelLeftOpen v-if="isSidebarCollapsed" :size="19" />
-            <PanelLeftClose v-else :size="19" />
-          </button>
           <div>
             <span>Halo, {{ firstName }}</span>
             <small>Semoga harimu berjalan ringan.</small>
@@ -136,7 +132,7 @@ async function logout() {
   text-decoration: none;
 }
 
-.sidebar-toggle-btn, .topbar-toggle-btn {
+.sidebar-toggle-btn {
   display: grid;
   width: 2.2rem;
   height: 2.2rem;
@@ -149,7 +145,7 @@ async function logout() {
   transition: background 0.15s, border-color 0.15s;
 }
 
-.sidebar-toggle-btn:hover, .topbar-toggle-btn:hover {
+.sidebar-toggle-btn:hover {
   background: var(--cream-100);
   border-color: var(--teal-500);
   color: var(--teal-800);

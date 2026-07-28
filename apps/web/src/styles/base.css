@@ -155,16 +155,16 @@ img, video {
 }
 
 .button-secondary, a.button-secondary, button.button-secondary {
-  border: 1px solid #0f172a !important;
-  background: #ffffff !important;
-  color: #0f172a !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--teal-200, #ccfbf1) !important;
+  background: var(--teal-50, #f0fdf4) !important;
+  color: var(--teal-800, #115e59) !important;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.08);
 }
 
 .button-secondary:hover, a.button-secondary:hover, button.button-secondary:hover {
-  border-color: #0f766e !important;
-  background: #f0fdf4 !important;
-  color: #0f766e !important;
+  border-color: var(--teal-600, #0d9488) !important;
+  background: var(--teal-100, #ccfbf1) !important;
+  color: var(--teal-900, #134e4a) !important;
 }
 
 .button-secondary:disabled, a.button-secondary:disabled, button.button-secondary:disabled {

@@ -52,10 +52,6 @@ async function logout() { await session.logout(); await router.push('/login'); }
     <div class="admin-main">
       <header class="admin-topbar">
         <div class="topbar-left">
-          <button type="button" class="topbar-toggle-btn" :title="isSidebarCollapsed ? 'Buka Sidebar' : 'Sembunyikan Sidebar'" @click="toggleSidebar">
-            <PanelLeftOpen v-if="isSidebarCollapsed" :size="19" />
-            <PanelLeftClose v-else :size="19" />
-          </button>
           <div>
             <strong>CMS Pengurus</strong>
             <span>Kelola layanan tanpa membuka privasi warga.</span>
@@ -119,7 +115,7 @@ async function logout() { await session.logout(); await router.push('/login'); }
   text-decoration: none;
 }
 
-.sidebar-toggle-btn, .topbar-toggle-btn {
+.sidebar-toggle-btn {
   display: grid;
   width: 2.2rem;
   height: 2.2rem;
@@ -132,15 +128,9 @@ async function logout() { await session.logout(); await router.push('/login'); }
   transition: background 0.15s;
 }
 
-.sidebar-toggle-btn:hover, .topbar-toggle-btn:hover {
+.sidebar-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   color: white;
-}
-
-.topbar-toggle-btn {
-  border-color: var(--line);
-  background: var(--paper);
-  color: var(--ink-700);
 }
 
 .organization {
@@ -184,7 +174,7 @@ async function logout() { await session.logout(); await router.push('/login'); }
   font-family: var(--font-sans) !important;
   color: #cbd5e1 !important;
   font-size: 0.86rem !important;
-  font-weight: 500 !important; /* Smooth clean medium font weight */
+  font-weight: 500 !important;
   letter-spacing: -0.01em;
 }
 
