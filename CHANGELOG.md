@@ -29,6 +29,7 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Dropdown formulir tidak lagi memakai select native dan notifikasi/konfirmasi native diganti modal yang konsisten.
 
 ### Fixed
+- Validasi CSRF pada portal lintas subdomain (`vercel.app` dan domain custom) setelah reload halaman.
 - Proyeksi data publik yang sebelumnya gagal dimuat atau menampilkan state kosong yang tidak informatif.
 - Filter laporan publik agar hanya menampilkan laporan publik yang belum diarsipkan.
 - Status program kini mengikuti status backend, termasuk warna progress yang membedakan pekerjaan selesai dan masih berjalan.
