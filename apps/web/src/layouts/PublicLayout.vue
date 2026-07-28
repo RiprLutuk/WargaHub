@@ -39,10 +39,10 @@ function closeAll() {
               <span>Informasi</span> <ChevronDown :size="14" class="arrow-icon" />
             </button>
             <div class="dropdown-menu">
-              <RouterLink to="/pengumuman" @click="closeAll">📢 Pengumuman Resmi</RouterLink>
-              <RouterLink to="/laporan" @click="closeAll">📋 Status Laporan Publik</RouterLink>
-              <RouterLink to="/agenda" @click="closeAll">📅 Agenda & Kegiatan</RouterLink>
-              <RouterLink to="/dokumen" @click="closeAll">📄 Dokumen Publik</RouterLink>
+              <RouterLink to="/pengumuman" @click="closeAll">Pengumuman Resmi</RouterLink>
+              <RouterLink to="/laporan" @click="closeAll">Status Laporan Publik</RouterLink>
+              <RouterLink to="/agenda" @click="closeAll">Agenda & Kegiatan</RouterLink>
+              <RouterLink to="/dokumen" @click="closeAll">Dokumen Publik</RouterLink>
             </div>
           </div>
 
@@ -52,15 +52,15 @@ function closeAll() {
               <span>Lingkungan & Fasilitas</span> <ChevronDown :size="14" class="arrow-icon" />
             </button>
             <div class="dropdown-menu">
-              <RouterLink to="/transparansi" @click="closeAll">📊 Transparansi Keuangan</RouterLink>
-              <RouterLink to="/fasilitas" @click="closeAll">🏛️ Fasilitas & Inventaris</RouterLink>
-              <RouterLink to="/program" @click="closeAll">🏗️ Program Pembangunan</RouterLink>
-              <RouterLink to="/umkm" @click="closeAll">🛍️ Direktori UMKM Warga</RouterLink>
+              <RouterLink to="/transparansi" @click="closeAll">Transparansi Keuangan</RouterLink>
+              <RouterLink to="/fasilitas" @click="closeAll">Fasilitas & Inventaris</RouterLink>
+              <RouterLink to="/program" @click="closeAll">Program Pembangunan</RouterLink>
+              <RouterLink to="/umkm" @click="closeAll">Direktori UMKM Warga</RouterLink>
             </div>
           </div>
 
           <RouterLink to="/kontak" @click="closeAll">Kontak</RouterLink>
-          <RouterLink class="emergency-link" to="/darurat" @click="closeAll"><Phone :size="15" aria-hidden="true" /> Darurat</RouterLink>
+          <RouterLink class="emergency-link" to="/darurat" @click="closeAll">Darurat</RouterLink>
           <RouterLink class="button button-sm" to="/login" @click="closeAll">Portal warga <ArrowRight :size="15" aria-hidden="true" /></RouterLink>
         </nav>
       </div>
