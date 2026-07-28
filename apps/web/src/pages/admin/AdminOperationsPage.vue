@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, CheckCircle2, ClipboardCheck, Clock3, FileClock, Plus, Search, ShieldCheck, Sparkles, UserCheck, Wand2 } from 'lucide-vue-next';
+import { Activity, CalendarClock, CheckCircle2, ClipboardCheck, Clock3, FileClock, FileText, Plus, RefreshCw, Search, ShieldCheck, UserCheck } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
 import AutomatedRosterModal from '../../components/AutomatedRosterModal.vue';
 import StatePanel from '../../components/StatePanel.vue';
@@ -70,7 +70,7 @@ function openCreateModal(mode: 'activity' | 'patrol') {
 
 async function onImported() {
   waModalOpen.value = false;
-  message.value = 'Data jadwal dan jimpitan WhatsApp berhasil diimpor ke sistem.';
+  message.value = 'Data jadwal dan jimpitan pengumuman berhasil diimpor ke sistem.';
   await activities.reload();
   await patrols.reload();
 }
@@ -168,10 +168,10 @@ async function createPatrol() {
 
       <div v-if="section === 'operations'" class="heading-actions">
         <button class="button button-sm" type="button" @click="rosterModalOpen = true">
-          <Wand2 :size="16" /> Susun Giliran Otomatis
+          <CalendarClock :size="16" /> Susun Giliran Otomatis
         </button>
         <button class="button button-secondary button-sm" type="button" @click="waModalOpen = true">
-          <Sparkles :size="16" /> Impor Teks WA
+          <FileText :size="16" /> Impor Teks Pesan
         </button>
         <span class="sla-chip"><Clock3 :size="15" /> {{ openComplaints.length }} laporan terbuka</span>
       </div>
@@ -260,7 +260,7 @@ async function createPatrol() {
             <p class="muted">Kelola giliran konsumsi tukang dan kebutuhan kegiatan warga secara otomatis.</p>
           </div>
           <div class="heading-actions">
-            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><Wand2 :size="15" /> Generate Giliran Otomatis</button>
+            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><CalendarClock :size="15" /> Susun Giliran Otomatis</button>
             <button class="button button-secondary button-sm" type="button" @click="openCreateModal('activity')"><Plus :size="15" /> Buat manual</button>
           </div>
         </div>
@@ -286,7 +286,7 @@ async function createPatrol() {
             <p class="muted">Rotasi ronda disusun otomatis dan dapat ditukar antar warga langsung dari aplikasi.</p>
           </div>
           <div class="heading-actions">
-            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><Wand2 :size="15" /> Generate Rotasi Ronda</button>
+            <button class="button button-sm" type="button" @click="rosterModalOpen = true"><CalendarClock :size="15" /> Susun Rotasi Ronda</button>
             <button class="button button-secondary button-sm" type="button" @click="openCreateModal('patrol')"><Plus :size="15" /> Manual</button>
           </div>
         </div>

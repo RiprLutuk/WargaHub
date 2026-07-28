@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, AlertTriangle, ArrowRight, Banknote, CheckCircle2, Clock3, Home, ReceiptText, Sparkles, Users } from 'lucide-vue-next';
+import { Activity, AlertTriangle, ArrowRight, Banknote, CalendarClock, CheckCircle2, Clock3, FileText, Home, ReceiptText, Users } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import StatePanel from '../../components/StatePanel.vue';
@@ -38,12 +38,12 @@ function onImported() {
       <div>
         <span class="eyebrow">Operasional RT/RW Hari Ini</span>
         <h1>Ringkasan lingkungan</h1>
-        <p>Prioritaskan pekerjaan yang menunggu tindakan. Pengurus dapat mengimpor pesan WhatsApp jadwal & jimpitan secara otomatis.</p>
+        <p>Prioritaskan pekerjaan yang menunggu tindakan. Pengurus dapat menyusun giliran otomatis atau mengimpor teks pesan rutin.</p>
       </div>
 
       <div class="heading-actions">
         <button class="button button-sm" type="button" @click="waModalOpen = true">
-          <Sparkles :size="16" /> Impor Teks WhatsApp
+          <FileText :size="16" /> Impor Teks Pesan
         </button>
         <span class="last-update"><CheckCircle2 :size="15" /> Data terbaru</span>
       </div>
@@ -134,9 +134,9 @@ function onImported() {
       <h2>Tindakan cepat</h2>
       <div>
         <button type="button" class="action-card" @click="waModalOpen = true">
-          <Sparkles :size="20" />
+          <FileText :size="20" />
           <span>
-            <strong>Impor Pesan WA Grup</strong>
+            <strong>Impor Teks Pesan Rutin</strong>
             <small>Jadwal konsumsi, ronda, jimpitan</small>
           </span>
           <ArrowRight :size="17" />

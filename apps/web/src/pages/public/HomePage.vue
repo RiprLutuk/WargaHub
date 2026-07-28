@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, CalendarDays, CheckCircle2, Megaphone, ShieldCheck, Sparkles, WalletCards } from 'lucide-vue-next';
+import { ArrowRight, CalendarDays, CheckCircle2, Megaphone, ShieldCheck, WalletCards } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import StatePanel from '../../components/StatePanel.vue';
@@ -19,7 +19,7 @@ const visibleAnnouncements = computed(() => announcements.data.value?.slice(0, 3
     <div class="hero-pattern" aria-hidden="true" />
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="hero-kicker"><Sparkles :size="15" aria-hidden="true" /> Ruang bersama yang lebih ringan</span>
+        <span class="hero-kicker"><CheckCircle2 :size="15" aria-hidden="true" /> Ruang bersama yang lebih ringan</span>
         <h1>WargaHub</h1>
         <p class="hero-lead">Gotong royong tanpa mengorbankan kewarasan.</p>
         <p class="hero-description">Informasi resmi, layanan warga, dan transparansi lingkungan—rapi dalam satu tempat, tanpa menambah tekanan sosial.</p>

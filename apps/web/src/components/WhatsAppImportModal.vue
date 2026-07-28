@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircle, CalendarClock, CheckCircle2, FileText, HardHat, MessageSquare, Receipt, ShieldCheck, Sparkles, Wand2, X } from 'lucide-vue-next';
+import { AlertCircle, CalendarClock, CheckCircle2, FileText, HardHat, MessageSquare, Receipt, RefreshCw, ShieldCheck, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { api, ApiClientError } from '../lib/api';
 import { formatRupiah } from '../lib/format';
@@ -40,7 +40,7 @@ async function commitImport() {
 
       await api.post('/activities', {
         title: 'Sodakoh Makanan & Konsumsi Tukang',
-        description: `Jadwal giliran kirim sodakoh makanan untuk pekerja/tukang (${firstDate} s/d ${lastDate}). Impor dari WhatsApp.`,
+        description: `Jadwal giliran kirim sodakoh makanan untuk pekerja/tukang (${firstDate} s/d ${lastDate}). Impor dari pengumuman.`,
         location: 'Lingkungan RT/RW',
         startsAt: `${firstDate}T07:00:00.000Z`,
         endsAt: `${lastDate}T18:00:00.000Z`,
@@ -72,10 +72,10 @@ async function commitImport() {
       createdCount++;
     }
 
-    successMsg.value = `Berhasil mengimpor ${createdCount} data jadwal & catatan dari pesan WhatsApp ke sistem WargaHub!`;
+    successMsg.value = `Berhasil mengimpor ${createdCount} data jadwal & catatan dari teks pengumuman ke sistem WargaHub!`;
     emit('imported');
   } catch (cause) {
-    errorMsg.value = cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Gagal mengimpor data WhatsApp.';
+    errorMsg.value = cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Gagal mengimpor data pengumuman.';
   } finally {
     busy.value = false;
   }
@@ -87,20 +87,20 @@ async function commitImport() {
     <div class="wa-modal-card">
       <div class="modal-header">
         <div class="header-title">
-          <span class="eyebrow"><Sparkles :size="14" /> AI Smart Parser</span>
-          <h2>Impor Teks Pesan WhatsApp RT/RW</h2>
+          <span class="eyebrow"><FileText :size="14" /> Konversi Teks Pengumuman</span>
+          <h2>Impor Teks Pesan Pengumuman RT/RW</h2>
         </div>
         <button type="button" class="close-btn" aria-label="Tutup modal" @click="emit('close')"><X :size="20" /></button>
       </div>
 
-      <p class="subtitle">Tempelkan teks pengumuman dari grup WhatsApp (Jadwal Makanan Tukang, Ronda, Jimpitan, Kerja Bakti) di bawah ini.</p>
+      <p class="subtitle">Tempelkan teks pengumuman rutin (Jadwal Makanan Tukang, Ronda, Jimpitan, Kerja Bakti) untuk dimasukkan langsung ke sistem.</p>
 
       <div v-if="successMsg" class="notice" role="status"><CheckCircle2 :size="18" /> {{ successMsg }}</div>
       <div v-if="errorMsg" class="notice notice-error" role="alert"><AlertCircle :size="18" /> {{ errorMsg }}</div>
 
       <div class="wa-grid">
         <div class="field">
-          <label for="wa-raw">Salin & Tempel Teks WhatsApp di sini</label>
+          <label for="wa-raw">Salin & Tempel Teks Pesan di sini</label>
           <textarea
             id="wa-raw"
             v-model="rawText"
@@ -120,11 +120,11 @@ Jimpitan senin tgl 27 07 2026 Rp 24000"
 
         <!-- Live Parsed Result Preview -->
         <div class="parsed-preview">
-          <span class="preview-title"><Wand2 :size="16" /> Hasil Ekstraksi Otomatis</span>
+          <span class="preview-title"><RefreshCw :size="15" /> Hasil Konversi Otomatis</span>
 
           <div v-if="!parsedResult || (!parsedResult.foodSchedules.length && !parsedResult.patrols.length && !parsedResult.jimpitans.length)" class="empty-preview">
             <MessageSquare :size="28" />
-            <p>Tempelkan teks pesan WA di sebelah kiri untuk melihat hasil konversi otomatis ke sistem.</p>
+            <p>Tempelkan teks pesan di sebelah kiri untuk melihat rincian jadwal yang teridentifikasi.</p>
           </div>
 
           <div v-else class="parsed-sections">
@@ -169,7 +169,7 @@ Jimpitan senin tgl 27 07 2026 Rp 24000"
           :disabled="busy || !parsedResult || (!parsedResult.foodSchedules.length && !parsedResult.patrols.length && !parsedResult.jimpitans.length)"
           @click="commitImport"
         >
-          <Sparkles :size="16" /> {{ busy ? 'Mengimpor…' : '🚀 Impor & Masukkan ke Sistem WargaHub' }}
+          <FileText :size="16" /> {{ busy ? 'Mengimpor…' : 'Impor & Masukkan ke Sistem WargaHub' }}
         </button>
         <button class="button button-secondary" type="button" @click="emit('close')">Tutup</button>
       </div>

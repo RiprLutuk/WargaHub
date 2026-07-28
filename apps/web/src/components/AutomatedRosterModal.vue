@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { AlertCircle, Calendar, CalendarClock, CheckCircle2, HardHat, ShieldCheck, Sparkles, Users, Wand2, X } from 'lucide-vue-next';
+import { AlertCircle, Calendar, CalendarClock, CheckCircle2, HardHat, RefreshCw, ShieldCheck, Users, X } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
 import { useResource } from '../composables/useResource';
 import { api, ApiClientError } from '../lib/api';
 import { adaptResidents } from '../lib/view-models';
 
 const props = defineProps<{ open: boolean }>();
-const emit = defineEmits<{ (e: 'close'): void; (e: 'generated'): void }>();
+const emit = defineEmits<{ (e: 'close'): void; (e: 'imported'): void }>();
 
 const residents = useResource(async () => adaptResidents(await api.get<unknown>('/residents')));
 
@@ -110,7 +110,7 @@ async function runAutoGenerator() {
   try {
     const resList = residents.data.value ?? [];
     if (!resList.length) {
-      throw new Error('Belum ada data warga terdaftar untuk disusun giliran otomatis.');
+      throw new Error('Belum ada data warga terdaftar untuk disusun giliran.');
     }
 
     if (activeMode.value === 'food') {
@@ -128,7 +128,7 @@ async function runAutoGenerator() {
         });
         createdCount++;
       }
-      successMsg.value = `Berhasil menyusun giliran otomatis ${createdCount} hari konsumsi tukang dan mengirimkan notifikasi ke warga!`;
+      successMsg.value = `Berhasil menyusun giliran ${createdCount} hari konsumsi tukang dan mengunggah ke kalender warga!`;
     } else {
       let createdCount = 0;
       for (let i = 0; i < generatedPatrolDays.value.length; i++) {
@@ -145,10 +145,10 @@ async function runAutoGenerator() {
           createdCount++;
         }
       }
-      successMsg.value = `Berhasil menerbitkan ${createdCount} penugasan ronda malam otomatis tanpa perlu catat manual di WhatsApp!`;
+      successMsg.value = `Berhasil menerbitkan ${createdCount} penugasan ronda malam otomatis ke sistem WargaHub!`;
     }
 
-    emit('generated');
+    emit('imported');
   } catch (cause) {
     errorMsg.value = cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Gagal menyusun giliran otomatis.';
   } finally {
@@ -162,13 +162,13 @@ async function runAutoGenerator() {
     <div class="generator-modal-card">
       <div class="modal-header">
         <div class="header-title">
-          <span class="eyebrow"><Wand2 :size="14" /> Generator CRUD Otomatis</span>
-          <h2>Susun Giliran & Jadwal Otomatis (Anti-WhatsApp Manual)</h2>
+          <span class="eyebrow"><CalendarClock :size="14" /> Penjadwalan System-Driven</span>
+          <h2>Susun Giliran & Rotasi Terjadwal Warga</h2>
         </div>
         <button type="button" class="close-btn" aria-label="Tutup modal" @click="emit('close')"><X :size="20" /></button>
       </div>
 
-      <p class="subtitle">Sistem akan secara otomatis memutar giliran warga secara adil, menjadwalkan kalender, dan mengirimkan notifikasi langsung ke aplikasi warga.</p>
+      <p class="subtitle">Sistem akan secara otomatis memutar giliran warga secara berurutan, menjadwalkan kalender, dan memberikan konfirmasi langsung di aplikasi.</p>
 
       <div v-if="successMsg" class="notice" role="status"><CheckCircle2 :size="18" /> {{ successMsg }}</div>
       <div v-if="errorMsg" class="notice notice-error" role="alert"><AlertCircle :size="18" /> {{ errorMsg }}</div>
@@ -203,7 +203,7 @@ async function runAutoGenerator() {
 
           <!-- Preview Table -->
           <div class="preview-box">
-            <span class="preview-label"><Sparkles :size="15" /> Pratinjau Rotasi Giliran Warga ({{ generatedFoodDays.length }} Hari Total)</span>
+            <span class="preview-label"><RefreshCw :size="15" /> Pratinjau Rotasi Giliran Warga ({{ generatedFoodDays.length }} Hari Total)</span>
             <div class="roster-preview-grid">
               <div v-for="d in generatedFoodDays.slice(0, 6)" :key="d.dateStr" class="roster-card">
                 <strong>{{ d.dateStr }}</strong>
@@ -233,7 +233,7 @@ async function runAutoGenerator() {
 
           <!-- Preview Table -->
           <div class="preview-box">
-            <span class="preview-label"><Sparkles :size="15" /> Pratinjau Rotasi Ronda ({{ generatedPatrolDays.length }} Malam Ronda)</span>
+            <span class="preview-label"><RefreshCw :size="15" /> Pratinjau Rotasi Ronda ({{ generatedPatrolDays.length }} Malam Ronda)</span>
             <div class="roster-preview-grid">
               <div v-for="d in generatedPatrolDays.slice(0, 4)" :key="d.dateStr" class="roster-card">
                 <strong>{{ d.dayName }} ({{ d.dateStr }})</strong>
@@ -245,7 +245,7 @@ async function runAutoGenerator() {
 
         <div class="modal-footer">
           <button class="button" type="submit" :disabled="busy">
-            <Wand2 :size="16" /> {{ busy ? 'Menyusun…' : '🚀 Terbitkan Giliran & Jadwalkan Otomatis' }}
+            <CalendarClock :size="16" /> {{ busy ? 'Menyusun…' : 'Terbitkan Giliran & Jadwalkan Otomatis' }}
           </button>
           <button class="button button-secondary" type="button" @click="emit('close')">Batal</button>
         </div>
