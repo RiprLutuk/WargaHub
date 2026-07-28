@@ -135,7 +135,7 @@ onMounted(() => {
 <style scoped>
 .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 80% 10%, rgb(217 238 232 / .9), transparent 30rem), linear-gradient(150deg, var(--cream-50), #fffaf0); }
 .hero-pattern { position: absolute; inset: 0; opacity: .16; background-image: linear-gradient(var(--teal-700) 1px, transparent 1px), linear-gradient(90deg, var(--teal-700) 1px, transparent 1px); background-size: 44px 44px; mask-image: linear-gradient(90deg, transparent, black 70%); }
-.hero-grid { position: relative; display: grid; min-height: 41rem; grid-template-columns: 1.35fr .85fr; align-items: center; gap: clamp(2rem, 6vw, 6rem); padding-block: 5rem; }
+.hero-grid { position: relative; display: grid; min-height: 36rem; grid-template-columns: 1.3fr .9fr; align-items: center; gap: clamp(2rem, 5vw, 4rem); padding-block: 4rem; }
 .hero-copy { max-width: 43rem; }
 .hero-kicker { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1.1rem; padding: .38rem .62rem; border: 1px solid var(--teal-100); border-radius: 999px; background: rgb(255 253 248 / .72); color: var(--teal-700); font-size: .77rem; font-weight: 800; }
 .hero h1 { margin-bottom: .25rem; color: var(--ink-950); }
@@ -144,8 +144,8 @@ onMounted(() => {
 .hero-actions, .trust-row { display: flex; flex-wrap: wrap; gap: .75rem; }
 .trust-row { margin-top: 1.5rem; color: var(--ink-650); font-size: .82rem; font-weight: 700; }
 .trust-row span { display: inline-flex; align-items: center; gap: .35rem; }
-.community-card { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgb(255 255 255 / .65); border-radius: var(--radius-xl); background: rgb(255 253 248 / .9); box-shadow: var(--shadow-lg); backdrop-filter: blur(20px); transform: rotate(1.25deg); }
-.community-card-top { display: flex; align-items: center; gap: .45rem; margin: -0.3rem 0 2rem; color: var(--success-700); font-size: .75rem; font-weight: 800; }
+.community-card { padding: clamp(1.5rem, 3vw, 2.2rem); border: 1px solid var(--line-strong); border-radius: var(--radius-xl); background: var(--paper); box-shadow: var(--shadow-md); transform: none; margin-block: 1rem; }
+.community-card-top { display: flex; align-items: center; gap: .45rem; margin: -0.3rem 0 1.5rem; color: var(--success-700); font-size: .75rem; font-weight: 800; }
 .live-dot { width: .55rem; height: .55rem; border-radius: 50%; background: #3ca66e; box-shadow: 0 0 0 4px var(--success-100); }
 .community-card h2 { font-family: var(--font-display); font-size: 2rem; }
 .community-card p { color: var(--ink-650); }
