@@ -68,8 +68,8 @@ function closeAll() {
             </div>
           </div>
 
-          <RouterLink to="/kontak" @click="closeAll">Kontak</RouterLink>
-          <RouterLink class="emergency-link" to="/darurat" @click="closeAll">Darurat</RouterLink>
+          <RouterLink to="/kontak" class="nav-link" @click="closeAll">Kontak</RouterLink>
+          <RouterLink class="nav-link emergency-link" to="/darurat" @click="closeAll">Darurat</RouterLink>
 
           <!-- Dynamic User Portal Button -->
           <RouterLink
@@ -133,12 +133,14 @@ function closeAll() {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--paper);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 .header-inner {
   display: flex;
-  min-height: 4.5rem;
+  min-height: 4.6rem;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
@@ -151,24 +153,36 @@ function closeAll() {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
   background: var(--paper);
-  color: var(--ink-900);
+  color: var(--ink-950);
+  cursor: pointer;
 }
 nav {
   display: flex;
   align-items: center;
   gap: 1.25rem;
 }
-nav a {
-  color: var(--ink-700);
-  font-weight: 700;
-  font-size: 0.9rem;
+nav a, .nav-link {
+  color: var(--ink-800);
+  font-weight: 750;
+  font-size: 0.92rem;
+  text-decoration: none !important;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  transition: color 0.15s, background 0.15s;
 }
 nav a:hover,
 nav a.router-link-active {
   color: var(--teal-700);
+  background: var(--teal-50);
+  text-decoration: none !important;
 }
 nav .emergency-link {
-  color: var(--rose-700);
+  color: #e11d48;
+  font-weight: 800;
+}
+nav .emergency-link:hover {
+  background: #ffe4e6;
+  color: #be123c;
 }
 
 /* Nav Dropdown Styles */
@@ -180,20 +194,22 @@ nav .emergency-link {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.4rem 0.2rem;
+  padding: 0.4rem 0.65rem;
   border: 0;
+  border-radius: 0.5rem;
   background: transparent;
-  color: var(--ink-700);
-  font-weight: 700;
-  font-size: 0.9rem;
+  color: var(--ink-800);
+  font-weight: 750;
+  font-size: 0.92rem;
   font-family: inherit;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.15s, background 0.15s;
 }
 
 .dropdown-trigger:hover,
 .nav-dropdown.active .dropdown-trigger {
   color: var(--teal-700);
+  background: var(--teal-50);
 }
 
 .arrow-icon {
@@ -209,15 +225,16 @@ nav .emergency-link {
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: 13.5rem;
+  min-width: 14rem;
   padding: 0.5rem;
   border-radius: var(--radius-md);
-  background: var(--paper);
+  background: #ffffff;
   border: 1px solid var(--line-strong);
   box-shadow: var(--shadow-md);
   z-index: 50;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
 }
 
 .nav-dropdown.active .dropdown-menu {
@@ -225,11 +242,12 @@ nav .emergency-link {
 }
 
 .dropdown-menu a {
-  padding: 0.55rem 0.8rem;
-  border-radius: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.5rem;
   color: var(--ink-800);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-decoration: none !important;
   transition: background 0.15s, color 0.15s;
 }
 
@@ -237,19 +255,22 @@ nav .emergency-link {
 .dropdown-menu a.router-link-active {
   background: var(--teal-50);
   color: var(--teal-800);
+  text-decoration: none !important;
 }
 
 .user-portal-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: var(--teal-700);
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-800)) !important;
   color: white !important;
   font-weight: 800;
+  text-decoration: none !important;
 }
 
 .user-portal-btn:hover {
-  background: var(--teal-800);
+  background: linear-gradient(135deg, var(--teal-600), var(--teal-700)) !important;
+  color: white !important;
 }
 
 main {
@@ -257,41 +278,46 @@ main {
 }
 .site-footer {
   margin-top: 4rem;
-  padding-block: 3.5rem;
-  background: var(--ink-950);
-  color: var(--ink-100);
+  padding-block: 4rem;
+  background: #091e1a;
+  color: #e2e8f0;
 }
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 .footer-grid p {
   max-width: 24rem;
   margin-top: 1rem;
-  color: var(--ink-400);
+  color: #94a3b8;
+  font-size: 0.95rem;
 }
 .footer-grid h3 {
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  font-weight: 800;
+  margin-bottom: 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 850;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--teal-300);
+  letter-spacing: 0.08em;
+  color: #5eead4;
 }
 .footer-grid ul {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.75rem;
   padding: 0;
   list-style: none;
 }
 .footer-grid a {
-  color: var(--ink-300);
+  color: #cbd5e1;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: color 0.15s;
 }
 .footer-grid a:hover {
-  color: white;
+  color: #ffffff;
+  text-decoration: none !important;
 }
-@media (max-width: 820px) {
+@media (max-width: 880px) {
   .menu-button {
     display: grid;
   }
@@ -302,7 +328,7 @@ main {
     left: 0;
     right: 0;
     padding: 1.25rem;
-    background: var(--paper);
+    background: #ffffff;
     border-bottom: 1px solid var(--line-strong);
     flex-direction: column;
     align-items: stretch;
@@ -317,9 +343,6 @@ main {
     border: 0;
     padding-left: 1rem;
     background: var(--cream-50);
-  }
-  .footer-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
