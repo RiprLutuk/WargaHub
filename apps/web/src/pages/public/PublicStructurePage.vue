@@ -300,8 +300,8 @@ const adminCapabilities = [
 }
 
 .officer-card:hover {
-  border-color: var(--teal-300);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(13, 148, 136, 0.25);
+  box-shadow: 0 8px 24px rgba(16, 43, 39, 0.06);
   transform: translateY(-2px);
 }
 
