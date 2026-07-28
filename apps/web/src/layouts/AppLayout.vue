@@ -138,16 +138,16 @@ async function logout() {
   height: 2.2rem;
   place-items: center;
   border-radius: 0.55rem;
-  border: 1px solid var(--line);
-  background: var(--cream-50);
+  border: 1px solid var(--line-strong, #cbd5e1);
+  background: var(--cream-50, #f8fafc);
   color: var(--ink-700);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
 
 .sidebar-toggle-btn:hover {
-  background: var(--cream-100);
-  border-color: var(--teal-500);
+  background: var(--teal-50, #f0fdf4);
+  border-color: var(--teal-600);
   color: var(--teal-800);
 }
 
@@ -210,8 +210,8 @@ async function logout() {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem clamp(1rem, 3vw, 2rem);
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
 }
 
@@ -239,7 +239,7 @@ async function logout() {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .icon-button {
@@ -248,18 +248,26 @@ async function logout() {
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 0.7rem;
-  background: var(--paper);
-  color: var(--ink-700);
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.75rem;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-button:hover {
+  background: #f0fdf4 !important;
+  border-color: #0d9488 !important;
+  color: #0d9488 !important;
 }
 
 .notification-dot {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-  width: 0.42rem;
-  height: 0.42rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 50%;
   background: var(--coral-600);
 }
@@ -271,12 +279,19 @@ async function logout() {
 .avatar-button {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid var(--line);
+  gap: 0.45rem;
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 999px;
-  background: var(--paper);
+  background: #f8fafc !important;
+  color: #0f172a !important;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.avatar-button:hover {
+  background: #f0fdf4 !important;
+  border-color: #0d9488 !important;
 }
 
 .avatar-button span {
@@ -285,8 +300,8 @@ async function logout() {
   height: 2rem;
   place-items: center;
   border-radius: 50%;
-  background: var(--teal-600);
-  color: white;
+  background: #0f766e !important;
+  color: #ffffff !important;
   font-weight: 850;
   font-size: 0.85rem;
 }

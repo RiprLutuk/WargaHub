@@ -37,15 +37,15 @@ withDefaults(defineProps<{ compact?: boolean; inverse?: boolean }>(), {
   place-items: center;
   overflow: hidden;
   border-radius: 0.8rem 0.8rem 1.2rem;
-  background: linear-gradient(135deg, var(--teal-700), var(--teal-800));
-  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+  background: linear-gradient(135deg, #0f766e, #0d9488) !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3) !important;
   flex: none;
 }
 
 .brand-symbol::before {
   position: absolute;
   inset: 0.42rem;
-  border: 2px solid rgba(255, 255, 255, 0.95);
+  border: 2px solid #ffffff !important;
   border-top: 0;
   border-radius: 0.16rem 0.16rem 0.55rem 0.55rem;
   content: '';
@@ -57,7 +57,7 @@ withDefaults(defineProps<{ compact?: boolean; inverse?: boolean }>(), {
   bottom: 0.48rem;
   width: 0.22rem;
   border-radius: 1rem 1rem 0 0;
-  background: var(--amber-500);
+  background: #f59e0b !important;
   transform-origin: bottom;
 }
 
