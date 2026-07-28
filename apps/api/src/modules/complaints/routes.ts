@@ -24,6 +24,7 @@ type ComplaintRow = {
   status: ComplaintStatus;
   created_at: string | Date;
   updated_at: string | Date;
+  deleted_at: string | Date | null;
 };
 
 const allowedTransitions: Record<ComplaintStatus, readonly ComplaintStatus[]> = {
@@ -93,8 +94,8 @@ async function complaintById(
 ): Promise<ComplaintRow> {
   const result = await app.database.query<ComplaintRow>(
     `SELECT id, ticket_number, reporter_id, assigned_to, category, title,
-       description, visibility, location, priority, status, created_at, updated_at
-     FROM complaints WHERE id = $1 AND organization_id = $2`,
+       description, visibility, location, priority, status, created_at, updated_at, deleted_at
+     FROM complaints WHERE id = $1 AND organization_id = $2 AND deleted_at IS NULL`,
     [id, request.auth?.organizationId],
   );
   const row = result.rows[0];
@@ -119,9 +120,9 @@ export async function complaintRoutes(app: FastifyInstance): Promise<void> {
       values.push(page.pageSize, (page.page - 1) * page.pageSize);
       const result = await app.database.query<ComplaintRow & { total_count: number | string }>(
         `SELECT id, ticket_number, reporter_id, assigned_to, category, title,
-           description, visibility, location, priority, status, created_at, updated_at,
+           description, visibility, location, priority, status, created_at, updated_at, deleted_at,
            COUNT(*) OVER() AS total_count
-         FROM complaints WHERE organization_id = $1${scope}
+         FROM complaints WHERE organization_id = $1 AND deleted_at IS NULL${scope}
          ORDER BY created_at DESC LIMIT $${values.length - 1} OFFSET $${values.length}`,
         values,
       );
@@ -236,6 +237,34 @@ export async function complaintRoutes(app: FastifyInstance): Promise<void> {
       });
     },
   );
+
+  app.patch('/complaints/:id', { preHandler: app.requirePermission('complaint.read') }, async (request) => {
+    app.requireCsrf(request);
+    if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
+    const { id } = request.params as { id: string };
+    const complaint = await complaintById(app, request, id);
+    if (!isComplaintReporter(request, complaint)) throw new AppError(403, 'FORBIDDEN', 'Anda hanya dapat mengubah pengaduan sendiri.');
+    if (!['DRAFT', 'SUBMITTED'].includes(complaint.status)) throw new AppError(409, 'COMPLAINT_LOCKED', 'Pengaduan yang sudah diproses tidak dapat diubah.');
+    const input = z.object({ category: z.string().trim().min(2).max(80), title: z.string().trim().min(4).max(120), description: z.string().trim().min(10).max(5000), location: z.string().trim().max(240).nullable().optional(), priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']), visibility: z.enum(['PRIVATE', 'PUBLIC']) }).parse(request.body);
+    const result = await app.database.query<ComplaintRow>(
+      `UPDATE complaints SET category = $3, title = $4, description = $5, location = $6, priority = $7, visibility = $8, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $1 AND organization_id = $2 AND reporter_id = $9 AND deleted_at IS NULL
+       RETURNING id, ticket_number, reporter_id, assigned_to, category, title, description, visibility, location, priority, status, created_at, updated_at, deleted_at`,
+      [id, request.auth.organizationId, input.category, input.title, input.description, input.location ?? null, input.priority, input.visibility, request.auth.id],
+    );
+    return success(request, mapComplaint(result.rows[0]!));
+  });
+
+  app.delete('/complaints/:id', { preHandler: app.requirePermission('complaint.read') }, async (request) => {
+    app.requireCsrf(request);
+    if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
+    const { id } = request.params as { id: string };
+    const complaint = await complaintById(app, request, id);
+    if (!isComplaintReporter(request, complaint)) throw new AppError(403, 'FORBIDDEN', 'Anda hanya dapat menghapus pengaduan sendiri.');
+    if (!['DRAFT', 'SUBMITTED'].includes(complaint.status)) throw new AppError(409, 'COMPLAINT_LOCKED', 'Pengaduan yang sudah diproses tidak dapat dihapus.');
+    await app.database.query(`UPDATE complaints SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $1 AND organization_id = $2 AND reporter_id = $3 AND deleted_at IS NULL`, [id, request.auth.organizationId, request.auth.id]);
+    return success(request, { id, deleted: true });
+  });
 
   app.post(
     '/complaints/:id/comments',

@@ -15,7 +15,8 @@ import {
   Wallet,
   Wrench,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
@@ -33,7 +34,9 @@ interface Officer {
   orderIndex: number;
 }
 
-const selectedDept = ref('SEMUA');
+const route = useRoute();
+const router = useRouter();
+const selectedDept = ref(String(route.query.departemen ?? 'SEMUA'));
 const officers = useResource(() => api.get<Officer[]>('/public/officers'));
 
 const departments = [
@@ -43,6 +46,15 @@ const departments = [
   { key: 'SEKSI_LINGKUNGAN', label: 'Seksi Lingkungan & Kebersihan' },
   { key: 'PEMUDA_KARANG_TARUNA', label: 'Pemuda & Karang Taruna' },
 ];
+
+watch(selectedDept, (department) => {
+  router.replace({ query: { ...route.query, departemen: department !== 'SEMUA' ? department : undefined } });
+});
+
+watch(() => route.query.departemen, (department) => {
+  const next = String(department ?? 'SEMUA');
+  if (selectedDept.value !== next) selectedDept.value = next;
+});
 
 const defaultOfficers: Officer[] = [
   { id: 'off-1', name: 'Bpk. H. Ahmad Dahlan', position: 'Ketua RT 005', department: 'PENGURUS_INTI', phone: '+62 812-3456-7890', email: 'ahmad.dahlan@wargahub.id', period: '2024 - 2027', orderIndex: 1 },
@@ -115,7 +127,7 @@ const adminCapabilities = [
 </script>
 
 <template>
-  <div class="container public-page-shell">
+  <div class="container public-page-shell" :class="{ 'app-structure-shell': route.path.startsWith('/app/') }">
     <!-- Page Header -->
     <header class="page-header">
       <div class="header-badge">
@@ -205,45 +217,51 @@ const adminCapabilities = [
 </template>
 
 <style scoped>
-.public-page-shell {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
-}
+.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
+.app-structure-shell { width: 100%; max-width: var(--content); margin-top: 0; padding-block: 0 3rem; }
+.app-structure-shell .page-header { max-width: 56rem; margin-bottom: 1.25rem; }
+.app-structure-shell .officers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.app-structure-shell .header-badge { display: inline-flex; padding: 0; margin-bottom: .7rem; border: 0; border-radius: 0; background: transparent; color: var(--teal-700); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
+.app-structure-shell .header-badge::before { width: 1.6rem; height: 2px; margin-right: .4rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.app-structure-shell .page-header h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: .6rem; }
+.app-structure-shell .header-desc { max-width: 52rem; font-size: 1rem; line-height: 1.55; }
 
 .page-header {
-  margin-bottom: 2.5rem;
-  max-width: 48rem;
+  margin-bottom: 1.25rem;
+  max-width: 56rem;
 }
 
 .header-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  background: var(--teal-50);
-  border: 1px solid var(--teal-200);
-  color: var(--teal-800);
+  padding: 0;
+  margin-bottom: .9rem;
+  color: var(--teal-700);
   font-size: 0.78rem;
   font-weight: 800;
-  margin-bottom: 0.9rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
+.header-badge::before { width: 1.6rem; height: 2px; margin-right: .1rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.header-badge svg { display: none; }
 
 .badge-icon {
   color: var(--teal-600);
 }
 
 .page-header h1 {
-  font-size: clamp(2.1rem, 4.2vw, 3rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 850;
   line-height: 1.15;
   color: var(--ink-950);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.02em;
 }
 
 .header-desc {
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--ink-650);
   margin: 0;
 }
@@ -284,19 +302,19 @@ const adminCapabilities = [
 /* Officers Grid */
 .officers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .officer-card {
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  border-radius: 1.15rem;
   border: 1px solid var(--line);
   background: var(--paper);
   box-shadow: var(--shadow-sm);
-  transition: all 0.25 ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .officer-card:hover {
@@ -309,30 +327,31 @@ const adminCapabilities = [
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .avatar-box {
   display: grid;
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 3.15rem;
+  height: 3.15rem;
   place-items: center;
-  border-radius: 1rem;
+  border-radius: 0.9rem;
   background: linear-gradient(135deg, var(--teal-600), var(--teal-800));
   color: white;
-  font-size: 1.15rem;
-  font-weight: 850;
+  font-size: 1.05rem;
+  font-weight: 750;
   letter-spacing: 0.04em;
-  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+  box-shadow: 0 0 0 3px var(--amber-100), 0 4px 10px rgba(15, 118, 110, 0.16);
 }
 
 .dept-badge {
-  padding: 0.2rem 0.6rem;
+  padding: 0.22rem 0.55rem;
   border-radius: 0.4rem;
-  background: var(--cream-100);
-  color: var(--ink-800);
-  font-size: 0.7rem;
-  font-weight: 800;
+  border: 1px solid var(--teal-100);
+  background: var(--teal-50);
+  color: var(--teal-800);
+  font-size: 0.66rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -343,8 +362,8 @@ const adminCapabilities = [
 }
 
 .officer-name {
-  font-size: 1.25rem;
-  font-weight: 850;
+  font-size: 1.12rem;
+  font-weight: 650;
   color: var(--ink-950);
   margin: 0;
 }
@@ -353,8 +372,8 @@ const adminCapabilities = [
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.88rem;
-  font-weight: 800;
+  font-size: 0.83rem;
+  font-weight: 650;
   color: var(--teal-700);
 }
 
@@ -369,14 +388,14 @@ const adminCapabilities = [
   align-items: center;
   gap: 0.3rem;
   color: var(--ink-600);
-  font-weight: 700;
+  font-weight: 550;
 }
 
 .contact-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1rem;
-  padding-top: 0.8rem;
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
   border-top: 1px dashed var(--line);
 }
 
@@ -386,16 +405,19 @@ const adminCapabilities = [
   gap: 0.35rem;
   padding: 0.4rem 0.75rem;
   border-radius: 0.5rem;
-  background: #25d366;
+  background: var(--success-700);
   color: white;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 650;
   text-decoration: none;
-  transition: opacity 0.2s;
+  box-shadow: 0 2px 8px rgba(36, 112, 73, 0.16);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .wa-btn:hover {
-  opacity: 0.9;
+  background: var(--success-800);
+  box-shadow: 0 4px 12px rgba(36, 112, 73, 0.22);
+  transform: translateY(-1px);
 }
 
 .email-btn {
@@ -407,7 +429,7 @@ const adminCapabilities = [
   background: var(--cream-100);
   color: var(--ink-800);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 650;
   text-decoration: none;
 }
 
@@ -449,7 +471,7 @@ const adminCapabilities = [
 
 .capability-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.4rem;
 }
 
@@ -487,5 +509,24 @@ const adminCapabilities = [
   color: var(--ink-650);
   margin: 0;
   line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .category-pills { flex-wrap: nowrap; margin-inline: -.625rem; padding-inline: .625rem; overflow-x: auto; scrollbar-width: none; }
+  .category-pills::-webkit-scrollbar { display: none; }
+  .pill-btn { flex: 0 0 auto; white-space: nowrap; }
+  .admin-capabilities-section { margin-top: 2.5rem; padding-top: 2rem; }
+  .section-title { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .6rem; margin-bottom: 1.25rem; }
+  .section-title h2 { font-size: 1.35rem; line-height: 1.2; margin-bottom: .3rem; }
+  .section-title p { font-size: .88rem; line-height: 1.5; }
+  .officers-grid, .capability-grid { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .officers-grid::-webkit-scrollbar, .capability-grid::-webkit-scrollbar { display: none; }
+  .officer-card, .cap-card { flex: 0 0 min(84vw, 20rem); scroll-snap-align: start; }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .officers-grid, .capability-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .app-structure-shell { width: 100%; margin-top: 0; padding-block: 0 2rem; }
 }
 </style>

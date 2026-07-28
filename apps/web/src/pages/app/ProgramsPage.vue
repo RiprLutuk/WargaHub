@@ -12,11 +12,11 @@ interface ProgramView {
   id: string;
   title: string;
   description: string;
-  targetBudget: number;
-  currentBudget: number;
+  budget: number;
+  spent: number;
   status: string;
-  startDate: string;
-  endDate: string;
+  startsAt: string;
+  endsAt: string;
 }
 
 const programs = useResource(() => api.get<ProgramView[]>('/programs'));
@@ -47,7 +47,7 @@ const programs = useResource(() => api.get<ProgramView[]>('/programs'));
           <span class="program-icon"><HardHat :size="22" /></span>
           <div>
             <h2>{{ item.title }}</h2>
-            <p><Calendar :size="13" /> {{ formatDate(item.startDate) }} — {{ formatDate(item.endDate) }}</p>
+            <p><Calendar :size="13" /> {{ formatDate(item.startsAt) }} — {{ formatDate(item.endsAt) }}</p>
           </div>
           <StatusBadge :status="item.status === 'PUBLISHED' ? 'IN_PROGRESS' : item.status" />
         </div>
@@ -56,11 +56,11 @@ const programs = useResource(() => api.get<ProgramView[]>('/programs'));
 
         <div class="budget-tracker">
           <div class="budget-info">
-            <span>Terkumpul: <strong>{{ formatRupiah(item.currentBudget ?? 0) }}</strong></span>
-            <span>Target: <strong>{{ formatRupiah(item.targetBudget ?? 0) }}</strong></span>
+            <span>Terkumpul: <strong>{{ formatRupiah(item.spent ?? 0) }}</strong></span>
+            <span>Target: <strong>{{ formatRupiah(item.budget ?? 0) }}</strong></span>
           </div>
           <div class="progress-bar">
-            <i :style="{ width: `${item.targetBudget ? Math.min(100, ((item.currentBudget / item.targetBudget) * 100)) : 100}%` }" />
+            <i :style="{ width: `${item.budget ? Math.min(100, ((item.spent / item.budget) * 100)) : 0}%` }" />
           </div>
         </div>
 
@@ -73,7 +73,7 @@ const programs = useResource(() => api.get<ProgramView[]>('/programs'));
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.2rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 46rem; margin: 0; color: var(--ink-650); }
 .program-grid { display: grid; gap: 1rem; }

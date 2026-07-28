@@ -6,7 +6,7 @@ import {
 import { computed, type Component } from 'vue';
 import { RouterLink } from 'vue-router';
 
-interface NavigationItem { to: string; label: string; icon: Component; permission?: string }
+interface NavigationItem { to: string; label: string; icon: Component; permission?: string; newTab?: boolean }
 interface NavigationGroup { title: string; items: NavigationItem[] }
 
 const props = withDefaults(
@@ -44,7 +44,7 @@ const residentGroups: NavigationGroup[] = [
   {
     title: 'Layanan & Pemantauan',
     items: [
-      { to: '/fasilitas/cctv', label: 'CCTV Lingkungan (Live)', icon: Video },
+      { to: '/fasilitas/cctv', label: 'CCTV Lingkungan (Live)', icon: Video, newTab: true },
       { to: '/app/surat', label: 'Surat Pengantar', icon: FileSignature },
       { to: '/app/fasilitas', label: 'Fasilitas & Peminjaman', icon: Home },
       { to: '/app/layanan', label: 'Layanan & UMKM', icon: Store },
@@ -58,7 +58,7 @@ const adminGroups: NavigationGroup[] = [
     title: 'Ikhtisar & Warga',
     items: [
       { to: '/admin', label: 'Ringkasan Dashboard', icon: Gauge },
-      { to: '/admin/warga', label: 'Kelola Warga', icon: Users, permission: 'resident.read' },
+      { to: '/admin/warga', label: 'Kelola warga', icon: Users, permission: 'resident.read' },
       { to: '/admin/organisasi', label: 'Struktur Pengurus', icon: Users, permission: 'organization.update' },
       { to: '/admin/pengumuman', label: 'Publikasi & Info', icon: Megaphone, permission: 'announcement.create' },
     ],
@@ -106,6 +106,8 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
             v-for="item in group.items.filter(allowed)"
             :key="item.to"
             :to="item.to"
+            :target="item.newTab ? '_blank' : undefined"
+            :rel="item.newTab ? 'noopener noreferrer' : undefined"
             :title="collapsed ? item.label : undefined"
           >
             <component :is="item.icon" :size="18" aria-hidden="true" class="nav-icon" />
@@ -124,6 +126,8 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
             v-for="item in group.items.filter(allowed)"
             :key="item.to"
             :to="item.to"
+            :target="item.newTab ? '_blank' : undefined"
+            :rel="item.newTab ? 'noopener noreferrer' : undefined"
             :title="collapsed ? item.label : undefined"
           >
             <component :is="item.icon" :size="18" aria-hidden="true" class="nav-icon" />

@@ -30,7 +30,7 @@ async function submit(): Promise<void> {
 }
 
 function fillDemo(kind: 'resident' | 'admin'): void {
-  form.email = kind === 'admin' ? 'admin@demo.local' : 'warga@demo.local';
+  form.email = kind === 'admin' ? 'admin@demo.wargahub.id' : 'warga@demo.wargahub.id';
   form.password = 'WargaHub123!';
 }
 </script>
@@ -51,7 +51,7 @@ function fillDemo(kind: 'resident' | 'admin'): void {
       <div class="login-box">
         <span class="eyebrow">Portal warga & pengurus</span>
         <h1 id="login-heading">Selamat datang kembali</h1>
-        <p class="muted">Masuk dengan akun yang sudah diverifikasi oleh pengurus lingkungan.</p>
+        <p class="muted">Masuk dengan akun terverifikasi pengurus lingkungan.</p>
         <div v-if="invitationAccepted" class="notice" role="status">Akun berhasil diaktifkan. Silakan masuk dengan kata sandi baru Anda.</div>
         <div v-if="passwordReset" class="notice" role="status">Kata sandi berhasil diperbarui. Semua sesi lama telah diakhiri.</div>
         <div v-if="error" class="notice notice-error" role="alert">{{ error }}</div>
@@ -69,38 +69,38 @@ function fillDemo(kind: 'resident' | 'admin'): void {
 </template>
 
 <style scoped>
-.login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(22rem, .88fr) minmax(30rem, 1.12fr); background: var(--paper); }
-.login-story { position: relative; display: flex; min-height: 100vh; flex-direction: column; justify-content: space-between; overflow: hidden; padding: clamp(1.5rem, 4vw, 3.5rem); background: radial-gradient(circle at 80% 10%, rgb(226 164 58 / .28), transparent 17rem), var(--ink-950); color: white; }
-.login-story::after { position: absolute; right: -9rem; bottom: -10rem; width: 30rem; height: 30rem; border: 1px solid rgb(255 255 255 / .12); border-radius: 45% 55% 60% 40%; content: ''; transform: rotate(23deg); }
+.login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.45fr) minmax(28rem, .85fr); background: #ffffff; }
+.login-story { position: relative; display: flex; min-height: 100vh; flex-direction: column; justify-content: space-between; overflow: hidden; padding: clamp(1.5rem, 4vw, 3.5rem); background: linear-gradient(150deg, var(--ink-950) 0%, var(--teal-800) 100%); color: white; }
+.login-story::after { position: absolute; right: -11rem; bottom: -13rem; width: 29rem; height: 29rem; border: 1px solid rgb(255 255 255 / .1); border-radius: 50%; content: ''; }
 .back-link { position: relative; z-index: 1; display: inline-flex; width: fit-content; min-height: 2.75rem; align-items: center; gap: .4rem; color: rgb(255 255 255 / .78); font-size: .85rem; font-weight: 700; text-decoration: none; }
-.story-content { position: relative; z-index: 1; max-width: 33rem; }
-.story-quote { margin: 3rem 0; font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1.2; }
-.privacy-point { display: flex; gap: .75rem; padding: 1rem; border: 1px solid rgb(255 255 255 / .12); border-radius: var(--radius-md); background: rgb(255 255 255 / .06); }
+.story-content { position: relative; z-index: 1; max-width: 28rem; }
+.story-quote { max-width: 25rem; margin: 2.5rem 0; font-family: var(--font-display); font-size: clamp(1.55rem, 2.2vw, 2.2rem); line-height: 1.16; letter-spacing: -.01em; }
+.privacy-point { display: flex; gap: .7rem; max-width: 28rem; padding: .8rem .9rem; border: 1px solid rgb(255 255 255 / .14); border-radius: var(--radius-md); background: rgb(255 255 255 / .07); }
 .privacy-point > svg { flex: none; color: var(--amber-500); }
 .privacy-point span { display: grid; }
 .privacy-point small { margin-top: .2rem; color: rgb(255 255 255 / .65); }
 .story-foot { position: relative; z-index: 1; color: rgb(255 255 255 / .5); font-size: .78rem; }
-.login-panel { display: grid; min-height: 100vh; place-items: center; padding: 2rem; }
-.login-box { width: min(100%, 28rem); }
-.login-box h1 { margin-bottom: .7rem; font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.2rem); }
-.login-box > .muted { margin-bottom: 1.6rem; }
+.login-panel { display: grid; min-height: 100vh; place-items: center; padding: clamp(1.5rem, 5vw, 4rem); border-left: 1px solid var(--line); }
+.login-box { width: min(100%, 26rem); }
+.login-box h1 { margin-bottom: .55rem; font-family: var(--font-display); font-size: clamp(1.9rem, 3.5vw, 2.5rem); letter-spacing: -.01em; }
+.login-box > .muted { max-width: 24rem; margin-bottom: 1.25rem; }
 .login-box .notice { margin-bottom: 1rem; }
 .password-field { display: flex; align-items: center; gap: .5rem; padding-left: .75rem; border: 1px solid var(--line-strong); border-radius: .72rem; color: var(--ink-500); }
 .password-field:focus-within { border-color: var(--teal-600); box-shadow: 0 0 0 3px var(--teal-100); }
 .password-field input { min-width: 0; border: 0; box-shadow: none !important; outline: 0; }
 .password-field button { display: grid; width: 2.75rem; height: 2.75rem; flex: none; place-items: center; border: 0; background: transparent; color: var(--ink-650); cursor: pointer; }
-.login-options { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+.login-options { display: flex; justify-content: space-between; gap: 1rem; font-size: .8rem; }
 .login-options label { display: flex; align-items: center; gap: .35rem; }
 .login-options input { width: 1rem; height: 1rem; }
 .login-submit { width: 100%; }
 .button-spinner { width: 1rem; height: 1rem; border: 2px solid rgb(255 255 255 / .4); border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(1turn); } }
-.demo-access { display: grid; gap: .55rem; margin-top: 1.5rem; padding: .9rem; border: 1px dashed var(--line-strong); border-radius: var(--radius-md); background: var(--cream-50); }
+.demo-access { display: grid; gap: .55rem; margin-top: 1.3rem; padding: .85rem; border: 1px dashed var(--line-strong); border-radius: var(--radius-md); background: #fbfcfb; }
 .demo-access > span { color: var(--ink-800); font-size: .78rem; font-weight: 800; }
 .demo-access > div { display: flex; flex-wrap: wrap; gap: .5rem; }
 .demo-access button { min-height: 2.5rem; padding: .45rem .65rem; border: 1px solid var(--line); border-radius: .6rem; background: white; color: var(--teal-700); font-size: .76rem; font-weight: 750; cursor: pointer; }
 .demo-access small, .login-help { color: var(--ink-650); font-size: .73rem; }
 .login-help { margin: 1.3rem 0 0; text-align: center; }
-@media (max-width: 850px) { .login-page { grid-template-columns: 1fr; } .login-story { min-height: auto; padding-bottom: 2rem; } .story-content { margin-top: 4rem; } .story-quote { margin-block: 2rem; } .login-panel { min-height: auto; padding-block: 3rem; } }
+@media (max-width: 850px) { .login-page { grid-template-columns: 1fr; } .login-story { min-height: auto; padding-bottom: 1.5rem; } .story-content { margin-top: 2rem; } .story-quote { max-width: 22rem; margin-block: 1.4rem; font-size: 1.45rem; } .privacy-point, .story-foot { display: none; } .login-panel { min-height: auto; padding-block: 2.5rem; border-left: 0; } }
 @media (max-width: 480px) { .login-panel { padding-inline: 1rem; } .login-options { align-items: flex-start; flex-direction: column; } }
 </style>

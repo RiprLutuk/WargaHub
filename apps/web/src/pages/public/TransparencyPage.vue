@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDownRight, ArrowUpRight, Landmark, ShieldCheck } from 'lucide-vue-next';
+import { ArrowDownRight, ArrowUpRight, CalendarDays, Landmark, ShieldCheck } from 'lucide-vue-next';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -11,6 +11,9 @@ function periodLabel(period: string): string {
   const [year, month] = period.split('-').map(Number);
   if (!year || !month) return period;
   return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));
+}
+function dateLabel(date: string): string {
+  return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(date));
 }
 </script>
 
@@ -58,12 +61,33 @@ function periodLabel(period: string): string {
         </div>
         <p v-else class="muted">Belum ada transaksi terpublikasi untuk ditampilkan.</p>
       </section>
+
+      <section class="report-detail" aria-labelledby="detail-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="detail-heading">Rincian arus kas</h2>
+            <p class="muted">Sumber pemasukan dan tujuan pengeluaran yang sudah disahkan.</p>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div v-for="kind in ['INCOME', 'EXPENSE']" :key="kind" class="card detail-card" :class="kind === 'INCOME' ? 'income-card' : 'expense-card'">
+            <h3><ArrowUpRight v-if="kind === 'INCOME'" :size="18" /><ArrowDownRight v-else :size="18" />{{ kind === 'INCOME' ? 'Pemasukan dari' : 'Pengeluaran untuk' }}</h3>
+            <div v-if="report.data.value.entries.filter((entry) => entry.kind === kind).length" class="entry-list">
+              <div v-for="(entry, index) in report.data.value.entries.filter((item) => item.kind === kind)" :key="`${entry.occurredAt}-${entry.category}-${index}`" class="entry-row">
+                <div><strong>{{ entry.category }}</strong><small><CalendarDays :size="13" />{{ dateLabel(entry.occurredAt) }}</small></div>
+                <strong>{{ formatRupiah(entry.amount) }}</strong>
+              </div>
+            </div>
+            <p v-else class="muted">Belum ada rincian terpublikasi.</p>
+          </div>
+        </div>
+      </section>
     </template>
   </div>
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); display: grid; gap: 2rem; }
+.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); display: grid; gap: 1.25rem; }
 .page-heading { margin-bottom: 1rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
 .page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
@@ -89,6 +113,20 @@ function periodLabel(period: string): string {
 .bar i { display: block; height: 100%; border-radius: inherit; background: var(--teal-600); }
 .income-text { color: var(--success-700); }
 .expense-text { color: var(--coral-700); }
+.report-detail { display: grid; gap: 1rem; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.detail-card { padding: 1.5rem; border-radius: var(--radius-lg); }
+.detail-card h3 { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: 1.05rem; }
+.income-card h3 { color: var(--success-700); }
+.expense-card h3 { color: var(--coral-700); }
+.entry-list { display: grid; gap: .2rem; margin-top: 1rem; }
+.entry-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .8rem 0; border-top: 1px solid var(--line); }
+.entry-row > div { display: grid; gap: .25rem; }
+.entry-row small { display: inline-flex; align-items: center; gap: .3rem; color: var(--ink-650); font-size: .78rem; }
+.entry-row > strong { white-space: nowrap; font-size: .9rem; }
+.income-card .entry-row > strong { color: var(--success-700); }
+.expense-card .entry-row > strong { color: var(--coral-700); }
 @media (max-width: 850px) { .finance-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .report-meta { align-items: flex-start; flex-direction: column; } .finance-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .report-meta { align-items: flex-start; flex-direction: column; } .finance-grid { grid-template-columns: 1fr; } .detail-card, .monthly-card { padding: 1.1rem; } .entry-row { align-items: flex-start; } }
 </style>

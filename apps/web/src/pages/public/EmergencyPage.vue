@@ -58,11 +58,11 @@ const contacts = computed(() => {
 
 <style scoped>
 .emergency-page { min-height: 75vh; background: linear-gradient(180deg, #fff4f0, var(--cream-50)); }
-.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); display: grid; gap: 1.8rem; }
+.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); display: grid; gap: 1.25rem; }
 .page-heading { margin-bottom: .5rem; }
 .emergency-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .8rem; color: var(--coral-700); font-size: .8rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
-.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
+.page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }
+.page-heading p { max-width: 52rem; margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
 .contact-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
 .emergency-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.2rem; padding: 1.6rem 1.8rem; border: 1px solid var(--coral-100); border-radius: var(--radius-lg); background: var(--paper); box-shadow: var(--shadow-sm); }
 .emergency-card > svg { color: var(--coral-700); }

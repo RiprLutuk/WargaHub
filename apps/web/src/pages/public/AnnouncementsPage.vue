@@ -3,6 +3,7 @@ import { Search } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
+import SmartSelect from '../../components/SmartSelect.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
 import type { Announcement } from '../../lib/demo';
@@ -12,6 +13,7 @@ const search = ref('');
 const category = ref('SEMUA');
 const announcements = useResource(() => api.get<Announcement[]>('/public/announcements'));
 const categories = computed(() => ['SEMUA', ...new Set(announcements.data.value?.map((item) => item.category) ?? [])]);
+const categoryOptions = computed(() => categories.value.map((item) => ({ value: item, label: item === 'SEMUA' ? 'Semua kategori' : item })));
 const filtered = computed(() => (announcements.data.value ?? []).filter((item) => {
   const matchesCategory = category.value === 'SEMUA' || item.category === category.value;
   const term = search.value.trim().toLocaleLowerCase('id-ID');
@@ -29,7 +31,7 @@ const filtered = computed(() => (announcements.data.value ?? []).filter((item) =
 
     <div class="filter-bar" role="search">
       <label class="search-box"><Search :size="18" aria-hidden="true" /><span class="sr-only">Cari pengumuman</span><input v-model="search" type="search" placeholder="Cari judul atau isi pengumuman" /></label>
-      <label class="field"><span class="sr-only">Filter kategori</span><select v-model="category"><option v-for="item in categories" :key="item" :value="item">{{ item === 'SEMUA' ? 'Semua kategori' : item }}</option></select></label>
+      <label class="field"><span class="sr-only">Filter kategori</span><SmartSelect v-model="category" :options="categoryOptions" search-placeholder="Cari kategori…" /></label>
     </div>
 
     <StatePanel v-if="announcements.loading.value" state="loading" />

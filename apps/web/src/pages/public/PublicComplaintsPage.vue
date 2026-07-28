@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   Wrench,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
@@ -32,11 +33,24 @@ interface PublicComplaint {
   updatedAt: string;
 }
 
-const search = ref('');
-const selectedCategory = ref('SEMUA');
+const route = useRoute();
+const router = useRouter();
+const search = ref(String(route.query.cari ?? ''));
+const selectedCategory = ref(String(route.query.kategori ?? 'SEMUA'));
 const complaints = useResource(() => api.get<PublicComplaint[]>('/public/complaints'));
 
 const categories = computed(() => ['SEMUA', ...new Set(complaints.data.value?.map((c) => c.category) ?? [])]);
+
+watch([search, selectedCategory], ([nextSearch, nextCategory]) => {
+  router.replace({ query: { ...route.query, cari: nextSearch.trim() || undefined, kategori: nextCategory !== 'SEMUA' ? nextCategory : undefined } });
+});
+
+watch(() => route.query, (query) => {
+  const nextSearch = String(query.cari ?? '');
+  const nextCategory = String(query.kategori ?? 'SEMUA');
+  if (search.value !== nextSearch) search.value = nextSearch;
+  if (selectedCategory.value !== nextCategory) selectedCategory.value = nextCategory;
+}, { deep: true });
 
 const filteredComplaints = computed(() => {
   const list = complaints.data.value ?? [];
@@ -146,45 +160,44 @@ function getCategoryIcon(category: string) {
 </template>
 
 <style scoped>
-.public-page-shell {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
-}
+.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
-  margin-bottom: 2.5rem;
-  max-width: 48rem;
+  margin-bottom: 1.25rem;
+  max-width: 56rem;
 }
 
 .header-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  background: var(--teal-50);
-  border: 1px solid var(--teal-200);
-  color: var(--teal-800);
+  padding: 0;
+  color: var(--teal-700);
   font-size: 0.78rem;
   font-weight: 800;
   margin-bottom: 0.9rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
+.header-badge::before { width: 1.6rem; height: 2px; margin-right: .1rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.header-badge .badge-icon { display: none; }
 
 .badge-icon {
   color: var(--teal-600);
 }
 
 .page-header h1 {
-  font-size: clamp(2.1rem, 4.2vw, 3rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 850;
   line-height: 1.15;
   color: var(--ink-950);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.02em;
 }
 
 .header-desc {
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--ink-650);
   margin: 0;
 }
@@ -386,12 +399,81 @@ function getCategoryIcon(category: string) {
 }
 
 @media (max-width: 640px) {
+  .public-page-shell {
+    padding: 2.25rem 1rem 4rem;
+  }
+  .page-header {
+    margin-bottom: 1.25rem;
+  }
+  .page-header h1 {
+    font-size: 2rem;
+    line-height: 1.18;
+  }
+  .header-desc {
+    font-size: .95rem;
+    line-height: 1.5;
+  }
+  .controls-bar {
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .search-input-box {
+    width: 100%;
+    max-width: none;
+    min-height: 3rem;
+  }
+  .category-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -.25rem;
+    padding: .15rem .25rem .35rem;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .category-pills::-webkit-scrollbar { display: none; }
+  .pill-btn {
+    flex: 0 0 auto;
+    min-height: 2.55rem;
+    padding-inline: .85rem;
+    scroll-snap-align: start;
+  }
   .clean-card {
     grid-template-columns: auto 1fr;
+    gap: .75rem;
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+  .card-content-col {
+    grid-column: 1 / -1;
+    min-width: 0;
+    gap: .3rem;
   }
   .card-status-col {
-    grid-column: 1 / -1;
-    justify-self: flex-start;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    padding-top: 0;
+  }
+  .icon-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+  }
+  .card-top-meta {
+    gap: .35rem;
+    font-size: .72rem;
+  }
+  .card-title {
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+  .card-desc {
+    font-size: .86rem;
+    line-height: 1.5;
+  }
+  .card-bottom-meta {
+    gap: .65rem;
+    font-size: .75rem;
   }
 }
 </style>

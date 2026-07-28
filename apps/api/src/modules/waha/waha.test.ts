@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildApp } from '../../app.js';
+import { loadConfig } from '../../config.js';
 import { formatWahaChatId, WahaService } from '../../services/waha.js';
 
 describe('WAHA WhatsApp API Integration', () => {
@@ -63,7 +64,10 @@ describe('WAHA WhatsApp API Integration', () => {
   });
 
   it('handles WAHA webhook inbound events gracefully', async () => {
-    const app = await buildApp({ logger: false });
+    const app = await buildApp({
+      logger: false,
+      config: loadConfig({ ...process.env, NODE_ENV: 'test', PGLITE_DATA_DIR: 'memory://' }),
+    });
 
     const response = await app.inject({
       method: 'POST',

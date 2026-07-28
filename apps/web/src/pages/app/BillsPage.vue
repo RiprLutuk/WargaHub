@@ -3,6 +3,7 @@ import { CheckCircle2, Clock3, FileUp, Info, ReceiptText, ShieldCheck, X } from 
 import { computed, reactive, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
+import SmartSelect from '../../components/SmartSelect.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
@@ -16,11 +17,11 @@ const confirming = ref(false);
 const submitting = ref(false);
 const success = ref('');
 const form = reactive({ amount: 0, method: 'BANK_TRANSFER', note: '', file: null as File | null });
-const outstanding = computed(() => (bills.data.value ?? []).filter((bill) => ['OPEN', 'PARTIALLY_PAID'].includes(bill.status)).reduce((sum, bill) => sum + bill.amount, 0));
+const outstanding = computed(() => (bills.data.value ?? []).filter((bill) => ['OPEN', 'PARTIALLY_PAID'].includes(bill.status)).reduce((sum, bill) => sum + Math.max(0, bill.amount - bill.amountPaid), 0));
 
 function openPayment(bill: BillView) {
   selected.value = bill;
-  form.amount = bill.amount;
+  form.amount = Math.max(1, bill.amount - bill.amountPaid);
   form.method = 'BANK_TRANSFER';
   form.note = '';
   form.file = null;
@@ -96,13 +97,14 @@ async function submitPayment() {
           </div>
           <p>{{ bill.period }} · Jatuh tempo {{ formatDate(bill.dueAt) }}</p>
           <small>{{ bill.description }}</small>
+          <small v-if="bill.amountPaid > 0" class="paid-progress">Sudah dibayar {{ formatRupiah(bill.amountPaid) }} · Sisa {{ formatRupiah(Math.max(0, bill.amount - bill.amountPaid)) }}</small>
         </div>
         <strong>{{ formatRupiah(bill.amount) }}</strong>
 
-        <button v-if="bill.status === 'OPEN'" class="button button-sm" type="button" @click="openPayment(bill)">Kirim bukti</button>
+        <button v-if="['OPEN', 'PARTIALLY_PAID'].includes(bill.status)" class="button button-sm" type="button" @click="openPayment(bill)">{{ bill.amountPaid > 0 ? 'Bayar sisa' : 'Kirim bukti' }}</button>
         <span v-else-if="bill.status === 'PENDING_VERIFICATION'" class="pending-note"><Clock3 :size="16" /> Menunggu pemeriksaan</span>
         <span v-else-if="bill.status === 'PAID'" class="paid-note"><CheckCircle2 :size="16" /> Tercatat lunas</span>
-        <button v-else class="button button-sm button-secondary" type="button" @click="openPayment(bill)">Bayar sisa</button>
+        <span v-else class="muted small">Tagihan tidak menerima pembayaran baru</span>
       </article>
     </div>
 
@@ -122,10 +124,7 @@ async function submitPayment() {
             <div class="field"><label for="payment-amount">Nominal pembayaran</label><input id="payment-amount" v-model.number="form.amount" type="number" min="1" required /></div>
             <div class="field">
               <label for="payment-method">Metode pembayaran</label>
-              <select id="payment-method" v-model="form.method">
-                <option value="BANK_TRANSFER">Transfer bank</option>
-                <option value="CASH">Tunai melalui pengurus</option>
-              </select>
+              <SmartSelect id="payment-method" v-model="form.method" :options="[{ value: 'BANK_TRANSFER', label: 'Transfer bank' }, { value: 'CASH', label: 'Tunai melalui pengurus' }]" :searchable="false" />
             </div>
           </div>
           <div v-if="form.method === 'BANK_TRANSFER'" class="field">
@@ -160,7 +159,7 @@ async function submitPayment() {
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.2rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .portal-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 43rem; margin: 0; color: var(--ink-650); }
@@ -175,6 +174,7 @@ async function submitPayment() {
 .bill-copy p, .bill-copy small { margin: 0; color: var(--ink-650); }
 .bill-copy p { font-size: .83rem; }
 .bill-copy small { font-size: .74rem; }
+.bill-copy .paid-progress { color: var(--success-700); font-weight: 600; }
 .paid-note { display: inline-flex; align-items: center; gap: .3rem; color: var(--success-700); font-size: .78rem; font-weight: 750; }
 .pending-note { display: inline-flex; align-items: center; gap: .3rem; color: var(--amber-700); font-size: .78rem; font-weight: 750; }
 .payment-panel { position: fixed; z-index: 50; top: 0; right: 0; width: min(100%, 36rem); height: 100vh; padding: clamp(1rem, 3vw, 2rem); overflow-y: auto; border-left: 1px solid var(--line); background: var(--paper); box-shadow: var(--shadow-lg); }

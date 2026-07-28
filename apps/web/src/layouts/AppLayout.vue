@@ -62,10 +62,6 @@ async function logout() {
     <div class="portal-main">
       <header class="portal-topbar">
         <div class="topbar-left">
-          <button type="button" class="topbar-toggle-btn" :title="isSidebarCollapsed ? 'Buka Sidebar' : 'Sembunyikan Sidebar'" @click="toggleSidebar">
-            <PanelLeftOpen v-if="isSidebarCollapsed" :size="18" />
-            <PanelLeftClose v-else :size="18" />
-          </button>
           <div>
             <span>Halo, {{ firstName }}</span>
             <small>Semoga harimu berjalan ringan.</small>
@@ -135,5 +131,17 @@ async function logout() {
 .profile-popover a:hover, .profile-popover button:hover { background: var(--cream-100); color: var(--teal-800); }
 .mobile-nav { display: none; }
 #portal-content { padding: clamp(1rem, 2.5vw, 2rem); }
-@media (max-width: 900px) { .portal-shell { grid-template-columns: 1fr; } .portal-sidebar { display: none; } .mobile-nav { display: block; position: fixed; bottom: 0; left: 0; right: 0; background: var(--paper); border-top: 1px solid var(--line); z-index: 40; padding: 0.5rem; } }
+@media (max-width: 900px) {
+  .portal-shell { grid-template-columns: 1fr; }
+  .portal-sidebar { display: none; }
+  .mobile-nav { display: block; position: fixed; bottom: 0; left: 0; right: 0; background: var(--paper); border-top: 1px solid var(--line); z-index: 40; padding: 0.45rem 0.35rem; overflow-x: auto; }
+  .mobile-nav :deep(.app-sidebar) { display: block; min-width: max-content; }
+  .mobile-nav :deep(.nav-tree) { display: flex; flex-direction: row; gap: 0.2rem; }
+  .mobile-nav :deep(.nav-section) { display: contents; }
+  .mobile-nav :deep(.section-title), .mobile-nav :deep(.nav-label) { display: none; }
+  .mobile-nav :deep(.section-items) { display: contents; }
+  .mobile-nav :deep(a) { min-height: 3.1rem; flex-direction: column; gap: 0.15rem; padding: 0.35rem 0.65rem; border-radius: 0.65rem; font-size: 0.66rem; white-space: nowrap; }
+  .mobile-nav :deep(.nav-icon) { width: 1.1rem; height: 1.1rem; }
+  #portal-content { padding-bottom: 5.8rem; }
+}
 </style>

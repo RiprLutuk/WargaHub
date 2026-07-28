@@ -432,7 +432,7 @@ function onGenerated() {
 </template>
 
 <style scoped>
-.admin-page { display: grid; max-width: 88rem; gap: 1.2rem; margin-inline: auto; }
+.admin-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .admin-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .heading-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: nowrap; flex: none; }
 .heading-actions .button, .heading-actions .sla-chip { white-space: nowrap !important; word-break: keep-all !important; flex: none; }

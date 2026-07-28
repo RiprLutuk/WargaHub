@@ -4,6 +4,30 @@ Semua perubahan penting WargaHub dicatat di file ini. Format mengikuti
 [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan versi release
 mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [0.6.0] - 2026-07-28
+
+### Added
+- Modal reusable untuk form warga (pengaduan, surat, layanan, kegiatan, ronda, dan peminjaman fasilitas).
+- `SmartSelect` reusable dengan pencarian untuk pilihan surat, jadwal, pembayaran, kategori, dan formulir terkait.
+- Soft delete pengaduan dengan alur edit dan konfirmasi penghapusan yang aman.
+- Rincian arus kas publik untuk menampilkan sumber pemasukan dan tujuan pengeluaran yang sudah disanitasi.
+- Data target jadwal ronda warga lain untuk membantu pertukaran jadwal.
+
+### Changed
+- Refaktor portal publik dan portal warga agar lebih bersih, responsif, dan konsisten dengan baseline layout UMKM.
+- Header, spacing, strip kategori, kartu, tombol WhatsApp, serta carousel mobile dirapikan di halaman UMKM, program, fasilitas, laporan, struktur, agenda, dokumen, kontak, dan darurat.
+- Hero homepage dibuat lebih ringkas dan sejajar dengan halaman publik lainnya.
+- Tab publik dan portal warga disinkronkan dengan URL agar tetap aktif saat reload dan mudah dibagikan.
+- Form kontribusi menyembunyikan tombol setelah berhasil disimpan dan menampilkan status kontribusi.
+- CCTV dari portal warga dibuka ke halaman publik di tab baru.
+- Dropdown formulir tidak lagi memakai select native dan notifikasi/konfirmasi native diganti modal yang konsisten.
+
+### Fixed
+- Proyeksi data publik yang sebelumnya gagal dimuat atau menampilkan state kosong yang tidak informatif.
+- Filter laporan publik agar hanya menampilkan laporan publik yang belum diarsipkan.
+- Status program kini mengikuti status backend, termasuk warna progress yang membedakan pekerjaan selesai dan masih berjalan.
+- Penempatan header dan jarak antar section pada halaman publik yang sebelumnya terlalu turun atau tidak seragam.
+
 ## [0.5.0] - 2026-07-28
 
 ### Added

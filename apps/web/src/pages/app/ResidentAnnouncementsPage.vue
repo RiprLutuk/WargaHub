@@ -110,7 +110,7 @@ function closeDetail() {
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.2rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 44rem; margin: 0; color: var(--ink-650); }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }

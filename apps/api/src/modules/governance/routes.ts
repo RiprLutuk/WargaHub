@@ -141,8 +141,8 @@ export async function governanceRoutes(app: FastifyInstance): Promise<void> {
       if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
       const isManager = request.auth.permissions.includes('letter.manage');
       const query = isManager
-        ? `SELECT id, applicant_id, letter_type, purpose, status, letter_number, created_at FROM letter_requests WHERE organization_id = $1 ORDER BY created_at DESC`
-        : `SELECT id, applicant_id, letter_type, purpose, status, letter_number, created_at FROM letter_requests WHERE organization_id = $1 AND applicant_id = $2 ORDER BY created_at DESC`;
+        ? `SELECT id, applicant_id, letter_type, purpose, status, letter_number, verification_token, issued_at, created_at FROM letter_requests WHERE organization_id = $1 ORDER BY created_at DESC`
+        : `SELECT id, applicant_id, letter_type, purpose, status, letter_number, verification_token, issued_at, created_at FROM letter_requests WHERE organization_id = $1 AND applicant_id = $2 ORDER BY created_at DESC`;
       const params = isManager ? [request.auth.organizationId] : [request.auth.organizationId, request.auth.id];
 
       const res = await app.database.query<{
@@ -152,6 +152,8 @@ export async function governanceRoutes(app: FastifyInstance): Promise<void> {
         purpose: string;
         status: string;
         letter_number: string | null;
+        verification_token: string;
+        issued_at: string | null;
         created_at: string;
       }>(query, params);
 
@@ -162,6 +164,8 @@ export async function governanceRoutes(app: FastifyInstance): Promise<void> {
         purpose: row.purpose,
         status: row.status,
         letterNumber: row.letter_number,
+        verificationToken: row.status === 'ISSUED' ? row.verification_token : null,
+        issuedAt: row.issued_at,
         createdAt: row.created_at,
       })));
     },

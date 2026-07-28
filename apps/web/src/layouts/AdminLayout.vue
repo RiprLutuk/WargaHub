@@ -56,10 +56,6 @@ async function logout() { await session.logout(); await router.push('/login'); }
     <div class="admin-main">
       <header class="admin-topbar">
         <div class="topbar-left">
-          <button type="button" class="topbar-toggle-btn" :title="isSidebarCollapsed ? 'Buka Sidebar' : 'Sembunyikan Sidebar'" @click="toggleSidebar">
-            <PanelLeftOpen v-if="isSidebarCollapsed" :size="18" />
-            <PanelLeftClose v-else :size="18" />
-          </button>
           <div>
             <strong>CMS Pengurus</strong>
             <span>Kelola layanan tanpa membuka privasi warga.</span>

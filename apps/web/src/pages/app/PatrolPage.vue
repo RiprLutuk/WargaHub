@@ -4,12 +4,14 @@ import { computed, reactive, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
+import SmartSelect from '../../components/SmartSelect.vue';
 import { useResource } from '../../composables/useResource';
 import { api, ApiClientError } from '../../lib/api';
 import { formatDateTime } from '../../lib/format';
 import { adaptPatrolAssignments, type PatrolAssignmentView } from '../../lib/view-models';
 
 const patrols = useResource(async () => adaptPatrolAssignments(await api.get<unknown>('/patrol-assignments')));
+const availableTargets = useResource(async () => api.get<Array<{ id: string; startsAt: string; endsAt: string; area: string; status: string }>>('/patrol-assignments/available-targets'));
 const selected = ref<PatrolAssignmentView | null>(null);
 const sent = ref(false);
 const sentMsg = ref('');
@@ -23,8 +25,9 @@ const form = reactive({
 });
 
 const otherPatrols = computed(() => {
-  return (patrols.data.value ?? []).filter((item) => item.id !== selected.value?.id);
+  return availableTargets.data.value ?? [];
 });
+const targetOptions = computed(() => otherPatrols.value.map((item) => ({ value: item.id, label: `${formatDateTime(item.startsAt)} · ${item.area}` })));
 
 function openSwap(item: PatrolAssignmentView) {
   selected.value = item;
@@ -114,7 +117,8 @@ async function submitPatrolRequest() {
       </div>
     </section>
 
-    <section v-if="selected" class="card swap-panel" aria-labelledby="swap-heading">
+    <div v-if="selected" class="swap-modal" role="dialog" aria-modal="true" aria-labelledby="swap-heading" @click.self="selected = null">
+    <section class="card swap-panel">
       <div>
         <span class="eyebrow">{{ selected.label }} · {{ formatDateTime(selected.startsAt) }}</span>
         <h2 id="swap-heading">Ajukan perubahan jadwal</h2>
@@ -141,12 +145,7 @@ async function submitPatrolRequest() {
 
         <div v-if="form.alternative === 'SWAP'" class="field">
           <label for="target-schedule">Jadwal yang dituju</label>
-          <select id="target-schedule" v-model="form.targetAssignmentId" required>
-            <option value="" disabled>Pilih jadwal warga lain</option>
-            <option v-for="item in otherPatrols" :key="item.id" :value="item.id">
-              {{ formatDateTime(item.startsAt) }} · {{ item.area }}
-            </option>
-          </select>
+          <SmartSelect id="target-schedule" v-model="form.targetAssignmentId" :options="targetOptions" placeholder="Pilih jadwal warga lain" search-placeholder="Cari area atau jadwal…" />
         </div>
 
         <div class="field">
@@ -166,6 +165,7 @@ async function submitPatrolRequest() {
         </div>
       </form>
     </section>
+    </div>
 
     <section class="emergency-info">
       <Clock3 :size="21" />
@@ -179,7 +179,7 @@ async function submitPatrolRequest() {
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.35rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.35rem; margin-inline: auto; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem,4.5vw,3rem); }
 .portal-page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); }
 .patrol-list { display: grid; gap: .7rem; }
@@ -189,6 +189,8 @@ async function submitPatrolRequest() {
 .patrol-row h3 { margin: .1rem 0; font-size: 1rem; }
 .patrol-row p { display: flex; align-items: center; gap: .25rem; margin: 0; color: var(--ink-650); font-size: .78rem; }
 .swap-panel { display: grid; gap: 1rem; padding: 1.3rem; }
+.swap-modal { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgb(16 43 39 / .38); backdrop-filter: blur(5px); }
+.swap-modal .swap-panel { width: min(100%, 44rem); max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .swap-options { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; padding: 0; border: 0; }
 .swap-options legend { grid-column: 1/-1; margin-bottom: .3rem; font-weight: 800; }
 .swap-options label { display: flex; min-height: 3.2rem; align-items: center; gap: .5rem; padding: .7rem; border: 1px solid var(--line); border-radius: .7rem; background: white; font-size: .8rem; font-weight: 700; cursor: pointer; }

@@ -128,5 +128,20 @@ describe('Governance & Voting API', () => {
 
     expect(statusRes.statusCode).toBe(200);
     expect(statusRes.json().data.status).toBe('ISSUED');
+
+    const residentLetters = await app.inject({
+      method: 'GET',
+      url: '/api/v1/letters',
+      headers: { cookie: residentCookie },
+    });
+    expect(residentLetters.statusCode).toBe(200);
+    expect(residentLetters.json().data[0].verificationToken).toBe(letter.verificationToken);
+
+    const verified = await app.inject({
+      method: 'GET',
+      url: `/api/v1/public/letters/verify/${encodeURIComponent(letter.verificationToken)}`,
+    });
+    expect(verified.statusCode).toBe(200);
+    expect(verified.json().data).toMatchObject({ valid: true, letterNumber: '001/RT01/RW05/VII/2026' });
   });
 });

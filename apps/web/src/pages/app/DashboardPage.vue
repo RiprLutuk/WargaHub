@@ -54,7 +54,7 @@ const nextActivity = computed(() => activities.data.value?.[0]);
 </template>
 
 <style scoped>
-.dashboard-page { display: grid; gap: 2rem; max-width: 78rem; margin-inline: auto; }
+.dashboard-page { display: grid; gap: 2rem; max-width: var(--content); margin-inline: auto; }
 .portal-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
 .portal-heading h1 { margin-bottom: .55rem; font-size: clamp(2rem, 4.8vw, 3.25rem); }
 .portal-heading p { max-width: 44rem; margin-bottom: 0; color: var(--ink-650); }

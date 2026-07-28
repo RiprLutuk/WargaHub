@@ -7,6 +7,7 @@ import StatusBadge from '../../components/StatusBadge.vue';
 import { useResource } from '../../composables/useResource';
 import { api, ApiClientError } from '../../lib/api';
 import { formatDate, formatDateTime, formatRupiah } from '../../lib/format';
+import { adaptHouseholds } from '../../lib/view-models';
 
 interface Facility {
   id: string;
@@ -28,7 +29,8 @@ interface FacilityBooking {
 }
 
 const facilities = useResource(() => api.get<Facility[]>('/facilities'));
-const bookings = useResource(() => api.get<FacilityBooking[]>('/facility-bookings'));
+const bookings = useResource(() => api.get<FacilityBooking[]>('/facilities/reservations'));
+const households = useResource(async () => adaptHouseholds(await api.get<unknown>('/households')));
 const formOpen = ref(false);
 const selectedFacility = ref<Facility | null>(null);
 const busy = ref(false);
@@ -56,8 +58,14 @@ async function submitBooking() {
   errorMsg.value = '';
   successMsg.value = '';
   try {
-    await api.post('/facility-bookings', {
+    const householdId = households.data.value?.[0]?.id;
+    if (!householdId) {
+      errorMsg.value = 'Hubungkan rumah terlebih dahulu sebelum mengajukan reservasi.';
+      return;
+    }
+    await api.post('/facilities/reservations', {
       facilityId: selectedFacility.value.id,
+      householdId,
       startsAt: new Date(form.startsAt).toISOString(),
       endsAt: new Date(form.endsAt).toISOString(),
       purpose: form.purpose,
@@ -86,11 +94,12 @@ async function submitBooking() {
     <div v-if="successMsg" class="notice" role="status"><CheckCircle2 :size="19" /> {{ successMsg }}</div>
 
     <!-- Booking Form Modal -->
-    <section v-if="formOpen && selectedFacility" class="card booking-modal">
+    <div v-if="formOpen && selectedFacility" class="booking-overlay" role="dialog" aria-modal="true" aria-labelledby="booking-heading" @click.self="formOpen = false">
+    <section class="card booking-modal">
       <div class="panel-header">
         <div>
           <span class="eyebrow">Reservasi Fasilitas</span>
-          <h2>{{ selectedFacility.name }}</h2>
+          <h2 id="booking-heading">{{ selectedFacility.name }}</h2>
         </div>
         <button type="button" class="close-btn" aria-label="Tutup modal" @click="formOpen = false"><X :size="20" /></button>
       </div>
@@ -117,6 +126,7 @@ async function submitBooking() {
         </div>
       </form>
     </section>
+    </div>
 
     <!-- Available Facilities Cards -->
     <section>
@@ -128,6 +138,8 @@ async function submitBooking() {
       </div>
 
       <StatePanel v-if="facilities.loading.value" state="loading" />
+      <StatePanel v-else-if="facilities.error.value" state="error" :message="facilities.error.value" @retry="facilities.reload" />
+      <EmptyState v-else-if="!facilities.data.value?.length" title="Belum ada fasilitas aktif" message="Belum ada fasilitas yang bisa dipinjam saat ini." />
       <div v-else class="facility-grid">
         <article v-for="item in facilities.data.value" :key="item.id" class="card facility-card">
           <span class="facility-icon"><Home :size="22" /></span>
@@ -168,7 +180,7 @@ async function submitBooking() {
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.5rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.5rem; margin-inline: auto; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 46rem; margin: 0; color: var(--ink-650); }
 .facility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
@@ -179,6 +191,8 @@ async function submitBooking() {
 .facility-body p { margin: 0 0 .5rem; color: var(--ink-650); font-size: .84rem; }
 .fee-tag { font-size: .82rem; font-weight: 850; color: var(--amber-700); }
 .booking-modal { padding: 1.4rem; }
+.booking-overlay { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgb(16 43 39 / .38); backdrop-filter: blur(5px); }
+.booking-overlay .booking-modal { width: min(100%, 48rem); max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
 .close-btn { border: 0; background: transparent; font-size: 1.4rem; cursor: pointer; }
 .booking-list { display: grid; gap: .7rem; }
@@ -186,5 +200,5 @@ async function submitBooking() {
 .booking-card h3 { margin: .15rem 0; font-size: 1.05rem; }
 .booking-card p { margin: 0; color: var(--ink-650); font-size: .8rem; }
 .two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
-@media (max-width: 600px) { .two-fields { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .two-fields { grid-template-columns: 1fr; } .booking-overlay { align-items: end; padding: .5rem; } .booking-overlay .booking-modal { max-height: 94vh; border-radius: 1.1rem 1.1rem .8rem .8rem; } .booking-card { align-items: flex-start; flex-direction: column; } }
 </style>

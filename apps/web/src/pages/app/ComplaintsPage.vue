@@ -1,43 +1,86 @@
 <script setup lang="ts">
-import { CheckCircle2, EyeOff, ImagePlus, LockKeyhole, Plus, Send, X } from 'lucide-vue-next';
+import { CheckCircle2, EyeOff, ImagePlus, LockKeyhole, Pencil, Plus, Send, Trash2, X } from 'lucide-vue-next';
 import { reactive, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
+import SmartSelect from '../../components/SmartSelect.vue';
 import { useResource } from '../../composables/useResource';
 import { api } from '../../lib/api';
 import type { Complaint } from '../../lib/demo';
 import { formatDateTime } from '../../lib/format';
 
-const complaints = useResource(() => api.get<Complaint[]>('/complaints'));
-const formOpen = ref(true);
+type ComplaintRecord = Complaint & { description: string; location?: string | null; priority: string; visibility: string };
+const complaints = useResource(() => api.get<ComplaintRecord[]>('/complaints'));
+const formOpen = ref(false);
+const editingId = ref<string | null>(null);
+const deleteTarget = ref<ComplaintRecord | null>(null);
 const confirming = ref(false);
 const submitting = ref(false);
 const success = ref('');
 const form = reactive({ category: 'FASILITAS', title: '', description: '', location: '', visibility: 'PRIVATE', priority: 'NORMAL' });
+const categoryOptions = [
+  { value: 'FASILITAS', label: 'Fasilitas' }, { value: 'SAMPAH', label: 'Sampah' }, { value: 'KEAMANAN', label: 'Keamanan' },
+  { value: 'SALURAN_AIR', label: 'Saluran air' }, { value: 'KEBISINGAN', label: 'Kebisingan' }, { value: 'LAINNYA', label: 'Lainnya' },
+];
+const priorityOptions = [
+  { value: 'LOW', label: 'Rendah' }, { value: 'NORMAL', label: 'Normal' }, { value: 'HIGH', label: 'Tinggi' }, { value: 'URGENT', label: 'Mendesak' },
+];
 
 async function submitComplaint() {
   submitting.value = true;
   try {
-    const created = await api.post<Complaint>('/complaints', { ...form });
-    if (complaints.data.value) complaints.data.value = [created, ...complaints.data.value];
-    success.value = 'Pengaduan terkirim. Nomor tiket dibuat dan hanya pihak berizin yang dapat membacanya.';
+    const saved = editingId.value
+      ? await api.patch<ComplaintRecord>(`/complaints/${editingId.value}`, { ...form })
+      : await api.post<ComplaintRecord>('/complaints', { ...form });
+    if (complaints.data.value) complaints.data.value = editingId.value
+      ? complaints.data.value.map((item) => item.id === editingId.value ? saved : item)
+      : [saved, ...complaints.data.value];
+    success.value = editingId.value ? 'Pengaduan berhasil diperbarui.' : 'Pengaduan terkirim. Nomor tiket dibuat dan hanya pihak berizin yang dapat membacanya.';
     confirming.value = false;
+    formOpen.value = false;
+    editingId.value = null;
     form.title = ''; form.description = ''; form.location = '';
   } finally { submitting.value = false; }
+}
+
+function editComplaint(item: ComplaintRecord) {
+  editingId.value = item.id;
+  form.category = item.category;
+  form.title = item.title;
+  form.description = item.description;
+  form.location = item.location ?? '';
+  form.priority = item.priority;
+  form.visibility = item.visibility;
+  success.value = '';
+  formOpen.value = true;
+}
+
+async function deleteComplaint(item: ComplaintRecord) {
+  deleteTarget.value = item;
+}
+
+async function confirmDeleteComplaint() {
+  if (!deleteTarget.value) return;
+  const target = deleteTarget.value;
+  await api.delete(`/complaints/${target.id}`);
+  if (complaints.data.value) complaints.data.value = complaints.data.value.filter((entry) => entry.id !== target.id);
+  deleteTarget.value = null;
+  success.value = 'Pengaduan berhasil dihapus.';
 }
 </script>
 
 <template>
   <div class="portal-page">
-    <header class="portal-page-heading"><div><span class="eyebrow">Lapor tanpa berdebat di grup</span><h1>Pengaduan warga</h1><p>Kirim masalah secara terstruktur, pilih tingkat privasi, dan pantau setiap perubahan status.</p></div><button v-if="!formOpen" class="button" type="button" @click="formOpen = true"><Plus :size="17" /> Buat pengaduan</button></header>
+    <header class="portal-page-heading"><div><span class="eyebrow">Lapor tanpa berdebat di grup</span><h1>Pengaduan warga</h1><p>Kirim masalah secara terstruktur, pilih tingkat privasi, dan pantau setiap perubahan status.</p></div><button v-if="!formOpen" class="button" type="button" @click="editingId = null; success = ''; formOpen = true"><Plus :size="17" /> Buat pengaduan</button></header>
     <div class="privacy-note"><LockKeyhole :size="20" aria-hidden="true" /><div><strong>Privat secara default</strong><span>Identitas Anda tidak ditampilkan kepada warga lain. Pengurus yang berizin tetap dapat melihat pelapor agar laporan dapat ditindaklanjuti.</span></div></div>
+    <div v-if="success" class="notice" role="status"><CheckCircle2 :size="19" /><span>{{ success }}</span></div>
 
-    <section v-if="formOpen" class="card complaint-form" aria-labelledby="complaint-form-heading">
-      <div class="form-heading"><div><span class="eyebrow">Laporan baru</span><h2 id="complaint-form-heading">Ceritakan masalah dengan singkat</h2></div><button type="button" aria-label="Tutup formulir pengaduan" @click="formOpen = false"><X :size="19" /></button></div>
-      <div v-if="success" class="notice" role="status"><CheckCircle2 :size="19" /><span>{{ success }}</span></div>
-      <form v-else class="form-grid" @submit.prevent="confirming = true">
-        <div class="two-fields"><div class="field"><label for="complaint-category">Kategori</label><select id="complaint-category" v-model="form.category"><option value="FASILITAS">Fasilitas</option><option value="SAMPAH">Sampah</option><option value="KEAMANAN">Keamanan</option><option value="SALURAN_AIR">Saluran air</option><option value="KEBISINGAN">Kebisingan</option><option value="LAINNYA">Lainnya</option></select></div><div class="field"><label for="complaint-priority">Prioritas</label><select id="complaint-priority" v-model="form.priority"><option value="LOW">Rendah</option><option value="NORMAL">Normal</option><option value="HIGH">Tinggi</option><option value="URGENT">Mendesak</option></select></div></div>
+    <div v-if="formOpen" class="complaint-modal" role="dialog" aria-modal="true" aria-labelledby="complaint-form-heading" @click.self="formOpen = false">
+    <section class="card complaint-form">
+      <div class="form-heading"><div><span class="eyebrow">{{ editingId ? 'Perbarui laporan' : 'Laporan baru' }}</span><h2 id="complaint-form-heading">{{ editingId ? 'Edit pengaduan' : 'Ceritakan masalah dengan singkat' }}</h2></div><button type="button" aria-label="Tutup formulir pengaduan" @click="formOpen = false"><X :size="19" /></button></div>
+      <form class="form-grid" @submit.prevent="confirming = true">
+        <div class="two-fields"><div class="field"><label for="complaint-category">Kategori</label><SmartSelect id="complaint-category" v-model="form.category" :options="categoryOptions" search-placeholder="Cari kategori…" /></div><div class="field"><label for="complaint-priority">Prioritas</label><SmartSelect id="complaint-priority" v-model="form.priority" :options="priorityOptions" :searchable="false" /></div></div>
         <div class="field"><label for="complaint-title">Judul masalah</label><input id="complaint-title" v-model.trim="form.title" minlength="4" maxlength="120" placeholder="Contoh: Lampu jalan depan blok C padam" required /></div>
         <div class="field"><label for="complaint-description">Apa yang terjadi?</label><textarea id="complaint-description" v-model.trim="form.description" minlength="10" maxlength="5000" placeholder="Jelaskan kondisi dan sejak kapan terjadi…" required /><p class="field-hint">Hindari mencantumkan data pribadi orang lain jika tidak dibutuhkan.</p></div>
         <div class="field"><label for="complaint-location">Lokasi (opsional)</label><input id="complaint-location" v-model.trim="form.location" maxlength="240" placeholder="Blok, jalan, atau titik terdekat" /></div>
@@ -46,13 +89,23 @@ async function submitComplaint() {
       </form>
       <div v-if="confirming" class="confirmation-overlay" role="dialog" aria-modal="true" aria-labelledby="complaint-confirm-heading"><div><span class="eyebrow">Konfirmasi</span><h2 id="complaint-confirm-heading">Kirim laporan ini?</h2><p>Pengurus akan menerima isi laporan dan identitas akun Anda. Warga lain tidak akan melihat identitas Anda.</p><dl><div><dt>Judul</dt><dd>{{ form.title }}</dd></div><div><dt>Privasi</dt><dd>{{ form.visibility === 'PRIVATE' ? 'Privat' : 'Terlihat warga tanpa identitas' }}</dd></div></dl><div class="form-actions"><button class="button" type="button" :disabled="submitting" @click="submitComplaint">{{ submitting ? 'Mengirim…' : 'Ya, kirim laporan' }}</button><button class="button button-secondary" type="button" @click="confirming = false">Periksa lagi</button></div></div></div>
     </section>
+    </div>
 
-    <section aria-labelledby="complaint-list-heading"><div class="section-heading"><div><h2 id="complaint-list-heading">Laporan Anda</h2><p class="muted">Riwayat status disimpan agar proses mudah ditelusuri.</p></div></div><StatePanel v-if="complaints.loading.value" state="loading" /><StatePanel v-else-if="complaints.error.value" state="error" :message="complaints.error.value" @retry="complaints.reload" /><EmptyState v-else-if="!complaints.data.value?.length" title="Belum ada pengaduan" /><div v-else class="complaint-list"><article v-for="item in complaints.data.value" :key="item.id" class="card card-body"><div><span>{{ item.category }}</span><h3>{{ item.title }}</h3><small>Diperbarui {{ formatDateTime(item.updatedAt) }}</small></div><StatusBadge :status="item.status" /></article></div></section>
+    <section aria-labelledby="complaint-list-heading"><div class="section-heading"><div><h2 id="complaint-list-heading">Laporan Anda</h2><p class="muted">Riwayat status disimpan agar proses mudah ditelusuri.</p></div></div><StatePanel v-if="complaints.loading.value" state="loading" /><StatePanel v-else-if="complaints.error.value" state="error" :message="complaints.error.value" @retry="complaints.reload" /><EmptyState v-else-if="!complaints.data.value?.length" title="Belum ada pengaduan" /><div v-else class="complaint-list"><article v-for="item in complaints.data.value" :key="item.id" class="card card-body"><div><span>{{ item.category }}</span><h3>{{ item.title }}</h3><small>Diperbarui {{ formatDateTime(item.updatedAt) }}</small></div><div class="complaint-actions"><StatusBadge :status="item.status" /><template v-if="['DRAFT', 'SUBMITTED'].includes(item.status)"><button type="button" class="icon-action" title="Edit laporan" @click="editComplaint(item)"><Pencil :size="15" /></button><button type="button" class="icon-action danger" title="Hapus laporan" @click="deleteComplaint(item)"><Trash2 :size="15" /></button></template></div></article></div></section>
+
+    <div v-if="deleteTarget" class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-heading" @click.self="deleteTarget = null">
+      <div class="delete-dialog">
+        <span class="delete-icon"><Trash2 :size="20" /></span>
+        <h2 id="delete-heading">Hapus pengaduan?</h2>
+        <p>“{{ deleteTarget.title }}” akan dihapus dari daftar pengaduan Anda.</p>
+        <div class="form-actions"><button class="button button-secondary" type="button" @click="deleteTarget = null">Batal</button><button class="button button-danger" type="button" @click="confirmDeleteComplaint">Ya, hapus</button></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.35rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.35rem; margin-inline: auto; }
 .portal-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 44rem; margin: 0; color: var(--ink-650); }
@@ -60,6 +113,8 @@ async function submitComplaint() {
 .privacy-note > svg { flex: none; }
 .privacy-note div { display: grid; }
 .privacy-note span { color: var(--ink-650); font-size: .83rem; }
+.complaint-modal { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgb(16 43 39 / .38); backdrop-filter: blur(5px); }
+.complaint-modal .complaint-form { width: min(100%, 46rem); max-height: min(92vh, 52rem); overflow-y: auto; box-shadow: var(--shadow-lg); }
 .complaint-form { position: relative; padding: clamp(1rem, 3vw, 1.5rem); }
 .form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .form-heading h2 { margin: 0; }
@@ -81,8 +136,18 @@ async function submitComplaint() {
 .confirmation-overlay dd { margin: 0; font-weight: 750; }
 .complaint-list { display: grid; gap: .65rem; }
 .complaint-list article { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.complaint-actions { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; justify-content: flex-end; }
+.icon-action { display: grid; width: 2.15rem; height: 2.15rem; place-items: center; border: 1px solid var(--line); border-radius: .55rem; background: var(--paper); color: var(--ink-650); cursor: pointer; }
+.icon-action:hover { border-color: var(--teal-600); background: var(--teal-50); color: var(--teal-800); }
+.icon-action.danger:hover { border-color: var(--coral-500); background: var(--coral-50); color: var(--coral-700); }
+.delete-modal { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgb(16 43 39 / .4); backdrop-filter: blur(5px); }
+.delete-dialog { width: min(100%, 28rem); padding: 1.5rem; border-radius: var(--radius-lg); background: var(--paper); box-shadow: var(--shadow-lg); }
+.delete-icon { display: grid; width: 2.6rem; height: 2.6rem; place-items: center; margin-bottom: .8rem; border-radius: .75rem; background: var(--coral-100); color: var(--coral-700); }
+.delete-dialog h2 { margin-bottom: .45rem; font-size: 1.25rem; }
+.delete-dialog p { margin: 0; color: var(--ink-650); font-size: .9rem; line-height: 1.55; }
+.delete-dialog .form-actions { justify-content: flex-end; margin-top: 1.2rem; }
 .complaint-list article span:first-child { color: var(--teal-700); font-size: .68rem; font-weight: 850; text-transform: uppercase; }
 .complaint-list h3 { margin: .15rem 0; }
 .complaint-list small { color: var(--ink-650); }
-@media (max-width: 650px) { .portal-page-heading { align-items: flex-start; flex-direction: column; } .two-fields, .visibility-field { grid-template-columns: 1fr; } .visibility-field legend { grid-column: auto; } }
+@media (max-width: 650px) { .portal-page-heading { align-items: flex-start; flex-direction: column; } .two-fields, .visibility-field { grid-template-columns: 1fr; } .visibility-field legend { grid-column: auto; } .complaint-modal { align-items: end; padding: .5rem; } .complaint-modal .complaint-form { max-height: 94vh; border-radius: 1.1rem 1.1rem .8rem .8rem; } .complaint-list article { align-items: flex-start; } .complaint-actions { flex-direction: column; } }
 </style>

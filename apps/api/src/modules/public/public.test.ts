@@ -58,6 +58,13 @@ describe('sanitized public transparency and agenda', () => {
       expense: 125_000,
       balance: 375_000,
     });
+    expect(response.json().data.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'INCOME', category: 'Iuran', amount: 500_000 }),
+      expect.objectContaining({ kind: 'EXPENSE', category: 'Kebersihan', amount: 125_000 }),
+    ]));
+    expect(response.json().data.monthly).toEqual(expect.arrayContaining([
+      expect.objectContaining({ period: '2026-07', income: 500_000, expense: 125_000 }),
+    ]));
     expect(response.body).not.toContain('rumah A-01');
   });
 
@@ -69,5 +76,12 @@ describe('sanitized public transparency and agenda', () => {
       location: 'Taman RW',
     });
     expect(response.body).not.toContain('coordinatorId');
+  });
+
+  it('does not let private complaints suppress the public demo projection', async () => {
+    const response = await app!.inject({ method: 'GET', url: '/api/v1/public/complaints' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json().data.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).not.toContain('Lampu jalan dekat Blok A padam');
   });
 });

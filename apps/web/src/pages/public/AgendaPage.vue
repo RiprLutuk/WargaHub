@@ -39,11 +39,11 @@ const events = useResource(async () => adaptPublicEvents(await api.get<unknown>(
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); }
-.page-heading { margin-bottom: 3rem; }
+.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); }
+.page-heading { margin-bottom: 1.25rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
-.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
-.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
+.page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }
+.page-heading p { max-width: 52rem; margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
 .timeline { display: grid; max-width: 52rem; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 .timeline li { position: relative; display: grid; grid-template-columns: 3.6rem 1fr; padding-bottom: 1.6rem; }
 .timeline li:not(:last-child)::before { position: absolute; top: 3.2rem; bottom: -.2rem; left: 1.45rem; width: 2px; background: var(--teal-100); content: ''; }

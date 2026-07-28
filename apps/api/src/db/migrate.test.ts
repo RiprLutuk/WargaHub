@@ -27,6 +27,7 @@ describe('database migrations', () => {
       '0005_patrol_swap_guards.sql',
       '0006_governance_and_extended_modules.sql',
       '0007_organization_structure.sql',
+      '0008_complaint_soft_delete.sql',
     ]);
     expect(second).toEqual([]);
     expect(tables.rows.map((row) => row.table_name)).toEqual(

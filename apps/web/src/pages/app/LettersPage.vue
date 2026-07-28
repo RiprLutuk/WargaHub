@@ -1,26 +1,28 @@
 <script setup lang="ts">
 import { AlertCircle, CheckCircle2, Clock3, Download, FileCheck, FileSignature, FileText, Plus, QrCode, Search, ShieldCheck, X } from 'lucide-vue-next';
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
+import SmartSelect from '../../components/SmartSelect.vue';
 import { useResource } from '../../composables/useResource';
 import { api, ApiClientError } from '../../lib/api';
 import { formatDate, formatDateTime } from '../../lib/format';
+import { adaptHouseholds } from '../../lib/view-models';
 
 interface LetterRequest {
   id: string;
-  type: string;
+  letterType: string;
   purpose: string;
   status: string;
   letterNumber?: string | null;
-  issuedAt?: string | null;
   verificationToken?: string | null;
+  issuedAt?: string | null;
   createdAt: string;
-  updatedAt: string;
 }
 
-const letters = useResource(() => api.get<LetterRequest[]>('/letter-requests'));
+const letters = useResource(() => api.get<LetterRequest[]>('/letters'));
+const households = useResource(async () => adaptHouseholds(await api.get<unknown>('/households')));
 const formOpen = ref(false);
 const selectedLetter = ref<LetterRequest | null>(null);
 const busy = ref(false);
@@ -28,29 +30,36 @@ const errorMsg = ref('');
 const successMsg = ref('');
 
 const form = reactive({
-  type: 'PENGANTAR_KTP',
+  type: 'GENERAL',
   purpose: 'Pengurusan perpanjangan KTP Elektronik di Kantor Kelurahan',
   notes: '',
 });
 
 const letterTypes = [
-  { value: 'PENGANTAR_KTP', label: 'Surat Pengantar KTP / KK' },
-  { value: 'DOMISILI', label: 'Surat Keterangan Domisili' },
-  { value: 'SKU', label: 'Surat Keterangan Usaha (SKU)' },
-  { value: 'SKTM', label: 'Surat Keterangan Tidak Mampu (SKTM)' },
-  { value: 'NIKAH', label: 'Surat Pengantar Nikah' },
-  { value: 'LAINNYA', label: 'Surat Keterangan Umum' },
+  { value: 'DOMICILE', label: 'Surat Keterangan Domisili' },
+  { value: 'BUSINESS_INFO', label: 'Surat Keterangan Usaha' },
+  { value: 'LOW_INCOME', label: 'Surat Keterangan Tidak Mampu' },
+  { value: 'MARRIAGE_INTRO', label: 'Surat Pengantar Nikah' },
+  { value: 'MOVE_NOTICE', label: 'Surat Pindah / Datang' },
+  { value: 'GENERAL', label: 'Surat Keterangan Umum' },
 ];
+
 
 async function submitRequest() {
   busy.value = true;
   errorMsg.value = '';
   successMsg.value = '';
   try {
-    const created = await api.post<LetterRequest>('/letter-requests', {
-      type: form.type,
+    const householdId = households.data.value?.[0]?.id;
+    if (!householdId) {
+      errorMsg.value = 'Hubungkan rumah terlebih dahulu sebelum mengajukan surat.';
+      return;
+    }
+    await api.post<LetterRequest>('/letters', {
+      householdId,
+      letterType: form.type,
       purpose: form.purpose,
-      ...(form.notes ? { notes: form.notes } : {}),
+      fields: form.notes ? { notes: form.notes } : {},
     });
     successMsg.value = 'Permohonan surat berhasil dikirim. Sekretaris RT/RW akan meninjau dan menerbitkan surat resmi.';
     formOpen.value = false;
@@ -81,11 +90,12 @@ async function submitRequest() {
     </div>
 
     <!-- New Letter Form Modal / Drawer -->
-    <section v-if="formOpen" class="card form-panel">
+    <div v-if="formOpen" class="form-modal" role="dialog" aria-modal="true" aria-labelledby="letter-form-heading" @click.self="formOpen = false">
+    <section class="card form-panel">
       <div class="panel-header">
         <div>
           <span class="eyebrow">Formulir Mandiri</span>
-          <h2>Permohonan Surat Pengantar</h2>
+          <h2 id="letter-form-heading">Permohonan Surat Pengantar</h2>
         </div>
         <button type="button" class="close-btn" aria-label="Tutup formulir" @click="formOpen = false"><X :size="20" /></button>
       </div>
@@ -97,9 +107,7 @@ async function submitRequest() {
       <form class="form-grid" @submit.prevent="submitRequest">
         <div class="field">
           <label for="letter-type">Jenis Surat Pengantar</label>
-          <select id="letter-type" v-model="form.type" required>
-            <option v-for="t in letterTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
-          </select>
+          <SmartSelect id="letter-type" v-model="form.type" :options="letterTypes" search-placeholder="Cari jenis surat…" />
         </div>
 
         <div class="field">
@@ -130,6 +138,7 @@ async function submitRequest() {
         </div>
       </form>
     </section>
+    </div>
 
     <!-- Requests Table / List -->
     <StatePanel v-if="letters.loading.value" state="loading" />
@@ -142,16 +151,13 @@ async function submitRequest() {
 
         <div class="letter-info">
           <div class="card-meta">
-            <span class="type-tag">{{ item.type.replaceAll('_', ' ') }}</span>
+            <span class="type-tag">{{ item.letterType.replaceAll('_', ' ') }}</span>
             <span class="time-tag">Diajukan {{ formatDateTime(item.createdAt) }}</span>
           </div>
 
           <h2>{{ item.purpose }}</h2>
           <p v-if="item.letterNumber" class="letter-num">Nomor Surat: <strong>{{ item.letterNumber }}</strong></p>
 
-          <div v-if="item.verificationToken" class="qr-verify-chip">
-            <QrCode :size="14" /> Kode Verifikasi: <code>{{ item.verificationToken }}</code>
-          </div>
         </div>
 
         <div class="card-right">
@@ -176,14 +182,15 @@ async function submitRequest() {
         <div class="cert-body">
           <p>Yang bertanda tangan di bawah ini Pengurus RT/RW menerangkan bahwa permohonan berikut:</p>
           <dl>
-            <div><dt>Jenis Surat</dt><dd>{{ selectedLetter.type.replaceAll('_', ' ') }}</dd></div>
+            <div><dt>Jenis Surat</dt><dd>{{ selectedLetter.letterType.replaceAll('_', ' ') }}</dd></div>
             <div><dt>Keperluan</dt><dd>{{ selectedLetter.purpose }}</dd></div>
-            <div><dt>Tanggal Terbit</dt><dd>{{ formatDate(selectedLetter.issuedAt ?? selectedLetter.updatedAt) }}</dd></div>
+            <div><dt>Tanggal Terbit</dt><dd>{{ formatDate(selectedLetter.issuedAt ?? selectedLetter.createdAt) }}</dd></div>
             <div><dt>Status Autentikasi</dt><dd>TERVERIFIKASI DIGITAL</dd></div>
           </dl>
           <div class="qr-preview">
             <QrCode :size="48" />
-            <small>Pindai QR ini atau akses <code>/surat/verifikasi/{{ selectedLetter.verificationToken }}</code> untuk keabsahan dokumen.</small>
+            <small v-if="selectedLetter.verificationToken">Verifikasi publik: <code>/surat/verifikasi/{{ selectedLetter.verificationToken }}</code></small>
+            <small v-else>Dokumen digital dapat diambil melalui sekretariat setelah status diterbitkan.</small>
           </div>
         </div>
 
@@ -196,11 +203,13 @@ async function submitRequest() {
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.2rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .portal-page-heading { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem, 4.5vw, 3rem); }
 .portal-page-heading p { max-width: 46rem; margin: 0; color: var(--ink-650); }
 .form-panel { padding: 1.3rem; }
+.form-modal { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgb(16 43 39 / .38); backdrop-filter: blur(5px); }
+.form-modal .form-panel { width: min(100%, 46rem); max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .panel-header h2 { margin: 0; }
 .close-btn { display: grid; width: 2.5rem; height: 2.5rem; flex: none; place-items: center; border: 1px solid var(--line); border-radius: .6rem; background: white; cursor: pointer; }
@@ -225,5 +234,5 @@ async function submitRequest() {
 .cert-body dd { margin: 0; font-weight: 750; }
 .qr-preview { display: flex; flex-direction: column; align-items: center; gap: .4rem; text-align: center; color: var(--ink-650); }
 .cert-footer { display: flex; justify-content: flex-end; margin-top: 1.2rem; }
-@media (max-width: 650px) { .letter-card { flex-direction: column; align-items: flex-start; } .card-right { align-items: flex-start; } }
+@media (max-width: 650px) { .letter-card { flex-direction: column; align-items: flex-start; } .card-right { align-items: flex-start; } .form-modal { align-items: end; padding: .5rem; } .form-modal .form-panel { max-height: 94vh; border-radius: 1.1rem 1.1rem .8rem .8rem; } }
 </style>

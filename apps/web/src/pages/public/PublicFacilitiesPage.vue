@@ -34,7 +34,7 @@ const getInitialTab = (): 'FACILITIES' | 'CCTV' => {
 };
 
 const activeTab = ref<'FACILITIES' | 'CCTV'>(getInitialTab());
-const selectedCategory = ref('SEMUA');
+const selectedCategory = ref(String(route.query.kategori ?? 'SEMUA'));
 const facilities = useResource(() => api.get<PublicFacility[]>('/public/facilities'));
 const activeCctvModal = ref<any | null>(null);
 
@@ -42,12 +42,22 @@ watch(() => [route.path, route.query.tab], () => {
   activeTab.value = getInitialTab();
 });
 
+watch(selectedCategory, (category) => {
+  if (activeTab.value !== 'FACILITIES') return;
+  router.replace({ query: { ...route.query, kategori: category !== 'SEMUA' ? category : undefined } });
+});
+
+watch(() => route.query.kategori, (category) => {
+  const next = String(category ?? 'SEMUA');
+  if (selectedCategory.value !== next) selectedCategory.value = next;
+});
+
 function switchTab(tab: 'FACILITIES' | 'CCTV') {
   activeTab.value = tab;
   if (tab === 'CCTV') {
-    router.replace({ path: '/fasilitas/cctv' });
+    router.replace({ path: '/fasilitas/cctv', query: {} });
   } else {
-    router.replace({ path: '/fasilitas' });
+    router.replace({ path: '/fasilitas', query: selectedCategory.value !== 'SEMUA' ? { kategori: selectedCategory.value } : {} });
   }
 }
 
@@ -315,13 +325,11 @@ const cctvFeeds = [
 </template>
 
 <style scoped>
-.public-page-shell {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
-}
+.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
-  margin-bottom: 2.8rem;
-  max-width: 52rem;
+  margin-bottom: 1.25rem;
+  max-width: 56rem;
 }
 
 .header-badge {
@@ -343,26 +351,29 @@ const cctvFeeds = [
 }
 
 .page-header h1 {
-  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 850;
   line-height: 1.15;
   color: var(--ink-950);
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.02em;
 }
 
 .header-desc {
-  font-size: 1.1rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--ink-650);
-  margin: 0 0 1.5rem;
+  margin: 0 0 .75rem;
 }
+.header-badge { padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--teal-700); letter-spacing: .08em; text-transform: uppercase; }
+.header-badge::before { width: 1.6rem; height: 2px; margin-right: .1rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.header-badge svg { display: none; }
 
 /* Navigation Tabs */
 .main-tabs {
   display: flex;
   gap: 0.8rem;
-  margin-top: 1.5rem;
+  margin-top: 0;
 }
 
 .tab-btn {
@@ -905,5 +916,28 @@ const cctvFeeds = [
 
 .ptz-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 850px) {
+  .page-header h1 { font-size: 2.2rem; }
+  .category-pills, .main-tabs { flex-wrap: nowrap; margin-inline: -.625rem; padding-inline: .625rem; overflow-x: auto; scrollbar-width: none; }
+  .category-pills::-webkit-scrollbar, .main-tabs::-webkit-scrollbar { display: none; }
+  .category-pills .pill-btn, .main-tabs .tab-btn { flex: 0 0 auto; white-space: nowrap; }
+  .facilities-grid, .cctv-grid { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .facilities-grid::-webkit-scrollbar, .cctv-grid::-webkit-scrollbar { display: none; }
+  .facility-card, .cctv-card { flex: 0 0 min(84vw, 24rem); scroll-snap-align: start; }
+  .facility-card { padding: 1rem; border-radius: 1rem; }
+  .facility-card .card-header { display: block; margin-bottom: .85rem; }
+  .facility-card .icon-avatar { width: 2.8rem; height: 2.8rem; margin-bottom: .65rem; border-radius: .8rem; }
+  .facility-card .header-tags { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: .35rem; }
+  .facility-card .facility-title { font-size: 1.12rem; }
+  .facility-card .facility-desc { font-size: .86rem; line-height: 1.5; }
+  .facility-card .card-specs { gap: .6rem; padding: .85rem; margin-top: 1rem; margin-bottom: .9rem; }
+  .facility-card .spec-label { font-size: .64rem; }
+  .facility-card .spec-value { font-size: .86rem; }
+  .facility-card .approval-note { font-size: .7rem; }
+  .facility-card .book-link { font-size: .8rem; }
+  .cctv-info-banner { padding: 1rem; gap: .65rem; }
+  .cctv-info-banner p { font-size: .84rem; line-height: 1.5; }
 }
 </style>

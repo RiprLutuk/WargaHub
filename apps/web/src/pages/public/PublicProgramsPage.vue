@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ArrowRight, Calendar, CheckCircle2, HardHat, HeartPulse, ShieldAlert, Sparkles, TrendingUp } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ArrowRight, HardHat, ShieldAlert, Sparkles, TrendingUp } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
@@ -25,13 +26,26 @@ interface PublicProgram {
   endsAt?: string;
 }
 
-const filterStatus = ref('SEMUA');
+const route = useRoute();
+const router = useRouter();
+const filterStatus = ref(String(route.query.status ?? 'SEMUA'));
 const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'));
+
+watch(filterStatus, (status) => {
+  router.replace({ query: { ...route.query, status: status !== 'SEMUA' ? status : undefined } });
+});
+
+watch(() => route.query.status, (status) => {
+  const next = String(status ?? 'SEMUA');
+  if (filterStatus.value !== next) filterStatus.value = next;
+});
 
 const filteredPrograms = computed(() => {
   const list = programs.data.value ?? [];
   if (filterStatus.value === 'SEMUA') return list;
-  return list.filter((p) => p.status === filterStatus.value || (filterStatus.value === 'IN_PROGRESS' && p.status === 'PUBLISHED'));
+  if (filterStatus.value === 'COMPLETED') return list.filter((p) => ['COMPLETED', 'RESOLVED', 'CLOSED'].includes(p.status.toUpperCase()));
+  if (filterStatus.value === 'IN_PROGRESS') return list.filter((p) => ['IN_PROGRESS', 'PUBLISHED', 'ASSIGNED'].includes(p.status.toUpperCase()));
+  return list.filter((p) => p.status === filterStatus.value);
 });
 
 function parseNum(val: unknown): number {
@@ -61,6 +75,11 @@ function calculatePercentage(item: PublicProgram): number {
   const current = getCurrentBudget(item);
   if (!target || target <= 0) return 100;
   return Math.min(100, Math.round((current / target) * 100));
+}
+
+function getDisplayStatus(item: PublicProgram): 'IN_PROGRESS' | 'RESOLVED' {
+  const status = item.status.toUpperCase();
+  return ['COMPLETED', 'RESOLVED', 'CLOSED'].includes(status) ? 'RESOLVED' : 'IN_PROGRESS';
 }
 </script>
 
@@ -115,50 +134,20 @@ function calculatePercentage(item: PublicProgram): number {
       <!-- Program List Grid -->
       <div class="program-list">
         <article v-for="item in filteredPrograms" :key="item.id" class="program-card">
-          <div class="card-main">
-            <div class="card-header-row">
-              <div class="icon-avatar">
-                <HeartPulse v-if="item.category?.toLowerCase().includes('kesehatan') || item.category?.toLowerCase().includes('posyandu')" :size="22" />
-                <HardHat v-else :size="22" />
-              </div>
-              <div class="header-content">
-                <div class="meta-row">
-                  <span class="dates"><Calendar :size="13" /> {{ formatDate(getStartDate(item)) }} — {{ formatDate(getEndDate(item)) }}</span>
-                  <StatusBadge :status="item.status === 'PUBLISHED' ? 'IN_PROGRESS' : item.status" />
-                </div>
-                <h2 class="program-title">{{ item.title }}</h2>
-              </div>
-            </div>
-
-            <p class="program-desc">{{ item.description }}</p>
-
-            <!-- Budget Metric & Progress Bar -->
-            <div v-if="getTargetBudget(item) > 0" class="budget-box">
-              <div class="budget-header">
-                <div class="budget-col">
-                  <span class="label">Dana Realisasi / Terkumpul</span>
-                  <span class="amount primary">{{ formatRupiah(getCurrentBudget(item)) }}</span>
-                </div>
-                <div class="budget-col align-right">
-                  <span class="label">Target Anggaran</span>
-                  <span class="amount">{{ formatRupiah(getTargetBudget(item)) }}</span>
-                </div>
-              </div>
-
-              <div class="progress-track">
-                <div
-                  class="progress-fill"
-                  :style="{ width: `${calculatePercentage(item)}%` }"
-                />
-              </div>
-
-              <div class="progress-footer">
-                <span>Capaian dana: <strong>{{ calculatePercentage(item) }}%</strong></span>
-                <span v-if="getCurrentBudget(item) >= getTargetBudget(item)" class="success-note">
-                  <CheckCircle2 :size="13" /> Target Terpenuhi
-                </span>
-              </div>
-            </div>
+          <div class="program-heading">
+            <h2 class="program-title">{{ item.title }}</h2>
+            <StatusBadge :status="getDisplayStatus(item)" />
+          </div>
+          <p class="program-desc">{{ item.description }}</p>
+          <div class="program-progress" :class="{ complete: calculatePercentage(item) >= 100 }">
+            <strong>{{ calculatePercentage(item) }}%</strong>
+            <span>Realisasi dana</span>
+            <div class="progress-track"><div class="progress-fill" :style="{ width: `${calculatePercentage(item)}%` }" /></div>
+          </div>
+          <div class="program-metrics">
+            <div><span>Dana terkumpul</span><strong>{{ formatRupiah(getCurrentBudget(item)) }}</strong></div>
+            <div><span>Target anggaran</span><strong>{{ formatRupiah(getTargetBudget(item)) }}</strong></div>
+            <div><span>Periode</span><strong>{{ formatDate(getStartDate(item)) }} — {{ formatDate(getEndDate(item)) }}</strong></div>
           </div>
         </article>
       </div>
@@ -167,13 +156,11 @@ function calculatePercentage(item: PublicProgram): number {
 </template>
 
 <style scoped>
-.public-page-shell {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
-}
+.public-page-shell { padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
-  margin-bottom: 2.8rem;
-  max-width: 50rem;
+  margin-bottom: 1.25rem;
+  max-width: 56rem;
 }
 
 .header-badge {
@@ -195,20 +182,23 @@ function calculatePercentage(item: PublicProgram): number {
 }
 
 .page-header h1 {
-  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 850;
   line-height: 1.15;
   color: var(--ink-950);
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.02em;
 }
 
 .header-desc {
-  font-size: 1.1rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--ink-650);
   margin: 0;
 }
+.header-badge { padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--teal-700); letter-spacing: .08em; text-transform: uppercase; }
+.header-badge::before { width: 1.6rem; height: 2px; margin-right: .1rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.header-badge svg { display: none; }
 
 /* Filter Pills */
 .filter-pills {
@@ -257,6 +247,51 @@ function calculatePercentage(item: PublicProgram): number {
   box-shadow: var(--shadow-sm);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
+
+.program-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .65rem;
+}
+
+.program-heading .program-title {
+  flex: 1;
+}
+
+.program-progress {
+  display: grid;
+  gap: .35rem;
+  margin-top: .9rem;
+}
+
+.program-progress strong {
+  color: var(--amber-700);
+  font-size: 1.15rem;
+}
+
+.program-progress > span {
+  color: var(--ink-500);
+  font-size: .75rem;
+}
+
+.program-progress.complete strong { color: var(--success-700); }
+.program-progress .progress-fill { background: linear-gradient(90deg, var(--amber-500), var(--amber-600)); }
+.program-progress.complete .progress-fill { background: linear-gradient(90deg, var(--teal-600), var(--success-700)); }
+
+.program-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .8rem;
+  margin-top: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--line);
+}
+
+.program-metrics div { display: grid; gap: .2rem; min-width: 0; }
+.program-metrics span { color: var(--ink-500); font-size: .7rem; }
+.program-metrics strong { color: var(--ink-800); font-size: .88rem; overflow-wrap: anywhere; }
 
 .program-card:hover {
   transform: translateY(-3px);
@@ -391,5 +426,34 @@ function calculatePercentage(item: PublicProgram): number {
   gap: 0.35rem;
   color: var(--success-700);
   font-weight: 800;
+}
+
+@media (max-width: 850px) {
+  .filter-pills { flex-wrap: nowrap; margin-inline: -.625rem; padding-inline: .625rem; overflow-x: auto; scrollbar-width: none; }
+  .filter-pills::-webkit-scrollbar { display: none; }
+  .filter-pills .pill-btn { flex: 0 0 auto; white-space: nowrap; }
+  .program-list { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .program-list::-webkit-scrollbar { display: none; }
+  .program-card { flex: 0 0 min(88vw, 38rem); scroll-snap-align: start; padding: 1rem; border-radius: 1rem; }
+  .program-heading { align-items: flex-start; flex-direction: column; gap: .45rem; }
+  .program-heading .program-title { width: 100%; }
+  .program-metrics { grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .program-metrics div:last-child { grid-column: 1 / -1; }
+  .program-metrics strong { font-size: .8rem; }
+  .card-header-row { display: grid !important; grid-template-columns: 1fr; gap: 0; margin-bottom: .8rem; }
+  .icon-avatar { width: 2.8rem; height: 2.8rem; margin: 0 0 .7rem; border-radius: .8rem; }
+  .header-content { width: 100%; min-width: 0; }
+  .meta-row { align-items: center; justify-content: flex-start; flex-direction: row; flex-wrap: wrap; gap: .4rem .6rem; margin-bottom: .35rem; }
+  .dates { gap: .25rem; font-size: .68rem; }
+  :deep(.meta-row .status-badge) { padding: .25rem .4rem; font-size: .68rem; }
+  .program-title { font-size: 1.08rem; line-height: 1.25; }
+  .program-desc { font-size: .86rem; line-height: 1.5; margin-bottom: 1rem; }
+  .budget-box { gap: .65rem; padding: .9rem; border-radius: .85rem; }
+  .budget-header { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: .6rem; }
+  .budget-col.align-right { align-items: flex-start; text-align: left; }
+  .budget-col .label { font-size: .62rem; line-height: 1.3; }
+  .budget-col .amount { font-size: .98rem; }
+  .progress-track { height: .5rem; }
+  .progress-footer { align-items: flex-start; flex-direction: column; gap: .35rem; font-size: .74rem; }
 }
 </style>

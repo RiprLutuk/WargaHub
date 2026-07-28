@@ -163,7 +163,7 @@ function onImported() {
 </template>
 
 <style scoped>
-.admin-page { display: grid; max-width: 86rem; gap: 1.5rem; margin-inline: auto; }
+.admin-page { display: grid; max-width: var(--content); gap: 1.5rem; margin-inline: auto; }
 .admin-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .heading-actions { display: flex; align-items: center; gap: 0.75rem; }
 .admin-heading h1 { margin-bottom: 0.45rem; font-size: clamp(2rem, 4vw, 3rem); }

@@ -9,6 +9,7 @@ export const useSessionStore = defineStore('session', () => {
   const user = ref<SafeUser | null>(null);
   const loading = ref(false);
   const initialized = ref(false);
+  let sessionRequest: Promise<void> | null = null;
 
   const isAuthenticated = computed(() => user.value !== null);
   const permissions = computed(() => user.value?.permissions ?? []);
@@ -18,16 +19,22 @@ export const useSessionStore = defineStore('session', () => {
 
   async function ensureSession(): Promise<void> {
     if (initialized.value) return;
-    loading.value = true;
-    try {
-      const result = await api.get<LoginResult>('/auth/me');
-      user.value = result.user;
-    } catch {
-      user.value = null;
-    } finally {
-      loading.value = false;
-      initialized.value = true;
-    }
+    if (sessionRequest) return sessionRequest;
+    sessionRequest = (async () => {
+      loading.value = true;
+      try {
+        const result = await api.get<LoginResult>('/auth/me');
+        user.value = result.user;
+      } catch {
+        // A 401 on a public page means simply “not signed in”, not a page error.
+        user.value = null;
+      } finally {
+        loading.value = false;
+        initialized.value = true;
+        sessionRequest = null;
+      }
+    })();
+    return sessionRequest;
   }
 
   async function login(email: string, password: string): Promise<SafeUser> {

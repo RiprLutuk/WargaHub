@@ -75,6 +75,42 @@ export async function extendedRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
+  app.get(
+    '/facilities/reservations',
+    { preHandler: app.requirePermission('facility.reserve') },
+    async (request) => {
+      if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
+      const res = await app.database.query<{
+        id: string;
+        facility_id: string;
+        facility_name: string;
+        household_id: string;
+        purpose: string;
+        starts_at: string;
+        ends_at: string;
+        status: string;
+      }>(
+        `SELECT fr.id, fr.facility_id, f.name AS facility_name, fr.household_id,
+                fr.purpose, fr.starts_at, fr.ends_at, fr.status
+         FROM facility_reservations fr
+         JOIN facilities f ON f.id = fr.facility_id
+         WHERE fr.organization_id = $1 AND fr.user_id = $2
+         ORDER BY fr.starts_at DESC`,
+        [request.auth.organizationId, request.auth.id],
+      );
+      return success(request, res.rows.map((row) => ({
+        id: row.id,
+        facilityId: row.facility_id,
+        facilityName: row.facility_name,
+        householdId: row.household_id,
+        purpose: row.purpose,
+        startsAt: row.starts_at,
+        endsAt: row.ends_at,
+        status: row.status,
+      })));
+    },
+  );
+
   app.post(
     '/facilities/reservations',
     { preHandler: app.requirePermission('facility.reserve') },
@@ -165,6 +201,35 @@ export async function extendedRoutes(app: FastifyInstance): Promise<void> {
       );
 
       return reply.status(201).send(success(request, { id: vehicleId, plateNumber: body.plateNumber }));
+    },
+  );
+
+  app.get(
+    '/guests',
+    { preHandler: app.requirePermission('guest.manage') },
+    async (request) => {
+      if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
+      const res = await app.database.query<{
+        id: string;
+        guest_name: string;
+        purpose: string;
+        pass_code: string;
+        expected_arrival: string;
+        status: string;
+      }>(
+        `SELECT id, guest_name, purpose, pass_code, expected_arrival, status
+         FROM guests WHERE organization_id = $1 AND registered_by = $2
+         ORDER BY expected_arrival DESC`,
+        [request.auth.organizationId, request.auth.id],
+      );
+      return success(request, res.rows.map((row) => ({
+        id: row.id,
+        name: row.guest_name,
+        purpose: row.purpose,
+        passCode: row.pass_code,
+        expectedArrival: row.expected_arrival,
+        status: row.status,
+      })));
     },
   );
 

@@ -38,11 +38,11 @@ const documents = useResource(async () => adaptPublicDocuments(await api.get<unk
 </template>
 
 <style scoped>
-.public-page-container { padding-block: clamp(3rem, 6vw, 5.5rem); }
-.page-heading { margin-bottom: 3rem; }
+.public-page-container { padding-block: clamp(2rem, 4vw, 3.5rem); }
+.page-heading { margin-bottom: 1.25rem; }
 .page-heading .eyebrow { margin-bottom: .6rem; }
-.page-heading h1 { margin-bottom: .75rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.16; }
-.page-heading p { max-width: 48rem; margin: 0; color: var(--ink-650); font-size: 1.1rem; line-height: 1.6; }
+.page-heading h1 { margin-bottom: .6rem; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; }
+.page-heading p { max-width: 52rem; margin: 0; color: var(--ink-650); font-size: 1rem; line-height: 1.55; }
 .document-list { display: grid; gap: 1.2rem; }
 .document-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.4rem; padding: 1.5rem 1.8rem; border-radius: var(--radius-lg); }
 .file-icon { display: grid; width: 3.2rem; height: 3.2rem; place-items: center; border-radius: 1rem; background: var(--teal-100); color: var(--teal-700); }

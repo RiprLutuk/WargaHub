@@ -653,6 +653,8 @@ main {
     border-bottom: 1px solid var(--line-strong);
     flex-direction: column;
     align-items: stretch;
+    gap: 0.35rem;
+    padding: 1rem;
     box-shadow: var(--shadow-lg);
   }
   nav.open {
@@ -660,10 +662,37 @@ main {
   }
   .dropdown-menu {
     position: static;
+    width: 100%;
+    min-width: 0;
     box-shadow: none;
     border: 0;
-    padding-left: 1rem;
+    padding: 0.35rem 0 0.45rem 0.75rem;
     background: var(--cream-50);
+  }
+  .nav-dropdown,
+  .dropdown-trigger,
+  nav .nav-link,
+  nav .button {
+    width: 100%;
+  }
+  .dropdown-trigger {
+    justify-content: space-between;
+    padding: 0.9rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+  }
+  nav .nav-link {
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+  }
+  .dropdown-menu a {
+    display: block;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.94rem;
+  }
+  nav .button {
+    justify-content: center;
+    margin-top: 0.35rem;
   }
 }
 </style>

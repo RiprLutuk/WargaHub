@@ -191,11 +191,11 @@ onMounted(() => {
 }
 .hero-grid {
   display: grid;
-  min-height: min(38rem, 80vh);
+  min-height: auto;
   grid-template-columns: 1.15fr 0.85fr;
-  align-items: center;
+  align-items: start;
   gap: clamp(2rem, 5vw, 4rem);
-  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  padding-block: clamp(4rem, 6vw, 5.5rem);
 }
 .hero-content { display: grid; gap: 0.8rem; }
 .display-title { font-size: clamp(2.8rem, 5.5vw, 4.5rem); }
@@ -331,27 +331,26 @@ onMounted(() => {
 
 /* Dynamic Premium CTA Banner */
 .invitation-section {
-  margin-block: 4.5rem;
+  margin-block: clamp(2.5rem, 6vw, 4rem);
 }
 .cta-banner {
   position: relative;
   overflow: hidden;
-  padding: clamp(2.2rem, 5vw, 3.5rem);
+  padding: clamp(1.5rem, 4vw, 2.6rem);
+  border: 1px solid var(--teal-100);
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 100%);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-  box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.18);
-  color: #78350f;
+  background: linear-gradient(135deg, #f7fcfb 0%, #edf8f5 100%);
+  box-shadow: 0 10px 28px rgba(16, 43, 39, 0.07);
+  color: var(--ink-950);
 }
 .cta-banner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 25rem;
-  height: 25rem;
+  inset: auto -5rem -8rem auto;
+  width: 18rem;
+  height: 18rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.13) 0%, transparent 70%);
   pointer-events: none;
 }
 .cta-content {
@@ -367,33 +366,35 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.28rem 0.65rem;
   border-radius: 999px;
-  background: rgba(180, 83, 9, 0.08);
-  border: 1px solid rgba(180, 83, 9, 0.14);
-  color: #92400e;
+  background: var(--paper);
+  border: 1px solid var(--teal-100);
+  color: var(--teal-800);
   font-size: 0.76rem;
   font-weight: 600;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 .beacon-pulse {
   display: inline-block;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
-  background: #d97706;
-  box-shadow: 0 0 10px #d97706;
+  background: var(--teal-600);
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.4);
 }
 .cta-banner h2 {
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  max-width: 38rem;
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
   font-weight: 500;
-  color: #78350f;
-  margin-bottom: 0.65rem;
+  color: var(--ink-950);
+  margin-bottom: 0.55rem;
   line-height: 1.2;
 }
 .cta-banner p {
-  color: #92400e;
-  font-size: 1.02rem;
+  max-width: 39rem;
+  color: var(--ink-650);
+  font-size: 0.98rem;
   margin-bottom: 1.25rem;
   line-height: 1.55;
 }
@@ -408,9 +409,9 @@ onMounted(() => {
   gap: 0.35rem;
   padding: 0.3rem 0.65rem;
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(180, 83, 9, 0.12);
-  color: #78350f;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--teal-100);
+  color: var(--ink-800);
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -425,9 +426,10 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  padding: 0.85rem 1.6rem;
+  min-width: 12rem;
+  padding: 0.75rem 1.2rem;
   border-radius: 0.85rem;
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  background: var(--teal-700);
   color: #ffffff !important;
   font-weight: 600;
   font-size: 0.95rem;
@@ -447,17 +449,17 @@ onMounted(() => {
   gap: 0.5rem;
   padding: 0.7rem 1.2rem;
   border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(180, 83, 9, 0.15);
-  color: #78350f !important;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-800) !important;
   font-size: 0.86rem;
   font-weight: 600;
   text-decoration: none !important;
   transition: all 0.15s ease;
 }
 .cta-secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(180, 83, 9, 0.28);
+  background: var(--teal-50);
+  border-color: var(--teal-300);
 }
 
 @media (max-width: 900px) {
@@ -472,7 +474,9 @@ onMounted(() => {
 @media (max-width: 650px) {
   .hero-grid { padding-block: 2.5rem; }
   .hero-actions .button { width: 100%; }
-  .announcement-grid, .service-grid { grid-template-columns: 1fr; }
+  .announcement-grid, .service-grid { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .announcement-grid::-webkit-scrollbar, .service-grid::-webkit-scrollbar { display: none; }
+  .announcement-card, .service-card { flex: 0 0 min(84vw, 20rem); scroll-snap-align: start; }
   .announcement-card.featured { grid-column: auto; }
   .cta-actions { flex-direction: column; }
 }

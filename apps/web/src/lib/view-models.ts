@@ -56,6 +56,7 @@ export interface PublicTransparencyView {
   expense: number;
   balance: number;
   monthly: Array<{ period: string; income: number; expense: number }>;
+  entries: Array<{ kind: 'INCOME' | 'EXPENSE'; category: string; amount: number; occurredAt: string }>;
   note: string;
 }
 
@@ -68,12 +69,19 @@ export function adaptPublicTransparency(input: unknown): PublicTransparencyView 
       period: text(item.period), income: number(item.income), expense: number(item.expense),
     })).filter((item) => item.period.length > 0)
     : [];
+  const entries = Array.isArray(value.entries)
+    ? value.entries.map((item) => record(item)).map((item) => ({
+      kind: item.kind === 'EXPENSE' ? 'EXPENSE' as const : 'INCOME' as const,
+      category: text(item.category, 'Lainnya'), amount: number(item.amount), occurredAt: text(item.occurredAt),
+    })).filter((item) => item.occurredAt)
+    : [];
   return {
     currency: text(value.currency, 'IDR'),
     income,
     expense,
     balance: number(value.balance, income - expense),
     monthly,
+    entries,
     note: text(value.note, 'Laporan publik hanya menampilkan nilai agregat yang sudah disanitasi.'),
   };
 }

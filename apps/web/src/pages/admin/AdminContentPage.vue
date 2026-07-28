@@ -2,6 +2,7 @@
 import { CheckCircle2, Download, FileUp, Megaphone, Plus, Search, Trash2, Upload, UserCheck, UserPlus, Users } from 'lucide-vue-next';
 import { computed, reactive, ref, watch } from 'vue';
 import StatePanel from '../../components/StatePanel.vue';
+import EmptyState from '../../components/EmptyState.vue';
 import StatusBadge from '../../components/StatusBadge.vue';
 import { useResource } from '../../composables/useResource';
 import { api, ApiClientError } from '../../lib/api';
@@ -21,19 +22,7 @@ const announcements = useResource(() => api.get<AdminAnnouncement[]>('/announcem
 const documents = useResource(() => api.get<AdminDocument[]>('/documents'));
 const officers = useResource(() => props.section === 'officers' ? api.get<AdminOfficer[]>('/organization/officers') : Promise.resolve([]));
 
-const defaultAdminOfficers: AdminOfficer[] = [
-  { id: 'off-1', name: 'Bpk. H. Ahmad Dahlan', position: 'Ketua RT 005', department: 'PENGURUS_INTI', phone: '+62 812-3456-7890', email: 'ahmad.dahlan@wargahub.id', period: '2024 - 2027', orderIndex: 1, active: true },
-  { id: 'off-2', name: 'Bpk. Bambang Setiawan', position: 'Wakil Ketua RT', department: 'PENGURUS_INTI', phone: '+62 813-9876-5432', email: 'bambang@wargahub.id', period: '2024 - 2027', orderIndex: 2, active: true },
-  { id: 'off-3', name: 'Ibu Rina Pratiwi', position: 'Sekretaris RT', department: 'PENGURUS_INTI', phone: '+62 815-1122-3344', email: 'rina.pratiwi@wargahub.id', period: '2024 - 2027', orderIndex: 3, active: true },
-  { id: 'off-4', name: 'Ibu Hj. Siti Rahma', position: 'Bendahara RT', department: 'PENGURUS_INTI', phone: '+62 817-5566-7788', email: 'siti.rahma@wargahub.id', period: '2024 - 2027', orderIndex: 4, active: true },
-  { id: 'off-5', name: 'Bpk. Hendra Wijaya', position: 'Koordinator Ronda & Keamanan', department: 'SEKSI_KEAMANAN', phone: '+62 818-9900-1122', email: 'hendra.keamanan@wargahub.id', period: '2024 - 2027', orderIndex: 5, active: true },
-  { id: 'off-6', name: 'Bpk. Eko Prasetyo', position: 'Koordinator Kebersihan & Lingkungan', department: 'SEKSI_LINGKUNGAN', phone: '+62 819-3344-5566', email: 'eko.lingkungan@wargahub.id', period: '2024 - 2027', orderIndex: 6, active: true },
-];
-
-const adminOfficersList = computed(() => {
-  const raw = officers.data.value ?? [];
-  return raw.length > 0 ? raw : defaultAdminOfficers;
-});
+const adminOfficersList = computed(() => officers.data.value ?? []);
 
 interface OrganizationSettings { id: string; name: string; shortName: string; description: string; address: string; emergencyPhone: string; timezone: string; locale: string }
 interface ModuleSettings { billing: boolean; finance: boolean; patrol: boolean; complaints: boolean; activities: boolean; documents: boolean }
@@ -70,6 +59,22 @@ const filteredResidents = computed(() => (residents.data.value ?? []).filter(ite
 
 function chooseImport(event: Event) { importFile.value = (event.target as HTMLInputElement).files?.[0] ?? null; }
 function chooseDocument(event: Event) { documentFile.value = (event.target as HTMLInputElement).files?.[0] ?? null; }
+async function importHouseholds() {
+  if (!importFile.value) return;
+  busy.value = true;
+  try {
+    const csv = await importFile.value.text();
+    const result = await api.post<{ imported: number }>('/households/import', csv, { headers: { 'content-type': 'text/csv' } });
+    message.value = `${result.imported} rumah berhasil diimpor.`;
+    panelOpen.value = false;
+    importFile.value = null;
+    await households.reload();
+  } catch (cause) {
+    message.value = failureMessage(cause);
+  } finally {
+    busy.value = false;
+  }
+}
 function failureMessage(cause: unknown) { return cause instanceof ApiClientError || cause instanceof Error ? cause.message : 'Tindakan belum dapat diproses.'; }
 
 function openActionPanel(mode: 'csv' | 'household' | 'invite' | 'announcement' | 'document' | 'officer') {
@@ -184,6 +189,18 @@ async function updateOrganization() {
   }
 }
 
+async function updateModules() {
+  busy.value = true;
+  try {
+    await api.put('/settings/modules', { ...moduleForm });
+    message.value = 'Konfigurasi modul berhasil disimpan.';
+  } catch (cause) {
+    message.value = failureMessage(cause);
+  } finally {
+    busy.value = false;
+  }
+}
+
 watch(organization.data, (value) => {
   if (value) Object.assign(organizationForm, value);
 }, { immediate: true });
@@ -205,7 +222,7 @@ watch(modules.data, (value) => {
         <template v-if="section === 'residents'">
           <button class="button button-secondary" type="button" @click="openActionPanel('household')"><Plus :size="16" /> Tambah rumah</button>
           <button class="button button-secondary" type="button" @click="openActionPanel('invite')"><UserPlus :size="16" /> Undang warga</button>
-          <button class="button" type="button" @click="openActionPanel('csv')"><Upload :size="16" /> Impor CSV</button>
+          <button class="button" type="button" @click="openActionPanel('csv')"><Upload :size="16" /> Impor rumah CSV</button>
         </template>
         <template v-else-if="section === 'announcements'">
           <button class="button" type="button" @click="openActionPanel('announcement')"><Plus :size="16" /> Pengumuman baru</button>
@@ -296,6 +313,7 @@ watch(modules.data, (value) => {
     <template v-else-if="section === 'officers'">
       <StatePanel v-if="officers.loading.value" state="loading" />
       <StatePanel v-else-if="officers.error.value" state="error" :message="officers.error.value" @retry="officers.reload" />
+      <EmptyState v-else-if="!adminOfficersList.length" title="Belum ada pengurus tercatat" message="Tambahkan pengurus dari tombol di atas agar struktur organisasi tampil di sini." />
       <div v-else class="table-wrap">
         <table class="data-table">
           <thead>
@@ -400,7 +418,7 @@ watch(modules.data, (value) => {
               <span><strong>{{ mod.label }}</strong></span>
             </label>
           </div>
-          <button class="button" type="button">Simpan konfigurasi modul</button>
+          <button class="button" type="button" :disabled="busy" @click="updateModules">{{ busy ? 'Menyimpan…' : 'Simpan konfigurasi modul' }}</button>
         </section>
       </div>
     </template>
@@ -421,6 +439,12 @@ watch(modules.data, (value) => {
       </div>
 
       <!-- Form Pengurus Baru -->
+      <form v-if="panelMode === 'csv'" class="form-grid" @submit.prevent="importHouseholds">
+        <p class="muted">Impor data rumah secara atomik. Gunakan kolom: <code>code,address,rw,rt,block,occupancyStatus,ownershipStatus</code>.</p>
+        <div class="field"><label for="household-csv">Berkas CSV rumah</label><input id="household-csv" type="file" accept=".csv,text/csv" required @change="chooseImport" /></div>
+        <button class="button" type="submit" :disabled="busy || !importFile">{{ busy ? 'Mengimpor…' : 'Impor data rumah' }}</button>
+      </form>
+
       <form v-if="panelMode === 'officer'" class="form-grid" @submit.prevent="createOfficer">
         <div class="field"><label for="off-name">Nama Lengkap & Gelar</label><input id="off-name" v-model="officerForm.name" placeholder="Misal: Bpk. H. Bambang Sudirman" required /></div>
         <div class="field"><label for="off-pos">Jabatan Resmi</label><input id="off-pos" v-model="officerForm.position" placeholder="Misal: Ketua RT 03 / Sekretaris / Bendahara" required /></div>
@@ -463,7 +487,7 @@ watch(modules.data, (value) => {
 </template>
 
 <style scoped>
-.admin-page{display:grid;max-width:88rem;gap:1.2rem;margin-inline:auto}
+.admin-page{display:grid;max-width:var(--content);gap:1.2rem;margin-inline:auto}
 .admin-heading{display:flex;align-items:end;justify-content:space-between;gap:1rem}
 .heading-actions{display:flex;align-items:center;gap:.6rem}
 .admin-heading h1{margin-bottom:.4rem;font-size:clamp(2rem,4vw,3rem)}

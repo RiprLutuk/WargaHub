@@ -84,7 +84,7 @@ export function createApiClient(options: ApiClientOptions = {}) {
   async function request<T>(method: HttpMethod, path: string, body?: unknown, init: RequestInit = {}): Promise<T> {
     const headers = new Headers(init.headers);
     headers.set('accept', 'application/json');
-    if (body !== undefined && !(body instanceof FormData)) headers.set('content-type', 'application/json');
+    if (body !== undefined && !(body instanceof FormData) && !headers.has('content-type')) headers.set('content-type', 'application/json');
     const csrf = csrfToken();
     if (csrf && method !== 'GET') headers.set('x-csrf-token', csrf);
 

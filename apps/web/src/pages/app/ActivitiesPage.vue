@@ -79,14 +79,16 @@ async function saveContribution() {
             <span>Kontribusi Anda: <strong>{{ item.contribution }}</strong></span>
           </div>
         </div>
-        <button class="button button-secondary" type="button" @click="selectActivity(item)">Pilih kontribusi</button>
+        <button v-if="item.contribution === 'Belum memilih'" class="button button-secondary" type="button" @click="selectActivity(item)">Pilih kontribusi</button>
+        <span v-else class="contribution-status"><CheckCircle2 :size="16" /> Sudah memilih: <strong>{{ item.contribution }}</strong></span>
       </article>
     </div>
 
-    <section v-if="selected" class="card contribution-panel">
+    <div v-if="selected" class="contribution-modal" role="dialog" aria-modal="true" aria-labelledby="contribution-heading" @click.self="selected = null">
+    <section class="card contribution-panel">
       <div>
         <span class="eyebrow">{{ selected.title }}</span>
-        <h2>Bagaimana Anda ingin berkontribusi?</h2>
+        <h2 id="contribution-heading">Bagaimana Anda ingin berkontribusi?</h2>
         <p>Alasan dispensasi bersifat privat dan tidak ditampilkan kepada warga lain.</p>
       </div>
 
@@ -111,11 +113,12 @@ async function saveContribution() {
         </div>
       </form>
     </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.portal-page { display: grid; max-width: 78rem; gap: 1.2rem; margin-inline: auto; }
+.portal-page { display: grid; max-width: var(--content); gap: 1.2rem; margin-inline: auto; }
 .portal-page-heading h1 { margin-bottom: .45rem; font-size: clamp(2rem,4.5vw,3rem); }
 .portal-page-heading p { max-width: 44rem; margin: 0; color: var(--ink-650); }
 .activity-grid { display: grid; gap: .8rem; }
@@ -130,6 +133,8 @@ async function saveContribution() {
 .need-row { margin-top: .55rem; padding-top: .55rem; border-top: 1px solid var(--line); }
 .need-row span:first-child { color: var(--amber-700); font-weight: 750; }
 .contribution-panel { display: grid; gap: 1rem; padding: 1.3rem; }
+.contribution-modal { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgb(16 43 39 / .38); backdrop-filter: blur(5px); }
+.contribution-modal .contribution-panel { width: min(100%, 48rem); max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .contribution-panel > div:first-child p { color: var(--ink-650); }
 .contribution-options { display: grid; grid-template-columns: repeat(4,1fr); gap: .6rem; padding: 0; border: 0; }
 .contribution-options label { position: relative; }
@@ -137,6 +142,7 @@ async function saveContribution() {
 .contribution-options span { display: grid; min-height: 3.5rem; place-items: center; padding: .6rem; border: 1px solid var(--line); border-radius: .7rem; background: white; font-size: .76rem; font-weight: 750; text-align: center; cursor: pointer; }
 .contribution-options input:checked + span { border-color: var(--teal-700); background: var(--teal-100); color: var(--teal-800); box-shadow: 0 0 0 2px var(--teal-100); }
 .notice-error { background: var(--coral-100); color: var(--coral-700); }
+.contribution-status { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; color: var(--teal-700); font-size: .8rem; font-weight: 700; text-align: right; }
 @media(max-width:800px){.activity-card{grid-template-columns:auto 1fr}.activity-card>.button{grid-column:1/-1}.contribution-options{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.contribution-options{grid-template-columns:1fr}}
+@media(max-width:480px){.contribution-options{grid-template-columns:1fr}.contribution-status { grid-column: 1 / -1; justify-content: flex-start; text-align: left; }.contribution-modal { align-items: end; padding: .5rem; }.contribution-modal .contribution-panel { max-height: 94vh; border-radius: 1.1rem 1.1rem .8rem .8rem; }}
 </style>

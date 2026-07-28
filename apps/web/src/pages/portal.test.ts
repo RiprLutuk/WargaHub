@@ -66,10 +66,11 @@ describe('role-aware portal', () => {
     expect(wrapper.get('[role="status"]').attributes('aria-label')).toContain('Menunggu pemeriksaan');
   });
 
-  it('explains complaint privacy before submission', () => {
+  it('explains complaint privacy before submission', async () => {
     const wrapper = mount(ComplaintsPage, { global: residentGlobal });
 
     expect(wrapper.text()).toContain('Identitas Anda tidak ditampilkan kepada warga lain');
+    await wrapper.get('.portal-page-heading button').trigger('click');
     expect(wrapper.get('button[type="submit"]').text()).toContain('Kirim pengaduan');
   });
 

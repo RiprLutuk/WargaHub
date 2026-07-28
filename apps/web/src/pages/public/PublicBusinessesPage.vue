@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowUpRight, CheckCircle2, MessageCircle, Phone, Search, ShoppingBag, Store } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
 import StatePanel from '../../components/StatePanel.vue';
 import { useResource } from '../../composables/useResource';
@@ -17,7 +18,10 @@ interface PublicBusiness {
 }
 
 const search = ref('');
-const selectedCategory = ref('SEMUA');
+const route = useRoute();
+const router = useRouter();
+const selectedCategory = ref(String(route.query.kategori ?? 'SEMUA'));
+search.value = String(route.query.cari ?? '');
 const businesses = useResource(() => api.get<PublicBusiness[]>('/public/businesses'));
 
 const categories = computed(() => ['SEMUA', ...new Set(businesses.data.value?.map((b) => b.category) ?? [])]);
@@ -37,6 +41,22 @@ function formatWaLink(phone: string): string {
   const normalized = clean.startsWith('0') ? `62${clean.slice(1)}` : clean;
   return `https://wa.me/${normalized}?text=${encodeURIComponent('Halo, saya warga RT/RW ingin bertanya mengenai usaha/jasa Anda.')}`;
 }
+
+watch([search, selectedCategory], ([nextSearch, nextCategory]) => {
+  const query = {
+    ...route.query,
+    cari: nextSearch.trim() || undefined,
+    kategori: nextCategory !== 'SEMUA' ? nextCategory : undefined,
+  };
+  router.replace({ query });
+});
+
+watch(() => route.query, (query) => {
+  const nextCategory = String(query.kategori ?? 'SEMUA');
+  const nextSearch = String(query.cari ?? '');
+  if (selectedCategory.value !== nextCategory) selectedCategory.value = nextCategory;
+  if (search.value !== nextSearch) search.value = nextSearch;
+}, { deep: true });
 </script>
 
 <template>
@@ -119,24 +139,25 @@ function formatWaLink(phone: string): string {
 
 <style scoped>
 .public-page-shell {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
+  width: min(calc(100% - 3rem), 92rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
 }
 
 .page-header {
-  margin-bottom: 2.8rem;
-  max-width: 50rem;
+  margin-bottom: 2rem;
+  max-width: 56rem;
 }
 
 .header-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.38rem 0.85rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
   background: var(--teal-50);
   border: 1px solid var(--teal-200);
   color: var(--teal-800);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 800;
   margin-bottom: 1rem;
 }
@@ -146,26 +167,30 @@ function formatWaLink(phone: string): string {
 }
 
 .page-header h1 {
-  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-  font-weight: 850;
-  line-height: 1.15;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 650;
+  line-height: 1.12;
   color: var(--ink-950);
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.02em;
 }
 
 .header-desc {
-  font-size: 1.1rem;
-  line-height: 1.65;
+  max-width: 52rem;
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--ink-650);
   margin: 0;
 }
+.header-badge { padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--teal-700); letter-spacing: .08em; text-transform: uppercase; }
+.header-badge::before { width: 1.6rem; height: 2px; margin-right: .1rem; border-radius: 2px; background: var(--amber-500); content: ''; }
+.header-badge svg { display: none; }
 
 /* Controls & Filter Row */
 .controls-row {
   display: grid;
   gap: 1.2rem;
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.6rem;
 }
 
 .search-field {
@@ -232,15 +257,15 @@ function formatWaLink(phone: string): string {
 /* Grid Layout */
 .biz-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-  gap: 1.6rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .biz-card {
   display: flex;
   flex-direction: column;
-  padding: 1.8rem;
-  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  border-radius: 1.15rem;
   border: 1px solid var(--line);
   background: var(--paper);
   box-shadow: var(--shadow-sm);
@@ -263,13 +288,13 @@ function formatWaLink(phone: string): string {
 
 .icon-avatar {
   display: grid;
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 3.15rem;
+  height: 3.15rem;
   place-items: center;
-  border-radius: 1.1rem;
-  background: linear-gradient(135deg, var(--teal-100), var(--cream-100));
+  border-radius: 0.9rem;
+  background: var(--teal-50);
   color: var(--teal-700);
-  border: 1px solid var(--teal-200);
+  border: 1px solid var(--teal-100);
 }
 
 .header-tags {
@@ -282,10 +307,10 @@ function formatWaLink(phone: string): string {
 .category-chip {
   padding: 0.22rem 0.6rem;
   border-radius: 0.45rem;
-  background: var(--cream-100);
-  color: var(--ink-750);
-  font-size: 0.72rem;
-  font-weight: 800;
+  background: var(--teal-50);
+  color: var(--teal-800);
+  font-size: 0.66rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -296,33 +321,34 @@ function formatWaLink(phone: string): string {
   gap: 0.3rem;
   padding: 0.22rem 0.6rem;
   border-radius: 999px;
-  background: var(--teal-100);
+  background: var(--teal-50);
+  border: 1px solid var(--teal-100);
   color: var(--teal-800);
-  font-size: 0.73rem;
-  font-weight: 800;
+  font-size: 0.7rem;
+  font-weight: 650;
 }
 
 .card-body {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.9rem;
 }
 
 .biz-title {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.12rem;
+  font-weight: 650;
   line-height: 1.3;
   color: var(--ink-950);
   margin: 0 0 0.5rem;
 }
 
 .biz-desc {
-  font-size: 0.94rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.55;
   color: var(--ink-650);
   margin: 0 0 0.6rem;
 }
 
 .operating-hours {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--ink-500);
   font-weight: 700;
   margin: 0;
@@ -332,17 +358,17 @@ function formatWaLink(phone: string): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 1rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--line);
-  margin-top: auto;
+  margin-top: 0.8rem;
 }
 
 .phone-num {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.86rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 650;
   color: var(--ink-750);
 }
 
@@ -350,12 +376,12 @@ function formatWaLink(phone: string): string {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 0.7rem;
   background: var(--teal-700);
   color: white;
-  font-size: 0.84rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 650;
   text-decoration: none;
   transition: background 0.2s ease, transform 0.2s ease;
 }
@@ -371,5 +397,24 @@ function formatWaLink(phone: string): string {
   color: var(--ink-600);
   border-radius: var(--radius-lg);
   border: 1px dashed var(--line);
+}
+
+@media (max-width: 700px) {
+  .public-page-shell {
+    width: min(calc(100% - 1.25rem), 92rem);
+  }
+
+  .category-pills { flex-wrap: nowrap; margin-inline: -.625rem; padding-inline: .625rem; overflow-x: auto; scrollbar-width: none; }
+  .category-pills::-webkit-scrollbar { display: none; }
+  .pill-btn { flex: 0 0 auto; white-space: nowrap; }
+  .biz-grid { display: flex; gap: 1rem; margin-inline: 0; padding: .2rem .25rem .35rem; overflow-x: auto; scroll-padding-inline: .25rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .biz-grid::-webkit-scrollbar { display: none; }
+  .biz-card { flex: 0 0 min(84vw, 20rem); scroll-snap-align: start; }
+}
+
+@media (min-width: 701px) and (max-width: 1050px) {
+  .biz-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

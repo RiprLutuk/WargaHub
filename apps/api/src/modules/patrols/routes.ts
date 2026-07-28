@@ -81,6 +81,18 @@ export async function patrolRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
+  app.get('/patrol-assignments/available-targets', { preHandler: app.requirePermission('patrol.schedule.read') }, async (request) => {
+    if (!request.auth) throw new AppError(401, 'UNAUTHENTICATED', 'Silakan masuk.');
+    const result = await app.database.query<AssignmentRow>(
+      `SELECT id, user_id, starts_at, ends_at, area, status
+       FROM patrol_assignments
+       WHERE organization_id = $1 AND user_id <> $2 AND status IN ('SCHEDULED', 'SWAP_PENDING')
+       ORDER BY starts_at ASC LIMIT 100`,
+      [request.auth.organizationId, request.auth.id],
+    );
+    return success(request, result.rows.map((row) => ({ id: row.id, startsAt: new Date(row.starts_at).toISOString(), endsAt: new Date(row.ends_at).toISOString(), area: row.area, status: row.status })));
+  });
+
   app.post(
     '/patrol-assignments',
     { preHandler: app.requirePermission('patrol.schedule.manage') },

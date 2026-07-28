@@ -51,6 +51,34 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
     });
   });
 
+  app.get('/public/letters/verify/:token', async (request) => {
+    const token = z.string().trim().min(8).max(120).parse((request.params as { token?: string }).token);
+    const result = await app.database.query<{
+      letter_number: string | null;
+      letter_type: string;
+      purpose: string;
+      issued_at: string | null;
+      organization_name: string;
+    }>(
+      `SELECT lr.letter_number, lr.letter_type, lr.purpose, lr.issued_at,
+              o.name AS organization_name
+       FROM letter_requests lr
+       JOIN organizations o ON o.id = lr.organization_id
+       WHERE lr.verification_token = $1 AND lr.status = 'ISSUED'`,
+      [token],
+    );
+    const row = result.rows[0];
+    if (!row) throw new AppError(404, 'LETTER_NOT_FOUND', 'Surat tidak ditemukan atau belum diterbitkan.');
+    return success(request, {
+      valid: true,
+      letterNumber: row.letter_number ?? '',
+      type: row.letter_type,
+      purpose: row.purpose,
+      organizationName: row.organization_name,
+      issuedAt: row.issued_at ?? new Date().toISOString(),
+    });
+  });
+
   app.get('/public/announcements', async (request) => {
     const query = pageQuerySchema.parse(request.query);
     const organization = await publicOrganization(app);
@@ -223,6 +251,38 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       [organization.id],
     );
 
+    // Only expose the fields needed for public accountability. Transaction ids,
+    // descriptions, payer names, and proof references stay private.
+    const entriesResult = await app.database.query<{
+      kind: 'INCOME' | 'EXPENSE';
+      category: string;
+      amount: string;
+      occurred_at: Date;
+    }>(
+      `SELECT kind, category, amount::text, occurred_at
+       FROM finance_transactions
+       WHERE organization_id = $1 AND status = 'POSTED'
+       ORDER BY occurred_at DESC
+       LIMIT 60`,
+      [organization.id],
+    );
+
+    const monthlyResult = await app.database.query<{
+      period: string;
+      income: string;
+      expense: string;
+    }>(
+      `SELECT to_char(date_trunc('month', occurred_at), 'YYYY-MM') AS period,
+         COALESCE(SUM(amount) FILTER (WHERE kind = 'INCOME'), 0)::text AS income,
+         COALESCE(SUM(amount) FILTER (WHERE kind = 'EXPENSE'), 0)::text AS expense
+       FROM finance_transactions
+       WHERE organization_id = $1 AND status = 'POSTED'
+       GROUP BY date_trunc('month', occurred_at)
+       ORDER BY date_trunc('month', occurred_at) DESC
+       LIMIT 12`,
+      [organization.id],
+    );
+
     const inflow = BigInt(aggregateResult.rows[0]?.posted_inflow ?? '0');
     const outflow = BigInt(aggregateResult.rows[0]?.posted_outflow ?? '0');
 
@@ -236,6 +296,17 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       totalExpenses: outflow.toString(),
       currentBalance: (inflow - outflow).toString(),
       pendingVerificationsCount: pendingResult.rows[0]?.pending_count ?? 0,
+      entries: entriesResult.rows.map((row) => ({
+        kind: row.kind,
+        category: row.category,
+        amount: Number(row.amount),
+        occurredAt: new Date(row.occurred_at).toISOString(),
+      })),
+      monthly: monthlyResult.rows.map((row) => ({
+        period: row.period,
+        income: Number(row.income),
+        expense: Number(row.expense),
+      })),
       updatedAt: new Date().toISOString(),
     });
   });
@@ -300,7 +371,9 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       updated_at: Date;
     }>(
       `SELECT id, ticket_number, category, title, description, location, priority, status, created_at, updated_at
-       FROM complaints WHERE organization_id = $1 ORDER BY created_at DESC LIMIT 50`,
+       FROM complaints
+       WHERE organization_id = $1 AND visibility = 'PUBLIC' AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 50`,
       [organization.id],
     );
 
