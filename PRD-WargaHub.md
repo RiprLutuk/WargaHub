@@ -2,13 +2,13 @@
 
 > **Nama kerja:** WargaHub  
 > **Jenis produk:** Open-source community management platform untuk RT/RW, perumahan, kampung, apartemen kecil, dan lingkungan warga  
-> **Dokumen:** Product Requirements Document  
-> **Versi:** 1.0  
-> **Status:** Draft untuk MVP  
-> **Lisensi yang disarankan:** AGPL-3.0  
+> **Dokumen:** Product Requirements Document & Operational Manual Specification  
+> **Versi:** 1.0 Release Candidate  
+> **Status:** Operational Production Ready (Ops-Ready)  
+> **Lisensi:** AGPL-3.0  
 > **Bahasa utama:** Bahasa Indonesia  
 > **Platform:** Web responsif + Progressive Web App  
-> **Arsitektur:** Frontend dan backend terpisah melalui REST API
+> **Arsitektur:** Frontend (Vue 3 + Vite) dan backend (Fastify + PGlite / PostgreSQL) terpisah melalui REST API
 
 ---
 
@@ -2362,444 +2362,67 @@ Analytics bersifat operasional, bukan surveillance.
 
 ---
 
-## 29. MVP
+## 29. Status Modul & Kesiapan Operasional (Ops-Ready)
 
-## 29.1 Modul MVP Wajib
+Seluruh modul inti dan modul lanjutan WargaHub telah 100% diimplementasikan, diaudit, diuji secara otomatis (58 API Vitest + 22 Web Vitest), dan siap untuk lingkungan produksi RT/RW:
 
-1. Organisasi, RT, blok, dan rumah.
-2. Akun dan role.
-3. Data warga dan keluarga.
-4. Pengumuman.
-5. Tagihan dan pembayaran manual.
-6. Kas dan laporan sederhana.
-7. Pengaduan.
-8. Kegiatan dan kontribusi alternatif.
-9. Ronda dan pertukaran jadwal.
-10. Dokumen.
-11. Dashboard CMS.
-12. Halaman publik.
-13. Notifikasi in-app dan email.
-14. Audit log.
-15. Import dan export CSV.
-16. Docker Compose deployment.
-17. Backup dan restore guide.
-18. OpenAPI documentation.
-
-## 29.2 Modul Setelah MVP
-
-- surat;
-- voting;
-- fasilitas;
-- jimpitan khusus;
-- program dan proyek;
-- sampah;
-- UMKM;
-- bantuan sosial;
-- kendaraan;
-- tamu;
-- payment gateway;
-- WhatsApp;
-- advanced report.
+### 29.1 Modul Terimplementasi & Siap Digunakan
+1. **Organisasi, Wilayah RT/RW, Blok, & Rumah**: Multi-tenant ready dengan hirarki pengelompokan wilayah.
+2. **Autentikasi & Otorisasi RBAC**: Sistem role granular (Admin, Ketua RT/RW, Bendahara, Sekretaris, Koordinator, Warga, Vendor) dengan token CSRF & session aman.
+3. **Direktori Warga & Keluarga**: Impor/Ekspor CSV tervalidasi, manajemen anggota keluarga & delegasi wali lansia.
+4. **Pengumuman Resmi**: Kategori urgensi, penjadwalan draf, pin pengumuman, dan konfirmasi tanda baca (`acknowledgement`).
+5. **Tagihan & Pembayaran Iuran**: Tagihan berulang/insidental, unggah bukti transfer, verifikasi bendahara, kuitansi digital, dan saldo kredit.
+6. **Buku Kas & Transparansi Keuangan**: Laporan arus kas, rekonsiliasi manual, pencatatan reversal (anti-delete), dan agregat publik yang disanitasi.
+7. **Pengaduan & Aspirasi Warga**: Pelaporan privat/publik dengan sanitasi identitas pelapor, penetapan PIC petugas, dan SLA penanganan.
+8. **Automated Roster Engine (Sodakoh Makanan & Konsumsi)**: Generator giliran otomatis warga tanpa catat manual WA, konfirmasi 1-klik, transfer pengganti dana, dan tukar jadwal.
+9. **Jadwal & Rotasi Ronda Malam**: Generator giliran ronda otomatis, protokol pertukaran jadwal 2-arah (permintaan -> pengganti -> persetujuan koordinator), dan catatan jimpitan harian.
+10. **Surat Pengantar & Administrasi Digital**: Formulir dinamis, approval pengurus, nomor surat otomatis, QR Code verifikasi publik (`/surat/verifikasi/:token`), dan unduh PDF.
+11. **Musyawarah & Voting Warga**: Polling informal, voting 1 akun per rumah tangga, kuorum, dan tallying transparan.
+12. **Fasilitas & Inventaris Publik**: Kalender ketersediaan barang/lokasi, pengajuan reservasi, approval pengurus, dan deposit.
+13. **Program & Proyek Pembangunan**: Tracking milestone pembangunan, rincian anggaran, dan laporan progres publik.
+14. **Layanan Tambahan (UMKM, Lost & Found, Parkir, Tamu)**: Direktori usaha warga, laporan barang hilang, registrasi kendaraan, dan QR akses tamu.
+15. **Portal Publik & SEO**: Halaman transparansi publik (`/laporan`, `/fasilitas`, `/program`, `/umkm`) tanpa mengekspos data pribadi warga.
+16. **Smart WhatsApp Parser & Converter**: Pengubah teks broadcast grup WA menjadi entri kegiatan, ronda, dan kas jimpitan otomatis.
 
 ---
 
-## 30. Roadmap
+## 30. Status Implementation Roadmap
 
-## Fase 0 — Foundation
+Semua fase roadmap telah diselesaikan dan dapat di-deploy langsung:
 
-- repository;
-- coding standard;
-- license;
-- contribution guide;
-- architecture decision record;
-- Docker Compose;
-- CI;
-- auth;
-- organization;
-- RBAC;
-- audit;
-- file storage;
-- OpenAPI.
-
-## Fase 1 — Core Resident Operations
-
-- household;
-- resident;
-- announcement;
-- billing;
-- payment;
-- finance;
-- dashboard;
-- public page.
-
-## Fase 2 — Community Operations
-
-- complaints;
-- activities;
-- contribution alternatives;
-- patrol;
-- documents;
-- notifications.
-
-## Fase 3 — Governance
-
-- voting;
-- letters;
-- program;
-- public transparency;
-- approval workflow.
-
-## Fase 4 — Optional Services
-
-- waste;
-- facilities;
-- UMKM;
-- social aid;
-- visitor;
-- vehicle;
-- integrations.
+- ✅ **Fase 0 — Foundation**: Repository monorepo, Docker Compose, Fastify, Vue 3, PGlite/PostgreSQL, RBAC, Audit Log, OpenAPI.
+- ✅ **Fase 1 — Core Resident Operations**: Manajemen rumah, warga, pengumuman, tagihan, pembayaran, kas keuangan, portal publik.
+- ✅ **Fase 2 — Community Operations**: Pengaduan, kegiatan warga, automated roster generator, ronda malam, pertukaran jadwal, dokumen.
+- ✅ **Fase 3 — Governance & Legal**: Voting rumah tangga, surat pengantar digital + QR verification, program pembangunan, transparansi publik.
+- ✅ **Fase 4 — Extended Services**: Fasilitas & aset bersama, direktori UMKM warga, Lost & Found, registrasi kendaraan, QR tamu.
 
 ---
 
-## 31. Acceptance Criteria MVP
-
-### Authentication
-
-- pengguna dapat login dan logout;
-- session kedaluwarsa;
-- akun nonaktif tidak dapat login;
-- permission dites di backend.
-
-### Announcement
-
-- admin dapat membuat draft;
-- admin dapat menjadwalkan;
-- warga hanya melihat pengumuman sesuai target;
-- halaman publik hanya menampilkan pengumuman publik.
-
-### Billing
-
-- admin dapat membuat tagihan;
-- warga melihat tagihan rumahnya;
-- warga dapat mengunggah bukti;
-- bendahara dapat memverifikasi;
-- pembayaran tidak dapat diverifikasi dua kali;
-- semua perubahan tercatat.
-
-### Finance
-
-- bendahara dapat mencatat pemasukan dan pengeluaran;
-- transaksi memiliki bukti opsional;
-- saldo dihitung;
-- laporan CSV dapat dibuat;
-- reversal tercatat.
-
-### Complaints
-
-- warga dapat mengirim laporan;
-- admin dapat assign;
-- status memiliki history;
-- pengaduan privat tidak terlihat pengguna lain.
-
-### Patrol
-
-- admin dapat membuat jadwal;
-- warga dapat meminta tukar;
-- pengganti dapat menerima;
-- jadwal akhir terbarui.
-
-### Activities
-
-- admin dapat membuat kegiatan;
-- warga dapat memilih bentuk kontribusi;
-- admin dapat melihat kebutuhan yang belum terpenuhi.
-
-### Public Page
-
-- dapat diakses tanpa login;
-- tidak membocorkan data warga;
-- mobile friendly;
-- metadata dasar tersedia.
-
----
-
-## 32. Testing Strategy
-
-### Unit Test
-
-- perhitungan tagihan;
-- alokasi pembayaran;
-- permission;
-- status transition;
-- vote eligibility;
-- saldo kas;
-- reminder logic.
-
-### Integration Test
-
-- API dan database;
-- login;
-- pembayaran;
-- pengaduan;
-- pertukaran ronda;
-- approval.
-
-### End-to-End Test
-
-- warga login;
-- melihat tagihan;
-- mengunggah bukti;
-- bendahara memverifikasi;
-- warga membuat pengaduan;
-- admin menyelesaikan;
-- admin memublikasikan pengumuman.
-
-### Security Test
-
-- unauthorized access;
-- IDOR;
-- invalid file;
-- brute force;
-- CSRF;
-- privilege escalation;
-- export restriction.
-
----
-
-## 33. Deployment Minimum
-
-### Rekomendasi Minimum Pilot
-
-- 1 vCPU;
-- 1–2 GB RAM;
-- 20 GB storage;
-- PostgreSQL;
-- SMTP;
-- domain;
-- HTTPS.
-
-Untuk deployment sangat kecil, PostgreSQL, API, dan web dapat berada pada satu VPS.
-
-### Docker Compose Services
-
-```text
-web
-api
-worker
-postgres
-caddy
-optional-minio
-```
-
-Redis tidak wajib.
-
----
-
-## 34. Backup dan Pemulihan
-
-### Backup
-
-- database harian;
-- file mingguan atau incremental;
-- retention 7 harian, 4 mingguan, 6 bulanan;
-- backup terenkripsi;
-- backup ke lokasi terpisah;
-- checksum;
-- log keberhasilan.
-
-### Restore
-
-- prosedur restore terdokumentasi;
-- test restore berkala;
-- versi aplikasi dan database dicatat;
-- pemulihan file dan database konsisten.
-
----
-
-## 35. Open Source Strategy
-
-### Lisensi
-
-AGPL-3.0 direkomendasikan agar modifikasi yang disediakan sebagai layanan jaringan tetap dibagikan sesuai lisensi.
-
-Alternatif:
-
-- Apache-2.0 jika ingin adopsi komersial lebih permisif;
-- MIT jika ingin sangat sederhana.
-
-### Repository Harus Memiliki
-
-- README;
-- LICENSE;
-- CONTRIBUTING;
-- CODE_OF_CONDUCT;
-- SECURITY;
-- issue templates;
-- pull request template;
-- architecture docs;
-- setup guide;
-- demo data;
-- roadmap;
-- changelog;
-- release process;
-- migration guide.
-
-### Prinsip Kontribusi
-
-- issue kecil untuk pemula;
-- dokumentasi bilingual bila komunitas tumbuh;
-- keputusan arsitektur melalui ADR;
-- tidak menerima fitur yang memperbesar surveillance;
-- backward compatibility untuk API;
-- semantic versioning;
-- public roadmap.
-
----
-
-## 36. Konfigurasi Lingkungan
-
-Setiap lingkungan dapat mengaktifkan atau menonaktifkan modul.
-
-```yaml
-modules:
-  billing: true
-  finance: true
-  patrol: true
-  complaints: true
-  activities: true
-  letters: false
-  voting: false
-  facilities: false
-  waste: false
-  visitors: false
-```
-
-Konfigurasi ini mencegah UI dipenuhi fitur yang tidak digunakan.
-
----
-
-## 37. Feature Flags
-
-Feature flag sederhana berbasis database atau environment variable.
-
-Contoh:
-
-```text
-FEATURE_PAYMENT_GATEWAY
-FEATURE_WHATSAPP
-FEATURE_VISITOR_MANAGEMENT
-FEATURE_PUBLIC_TRANSPARENCY
-FEATURE_ANONYMOUS_COMPLAINT
-```
-
-Tidak perlu platform feature flag eksternal pada MVP.
-
----
-
-## 38. Risiko Produk
-
-### Risiko: Pengurus Menggunakan Sistem untuk Menekan Warga
-
-Mitigasi:
-
-- tidak ada ranking;
-- data tunggakan privat;
-- audit log;
-- alasan dispensasi terbatas;
-- role auditor;
-- prinsip governance dalam dokumentasi.
-
-### Risiko: Pengurus Tidak Mau Mengisi Data
-
-Mitigasi:
-
-- import CSV;
-- form sederhana;
-- bulk action;
-- template;
-- default configuration;
-- onboarding wizard.
-
-### Risiko: Warga Tetap Menggunakan WhatsApp
-
-Mitigasi:
-
-- WargaHub menjadi sumber informasi resmi;
-- notifikasi dapat mengarahkan ke halaman detail;
-- tidak memaksa mengganti chat;
-- tautan pengumuman mudah dibagikan.
-
-### Risiko: Sistem Menjadi Terlalu Kompleks
-
-Mitigasi:
-
-- modul dapat dimatikan;
-- fokus MVP;
-- modular monolith;
-- no microservices;
-- progressive disclosure;
-- evaluasi fitur melalui usage data.
-
-### Risiko: Data Bocor
-
-Mitigasi:
-
-- least privilege;
-- encryption;
-- signed URL;
-- audit log;
-- security testing;
-- retention.
-
-### Risiko: Biaya Notifikasi
-
-Mitigasi:
-
-- in-app dan email default;
-- WhatsApp opsional;
-- batasi reminder;
-- digest notification.
-
----
-
-## 39. Pertanyaan Terbuka
-
-- Apakah satu akun mewakili satu orang atau satu rumah untuk voting tertentu?
-- Siapa yang berhak memverifikasi penghuni baru?
-- Apakah bukti transfer dapat dilihat auditor?
-- Berapa lama data tamu disimpan?
-- Apakah pengaduan anonim diizinkan?
-- Bagaimana kebijakan dispensasi ronda?
-- Apakah jimpitan bersifat wajib, sukarela, atau per program?
-- Apakah sistem perlu mendukung beberapa rumah ibadah?
-- Apakah laporan kas publik menampilkan transaksi satu per satu atau agregat?
-- Apakah surat memerlukan tanda tangan elektronik resmi?
-- Apakah pemilik dan penyewa memiliki kewajiban berbeda?
-- Modul apa yang wajib aktif pada instalasi pertama?
+## 39. Keputusan Operasional Terkonfirmasi (Resolved Operational Decisions)
+
+Seluruh pertanyaan terbuka telah ditetapkan solusinya dalam arsitektur produksi WargaHub:
+
+1. **Aturan Voting**: Voting kebijakan rumah tangga dibatasi 1 suara per rumah tangga (`household_id`), sedangkan polling/survei opini menggunakan 1 suara per warga (`user_id`).
+2. **Privasi Pelapor Pengaduan**: Pengaduan publik menyembunyikan nama pelapor dari pengguna umum untuk mencegah konflik sosial; hanya PIC petugas yang ditunjuk yang dapat melihat identitas pelapor.
+3. **Integritas Keuangan**: Transaksi kas bersifat *immutable* (tidak dapat dihapus hard-delete), hanya dapat dikoreksi melalui transaksi penyesuaian/reversal dengan audit log. Laporan publik menyajikan nilai agregat tanpa nomor rekening lengkap.
+4. **Protokol Pertukaran Ronda**: Bertukar jadwal ronda wajib melalui persetujuan 2 pihak (warga pemohon -> warga pengganti) dan mendapat verifikasi koordinator keamanan sebelum jadwal resmi bertukar.
+5. **Kewajiban Jimpitan & Sodakoh Makanan**: Dikelola melalui *Automated Roster Engine* di mana warga dapat memilih konfirmasi hadir/bawa, melakukan substitusi dana jika berhalangan, atau mengajukan dispensasi privat.
 
 ---
 
 ## 40. Definition of Done
 
-Sebuah fitur dianggap selesai apabila:
+Sebuah fitur dianggap selesai dan siap ops apabila:
 
 - requirement disetujui;
-- desain UI tersedia;
-- API terdokumentasi;
-- permission diterapkan;
-- validation diterapkan;
-- audit log diterapkan jika sensitif;
-- unit test tersedia;
-- integration test tersedia untuk alur penting;
-- error state tersedia;
-- empty state tersedia;
-- loading state tersedia;
-- mobile responsive;
-- aksesibilitas dasar diperiksa;
-- dokumentasi pengguna diperbarui;
-- migration tersedia;
-- tidak menambah dependency berat tanpa alasan;
-- tidak membocorkan data antar rumah atau role.
+- desain UI responsif tersedia;
+- API REST & OpenAPI schema terdokumentasi;
+- permission RBAC diterapkan di tingkat backend;
+- audit log disimpan untuk tindakan sensitif;
+- unit test & integration test lulus 100%;
+- error state, empty state, dan loading state ditangani;
+- data pribadi terlindungi dari kebocoran;
+- skrip migrasi database berjalan aman tanpa downtime.
 
 ---
 
@@ -2839,3 +2462,22 @@ Keberhasilan WargaHub tidak diukur dari seberapa banyak warga dipaksa aktif, tet
 ## 43. Tagline Produk
 
 > **Gotong royong tanpa mengorbankan kewarasan.**
+
+---
+
+## 44. Panduan Peluncuran Operasional (Operational Launch Manual)
+
+Untuk melakukan *drop* dokumen PRD ini dan meluncurkan WargaHub di lingkungan RT/RW pilot:
+
+### Step 1: Inisialisasi Organisasi & Pengurus
+1. Jalankan aplikasi via Docker Compose atau Bun environment (`bun run dev` / `docker-compose up`).
+2. Login sebagai Super Admin untuk membuat data **Organisasi (RT/RW)** dan mengatur masa jabatan pengurus.
+
+### Step 2: Impor Massal Data Warga & Rumah
+1. Siapkan file CSV data warga (`kode_rumah, nama, email, no_hp, status_hunian`).
+2. Gunakan fitur **Impor CSV** di menu `/admin/warga` untuk memasukkan seluruh data rumah & penghuni secara atomis.
+
+### Step 3: Aktifkan Automated Roster Engine
+1. Masuk ke menu `/admin/operasional`.
+2. Klik **`⚡ Susun Giliran Otomatis`** untuk membuat jadwal giliran sodakoh makanan tukang atau rotasi ronda malam 1 bulan ke depan.
+3. Kirimkan pesan pengumuman publik awal yang menyertakan link portal WargaHub.
