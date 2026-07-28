@@ -14,7 +14,7 @@ interface PublicBusiness {
   address?: string | null;
 }
 
-const businesses = useResource(() => api.get<PublicBusiness[]>('/businesses'));
+const businesses = useResource(() => api.get<PublicBusiness[]>('/public/businesses'));
 </script>
 
 <template>

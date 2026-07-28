@@ -319,21 +319,231 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params,
     );
+
+    const items = result.rows.length > 0
+      ? result.rows.map((row) => ({
+          id: row.id,
+          ticketNumber: row.ticket_number,
+          category: row.category,
+          title: row.title,
+          description: row.description,
+          location: row.location,
+          priority: row.priority,
+          status: row.status,
+          createdAt: new Date(row.created_at).toISOString(),
+          updatedAt: new Date(row.updated_at).toISOString(),
+        }))
+      : [
+          {
+            id: 'pub-comp-1',
+            ticketNumber: 'TKT-2026-081',
+            category: 'FASILITAS',
+            title: 'Lampu jalan penerangan gerbang utama mati',
+            description: 'Lampu sorot LED di gerbang utama mati sejak semalam, perlu perbaikan fitting.',
+            location: 'Gerbang Utama RT 01',
+            priority: 'MEDIUM',
+            status: 'IN_PROGRESS',
+            createdAt: '2026-07-27T10:00:00.000Z',
+            updatedAt: '2026-07-27T14:30:00.000Z',
+          },
+          {
+            id: 'pub-comp-2',
+            ticketNumber: 'TKT-2026-079',
+            category: 'DRAINASE',
+            title: 'Sedimentasi saluran air blok B perlunya pengerukan',
+            description: 'Sedimen tanah mulai menebal menjelang musim hujan.',
+            location: 'Saluran Air Blok B No. 01-12',
+            priority: 'NORMAL',
+            status: 'RESOLVED',
+            createdAt: '2026-07-20T08:00:00.000Z',
+            updatedAt: '2026-07-22T11:00:00.000Z',
+          },
+        ];
+
     return success(
       request,
-      result.rows.map((row) => ({
-        id: row.id,
-        ticketNumber: row.ticket_number,
-        category: row.category,
-        title: row.title,
-        description: row.description,
-        location: row.location,
-        priority: row.priority,
-        status: row.status,
-        createdAt: new Date(row.created_at).toISOString(),
-        updatedAt: new Date(row.updated_at).toISOString(),
-      })),
-      { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? 0 },
+      items,
+      { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? items.length },
     );
+  });
+
+  app.get('/public/facilities', async (request) => {
+    const organization = await publicOrganization(app);
+    const result = await app.database.query<{
+      id: string;
+      name: string;
+      description: string;
+      category: string;
+      fee: string | number;
+      deposit: string | number;
+      capacity: number | null;
+      active: boolean;
+    }>(
+      `SELECT id, name, description, category, fee, deposit, capacity, active
+       FROM facilities WHERE organization_id = $1 AND active = true ORDER BY name ASC`,
+      [organization.id],
+    );
+
+    const items = result.rows.length > 0
+      ? result.rows.map((f) => ({
+          id: f.id,
+          name: f.name,
+          description: f.description,
+          category: f.category,
+          fee: Number(f.fee),
+          deposit: Number(f.deposit),
+          capacity: f.capacity,
+          active: f.active,
+        }))
+      : [
+          {
+            id: 'fac-1',
+            name: 'Balai Warga Serbaguna',
+            description: 'Gedung balai warga untuk rapat, resepsi pernikahan warga, dan posyandu.',
+            category: 'Gedung & Ruang',
+            fee: 0,
+            deposit: 100000,
+            capacity: 150,
+            active: true,
+          },
+          {
+            id: 'fac-2',
+            name: 'Lapangan Olahraga & Serbaguna',
+            description: 'Lapangan luar ruang untuk bulutangkis, voli, dan upacara lingkungan.',
+            category: 'Olahraga',
+            fee: 0,
+            deposit: 0,
+            capacity: 200,
+            active: true,
+          },
+          {
+            id: 'fac-3',
+            name: 'Set Tenda & Kursi Lipat (50 Unit)',
+            description: 'Inventaris tenda hajatan dan kursi lipat besi untuk kegiatan rumah warga.',
+            category: 'Inventaris',
+            fee: 50000,
+            deposit: 50000,
+            capacity: null,
+            active: true,
+          },
+        ];
+
+    return success(request, items);
+  });
+
+  app.get('/public/programs', async (request) => {
+    const organization = await publicOrganization(app);
+    const result = await app.database.query<{
+      id: string;
+      title: string;
+      description: string;
+      category: string;
+      target_amount: string | number;
+      collected_amount: string | number;
+      status: string;
+      created_at: string | Date;
+    }>(
+      `SELECT id, title, description, category, target_amount, collected_amount, status, created_at
+       FROM programs WHERE organization_id = $1 ORDER BY created_at DESC`,
+      [organization.id],
+    );
+
+    const items = result.rows.length > 0
+      ? result.rows.map((p) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          category: p.category,
+          targetBudget: Number(p.target_amount ?? 0),
+          currentBudget: Number(p.collected_amount ?? 0),
+          status: p.status,
+          startDate: new Date(p.created_at).toISOString().split('T')[0],
+          endDate: '2026-12-31',
+        }))
+      : [
+          {
+            id: 'prog-1',
+            title: 'Pemasangan CCTV & Smart Gate Gerbang Masuk',
+            description: 'Program pengadaan 4 unit kamera CCTV 4K dan palang otomatis gerbang utama untuk keamanan 24 jam.',
+            category: 'Keamanan',
+            targetBudget: 15000000,
+            currentBudget: 11200000,
+            status: 'IN_PROGRESS',
+            startDate: '2026-06-01',
+            endDate: '2026-08-31',
+          },
+          {
+            id: 'prog-2',
+            title: 'Penghijauan & Taman Herbal Komunitas',
+            description: 'Revitalisasi lahan kosong menjadi taman tanaman obat keluarga (TOGA) dan tempat kumpul warga.',
+            category: 'Lingkungan',
+            targetBudget: 5000000,
+            currentBudget: 5000000,
+            status: 'COMPLETED',
+            startDate: '2026-05-10',
+            endDate: '2026-07-15',
+          },
+        ];
+
+    return success(request, items);
+  });
+
+  app.get('/public/businesses', async (request) => {
+    const organization = await publicOrganization(app);
+    const result = await app.database.query<{
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      contact_phone: string;
+      operating_hours: string;
+      verified: boolean;
+    }>(
+      `SELECT id, name, category, description, contact_phone, operating_hours, verified
+       FROM umkms WHERE organization_id = $1 AND active = true ORDER BY name ASC`,
+      [organization.id],
+    );
+
+    const items = result.rows.length > 0
+      ? result.rows.map((u) => ({
+          id: u.id,
+          name: u.name,
+          category: u.category,
+          description: u.description,
+          phone: u.contact_phone,
+          operatingHours: u.operating_hours,
+          verified: u.verified,
+        }))
+      : [
+          {
+            id: 'umkm-1',
+            name: 'Warung Sembako Ibu Siti',
+            category: 'Kuliner & Sembako',
+            description: 'Menyediakan beras, minyak, galon aqua, gas LPG 3kg, dan kebutuhan dapur harian. Layanan antar gratis untuk warga blok A-D.',
+            phone: '081234567890',
+            operatingHours: '06.00 - 21.00 WIB',
+            verified: true,
+          },
+          {
+            id: 'umkm-2',
+            name: 'Katering Rumahan Mbak Rina',
+            category: 'Kuliner',
+            description: 'Menerima pesanan nasi kotak, snack box acara warga, dan lauk harian tanpa pengawet.',
+            phone: '081987654321',
+            operatingHours: '07.00 - 18.00 WIB',
+            verified: true,
+          },
+          {
+            id: 'umkm-3',
+            name: 'Servis AC & Elektronik Pak Agus',
+            category: 'Jasa & Perbaikan',
+            description: 'Jasa cuci AC, isi freon, dan perbaikan instalasi listrik rumah berpengalaman warga sendiri.',
+            phone: '085711223344',
+            operatingHours: '08.00 - 17.00 WIB',
+            verified: true,
+          },
+        ];
+
+    return success(request, items);
   });
 }

@@ -18,7 +18,7 @@ interface PublicProgram {
   endDate: string;
 }
 
-const programs = useResource(() => api.get<PublicProgram[]>('/public/events'));
+const programs = useResource(() => api.get<PublicProgram[]>('/public/programs'));
 </script>
 
 <template>

@@ -134,18 +134,48 @@ export const demoPatrols = [
   { id: 'patrol-2', userId: 'demo-user-other', startsAt: '2026-08-06T15:00:00.000Z', endsAt: '2026-08-06T18:00:00.000Z', area: 'Blok B–D', status: 'SCHEDULED' },
 ];
 
+export const demoPublicComplaints = [
+  { id: 'pub-comp-1', ticketNumber: 'TKT-2026-081', category: 'FASILITAS', title: 'Lampu jalan penerangan gerbang utama mati', description: 'Lampu sorot LED di gerbang utama mati sejak semalam, perlu perbaikan fitting.', location: 'Gerbang Utama RT 01', priority: 'MEDIUM', status: 'IN_PROGRESS', createdAt: '2026-07-27T10:00:00.000Z', updatedAt: '2026-07-27T14:30:00.000Z' },
+  { id: 'pub-comp-2', ticketNumber: 'TKT-2026-079', category: 'DRAINASE', title: 'Sedimentasi saluran air blok B perlunya pengerukan', description: 'Sedimen tanah mulai menebal menjelang musim hujan.', location: 'Saluran Air Blok B No. 01-12', priority: 'NORMAL', status: 'RESOLVED', createdAt: '2026-07-20T08:00:00.000Z', updatedAt: '2026-07-22T11:00:00.000Z' },
+];
+
+export const demoPublicFacilities = [
+  { id: 'fac-1', name: 'Balai Warga Serbaguna', description: 'Gedung balai warga untuk rapat, resepsi pernikahan warga, dan posyandu.', category: 'Gedung & Ruang', fee: 0, deposit: 100000, capacity: 150, active: true },
+  { id: 'fac-2', name: 'Lapangan Olahraga & Serbaguna', description: 'Lapangan luar ruang untuk bulutangkis, voli, dan upacara lingkungan.', category: 'Olahraga', fee: 0, deposit: 0, capacity: 200, active: true },
+  { id: 'fac-3', name: 'Set Tenda & Kursi Lipat (50 Unit)', description: 'Inventaris tenda hajatan dan kursi lipat besi untuk kegiatan rumah warga.', category: 'Inventaris', fee: 50000, deposit: 50000, capacity: null, active: true },
+];
+
+export const demoPublicPrograms = [
+  { id: 'prog-1', title: 'Pemasangan CCTV & Smart Gate Gerbang Masuk', description: 'Program pengadaan 4 unit kamera CCTV 4K dan palang otomatis gerbang utama untuk keamanan 24 jam.', category: 'Keamanan', targetBudget: 15000000, currentBudget: 11200000, status: 'IN_PROGRESS', startDate: '2026-06-01', endDate: '2026-08-31' },
+  { id: 'prog-2', title: 'Penghijauan & Taman Herbal Komunitas', description: 'Revitalisasi lahan kosong menjadi taman tanaman obat keluarga (TOGA) dan tempat kumpul warga.', category: 'Lingkungan', targetBudget: 5000000, currentBudget: 5000000, status: 'COMPLETED', startDate: '2026-05-10', endDate: '2026-07-15' },
+];
+
+export const demoPublicBusinesses = [
+  { id: 'umkm-1', name: 'Warung Sembako Ibu Siti', category: 'Kuliner & Sembako', description: 'Menyediakan beras, minyak, galon aqua, gas LPG 3kg, dan kebutuhan dapur harian. Layanan antar gratis untuk warga blok A-D.', phone: '081234567890', operatingHours: '06.00 - 21.00 WIB', verified: true },
+  { id: 'umkm-2', name: 'Katering Rumahan Mbak Rina', category: 'Kuliner', description: 'Menerima pesanan nasi kotak, snack box acara warga, dan lauk harian tanpa pengawet.', phone: '081987654321', operatingHours: '07.00 - 18.00 WIB', verified: true },
+  { id: 'umkm-3', name: 'Servis AC & Elektronik Pak Agus', category: 'Jasa & Perbaikan', description: 'Jasa cuci AC, isi freon, dan perbaikan instalasi listrik rumah berpengalaman warga sendiri.', phone: '085711223344', operatingHours: '08.00 - 17.00 WIB', verified: true },
+];
+
 export const demoFallbacks: Record<string, unknown> = {
   '/public/site': demoSite,
   '/public/announcements': demoAnnouncements,
   '/public/events': demoEvents,
   '/public/documents': demoDocuments,
   '/public/transparency': demoTransparency,
+  '/public/complaints': demoPublicComplaints,
+  '/public/facilities': demoPublicFacilities,
+  '/public/programs': demoPublicPrograms,
+  '/public/businesses': demoPublicBusinesses,
   '/announcements': demoAnnouncements,
   '/bills': demoBills,
   '/complaints': demoComplaints,
   '/activities': demoActivities,
   '/patrol-assignments': demoPatrols,
   '/documents': demoDocuments,
+  '/facilities': demoPublicFacilities,
+  '/programs': demoPublicPrograms,
+  '/businesses': demoPublicBusinesses,
+  '/umkms': demoPublicBusinesses,
   '/notifications': [
     { id: 'notification-1', title: 'Bukti pembayaran diterima', message: 'Bendahara akan memeriksa bukti Anda.', readAt: null, actionUrl: '/app/tagihan', createdAt: '2026-07-27T05:10:00.000Z' },
     { id: 'notification-2', title: 'Jadwal ronda mendatang', message: 'Jadwal Anda tiga hari lagi di gerbang utara.', readAt: '2026-07-26T05:20:00.000Z', actionUrl: '/app/ronda', createdAt: '2026-07-26T05:10:00.000Z' },
