@@ -14,3 +14,4 @@ test-results/
 apps/web/public/sw.js
 apps/web/public/workbox-*.js
 apps/web/public/registerSW.js
+.vercel
