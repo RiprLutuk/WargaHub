@@ -376,10 +376,9 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       category: string;
       fee: string | number;
       deposit: string | number;
-      capacity: number | null;
       active: boolean;
     }>(
-      `SELECT id, name, description, category, fee, deposit, capacity, active
+      `SELECT id, name, description, category, fee, deposit, active
        FROM facilities WHERE organization_id = $1 AND active = true ORDER BY name ASC`,
       [organization.id],
     );
@@ -392,7 +391,7 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
           category: f.category,
           fee: Number(f.fee),
           deposit: Number(f.deposit),
-          capacity: f.capacity,
+          capacity: null,
           active: f.active,
         }))
       : [
@@ -438,12 +437,13 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       title: string;
       description: string;
       category: string;
-      target_amount: string | number;
-      collected_amount: string | number;
+      budget: string | number;
+      spent: string | number;
       status: string;
-      created_at: string | Date;
+      starts_at: string | Date;
+      ends_at: string | Date;
     }>(
-      `SELECT id, title, description, category, target_amount, collected_amount, status, created_at
+      `SELECT id, title, description, category, budget, spent, status, starts_at, ends_at
        FROM programs WHERE organization_id = $1 ORDER BY created_at DESC`,
       [organization.id],
     );
@@ -454,11 +454,11 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
           title: p.title,
           description: p.description,
           category: p.category,
-          targetBudget: Number(p.target_amount ?? 0),
-          currentBudget: Number(p.collected_amount ?? 0),
+          targetBudget: Number(p.budget ?? 0),
+          currentBudget: Number(p.spent ?? 0),
           status: p.status,
-          startDate: new Date(p.created_at).toISOString().split('T')[0],
-          endDate: '2026-12-31',
+          startDate: new Date(p.starts_at).toISOString().split('T')[0],
+          endDate: new Date(p.ends_at).toISOString().split('T')[0],
         }))
       : [
           {
