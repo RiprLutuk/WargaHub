@@ -4,6 +4,11 @@ Semua perubahan penting WargaHub dicatat di file ini. Format mengikuti
 [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan versi release
 mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [Unreleased]
+
+### Added
+- Konfigurasi deployment gratis untuk Vercel (`vercel.json`) dan Render (`render.yaml`), plus panduan PostgreSQL eksternal di `docs/DEPLOYMENT.md`.
+
 ## [0.6.0] - 2026-07-28
 
 ### Added

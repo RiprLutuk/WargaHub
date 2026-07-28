@@ -1,0 +1,8 @@
+{
+  "installCommand": "bun install --frozen-lockfile",
+  "buildCommand": "bun run --cwd apps/web build",
+  "outputDirectory": "apps/web/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

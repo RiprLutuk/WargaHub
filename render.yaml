@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: wargahub-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: bun install --frozen-lockfile && bun run --cwd apps/api build
+    startCommand: bun run --cwd apps/api start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: SESSION_TTL_HOURS
+        value: 8
+      - key: UPLOAD_DIR
+        value: /tmp/wargahub-uploads
+      - key: MAX_UPLOAD_BYTES
+        value: 10485760
+      - key: LOG_LEVEL
+        value: info
+      - key: WAHA_ENABLED
+        value: "false"
