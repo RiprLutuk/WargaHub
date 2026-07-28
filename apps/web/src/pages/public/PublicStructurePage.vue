@@ -2,6 +2,8 @@
 import {
   Building2,
   Calendar,
+  CheckCircle2,
+  FileText,
   Mail,
   MessageCircle,
   Phone,
@@ -9,6 +11,9 @@ import {
   ShieldCheck,
   UserCheck,
   Users,
+  Vote,
+  Wallet,
+  Wrench,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import EmptyState from '../../components/EmptyState.vue';
@@ -64,6 +69,39 @@ function formatWaUrl(phone: string) {
   const formatted = digits.startsWith('0') ? `62${digits.slice(1)}` : digits;
   return `https://wa.me/${formatted}?text=${encodeURIComponent('Halo Pengurus RT/RW WargaHub, saya ingin bertanya...')}`;
 }
+
+const adminCapabilities = [
+  {
+    icon: Users,
+    title: 'Pendataan Warga & Rumah',
+    desc: 'Mengelola data Kartu Keluarga (KK), status tempat tinggal (Pemilik, Pengontrak, Kos), serta verifikasi warga baru.',
+  },
+  {
+    icon: Wallet,
+    title: 'Keuangan & Iuran Bulanan',
+    desc: 'Menerbitkan tagihan iuran otomatis, merekonsiliasi pembayaran warga, dan mengelola laporan kas yang transparan.',
+  },
+  {
+    icon: Wrench,
+    title: 'Pengaduan & Ronda Malam',
+    desc: 'Menugaskan laporan masalah fasilitas ke petugas seksi dan mengatur jadwal piket siskamling & tukar ronda warga.',
+  },
+  {
+    icon: FileText,
+    title: 'Pengesahan Surat Digital',
+    desc: 'Menyetujui Surat Pengantar RT/RW (KTP, Pindah Domisili, SKTM) secara online dengan Tanda Tangan Digital & QR Code.',
+  },
+  {
+    icon: Vote,
+    title: 'Musyawarah & Voting Online',
+    desc: 'Membuat polling musyawarah warga untuk keputusan bersama seperti rencana proyek lingkungan atau pemilihan pengurus.',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Notifikasi WhatsApp (WAHA)',
+    desc: 'Mengirimkan pengumuman penting dan penagihan iuran langsung ke WhatsApp warga secara cepat dan akurat.',
+  },
+];
 </script>
 
 <template>
@@ -131,6 +169,27 @@ function formatWaUrl(phone: string) {
           </div>
         </article>
       </div>
+
+      <!-- Admin Capabilities Section for Citizens -->
+      <section class="admin-capabilities-section">
+        <div class="section-title">
+          <ShieldCheck :size="22" class="shield-icon" />
+          <div>
+            <h2>Tugas & Kapabilitas Pengurus di WargaHub</h2>
+            <p>Penjelasan lengkap mengenai apa saja yang dikelola oleh Pengurus RT/RW melalui portal admin WargaHub demi ketertiban bersama.</p>
+          </div>
+        </div>
+
+        <div class="capability-grid">
+          <article v-for="cap in adminCapabilities" :key="cap.title" class="cap-card">
+            <div class="cap-icon-box">
+              <component :is="cap.icon" :size="22" />
+            </div>
+            <h3>{{ cap.title }}</h3>
+            <p>{{ cap.desc }}</p>
+          </article>
+        </div>
+      </section>
     </template>
   </div>
 </template>
@@ -344,5 +403,79 @@ function formatWaUrl(phone: string) {
 
 .email-btn:hover {
   background: var(--cream-200);
+}
+
+/* Capabilities Section */
+.admin-capabilities-section {
+  margin-top: 4.5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2.2rem;
+}
+
+.shield-icon {
+  color: var(--teal-700);
+  margin-top: 0.2rem;
+}
+
+.section-title h2 {
+  font-size: 1.65rem;
+  font-weight: 850;
+  color: var(--ink-950);
+  margin: 0 0 0.35rem;
+}
+
+.section-title p {
+  color: var(--ink-650);
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: 1.4rem;
+}
+
+.cap-card {
+  padding: 1.6rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.cap-icon-box {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: var(--teal-50);
+  color: var(--teal-700);
+  border: 1px solid var(--teal-200);
+}
+
+.cap-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink-950);
+  margin: 0;
+}
+
+.cap-card p {
+  font-size: 0.92rem;
+  color: var(--ink-650);
+  margin: 0;
+  line-height: 1.6;
 }
 </style>

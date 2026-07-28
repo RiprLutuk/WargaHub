@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Building2, CheckCircle2, Clock, Dumbbell, Home, Info, Package, Sparkles } from 'lucide-vue-next';
+import { ArrowRight, Building2, Camera, CheckCircle2, Clock, Dumbbell, Home, Info, Package, ShieldCheck, Sparkles, Video } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import EmptyState from '../../components/EmptyState.vue';
@@ -19,6 +19,7 @@ interface PublicFacility {
   requiresApproval?: boolean;
 }
 
+const activeTab = ref<'FACILITIES' | 'CCTV'>('FACILITIES');
 const selectedCategory = ref('SEMUA');
 const facilities = useResource(() => api.get<PublicFacility[]>('/public/facilities'));
 
@@ -37,6 +38,41 @@ function getFacilityIcon(category: string) {
   if (cat.includes('inventaris') || cat.includes('tenda')) return Package;
   return Home;
 }
+
+const cctvFeeds = [
+  {
+    id: 'cctv-1',
+    name: 'CCTV 01 — Gerbang Utama RT 04',
+    location: 'Akses Keluar-Masuk Utama Warga',
+    status: 'ONLINE',
+    quality: '1080p Full HD',
+    thumbnail: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+  },
+  {
+    id: 'cctv-2',
+    name: 'CCTV 02 — Pos Ronda Central',
+    location: 'Pusat Keamanan & Siskamling',
+    status: 'ONLINE',
+    quality: '1080p Full HD',
+    thumbnail: 'linear-gradient(135deg, #064e3b 0%, #0f172a 100%)',
+  },
+  {
+    id: 'cctv-3',
+    name: 'CCTV 03 — Taman Warga & Area Bermain',
+    location: 'Fasilitas Terbuka & Balai Pertemuan',
+    status: 'ONLINE',
+    quality: '1080p Full HD',
+    thumbnail: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
+  },
+  {
+    id: 'cctv-4',
+    name: 'CCTV 04 — Pertigaan Utama Blok B',
+    location: 'Simpang Perlintasan Kendaraan Warga',
+    status: 'ONLINE',
+    quality: '1080p Full HD',
+    thumbnail: 'linear-gradient(135deg, #312e81 0%, #0f172a 100%)',
+  },
+];
 </script>
 
 <template>
@@ -45,84 +81,143 @@ function getFacilityIcon(category: string) {
     <header class="page-header">
       <div class="header-badge">
         <Sparkles :size="14" class="badge-icon" />
-        <span>Fasilitas & Inventaris RT/RW</span>
+        <span>Fasilitas & Pemantauan Lingkungan</span>
       </div>
-      <h1>Aset & Fasilitas Bersama</h1>
+      <h1>Fasilitas & Pemantauan CCTV</h1>
       <p class="header-desc">
-        Pemanfaatan balai warga, lapangan olahraga, serta peralatan hajatan dan pertemuan yang dikelola secara transparan dan tertib untuk seluruh warga.
+        Aset bersama, peminjaman balai warga & inventaris hajatan, serta akses live pemantauan CCTV area publik untuk keamanan warga 24/7.
       </p>
+
+      <!-- Main Navigation Tabs -->
+      <div class="main-tabs">
+        <button
+          type="button"
+          class="tab-btn"
+          :class="{ active: activeTab === 'FACILITIES' }"
+          @click="activeTab = 'FACILITIES'"
+        >
+          <Building2 :size="16" />
+          <span>Fasilitas & Inventaris</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          :class="{ active: activeTab === 'CCTV' }"
+          @click="activeTab = 'CCTV'"
+        >
+          <Camera :size="16" />
+          <span>CCTV Lingkungan (Live)</span>
+        </button>
+      </div>
     </header>
 
-    <!-- State Panels -->
-    <StatePanel v-if="facilities.loading.value" state="loading" />
-    <StatePanel v-else-if="facilities.error.value" state="error" :message="facilities.error.value" @retry="facilities.reload" />
-    <EmptyState v-else-if="!facilities.data.value?.length" title="Belum ada fasilitas dipublikasikan" message="Pengurus belum menambahkan daftar fasilitas publik." />
+    <!-- Tab 1: Facilities & Inventory -->
+    <div v-if="activeTab === 'FACILITIES'">
+      <!-- State Panels -->
+      <StatePanel v-if="facilities.loading.value" state="loading" />
+      <StatePanel v-else-if="facilities.error.value" state="error" :message="facilities.error.value" @retry="facilities.reload" />
+      <EmptyState v-else-if="!facilities.data.value?.length" title="Belum ada fasilitas dipublikasikan" message="Pengurus belum menambahkan daftar fasilitas publik." />
 
-    <template v-else>
-      <!-- Category Filter Pills -->
-      <nav class="category-pills" aria-label="Filter kategori fasilitas">
-        <button
-          v-for="cat in categories"
-          :key="cat"
-          type="button"
-          class="pill-btn"
-          :class="{ active: selectedCategory === cat }"
-          @click="selectedCategory = cat"
-        >
-          {{ cat === 'SEMUA' ? 'Semua Fasilitas' : cat }}
-        </button>
-      </nav>
+      <template v-else>
+        <!-- Category Filter Pills -->
+        <nav class="category-pills" aria-label="Filter kategori fasilitas">
+          <button
+            v-for="cat in categories"
+            :key="cat"
+            type="button"
+            class="pill-btn"
+            :class="{ active: selectedCategory === cat }"
+            @click="selectedCategory = cat"
+          >
+            {{ cat === 'SEMUA' ? 'Semua Fasilitas' : cat }}
+          </button>
+        </nav>
 
-      <!-- Facility Cards Grid -->
-      <div class="facilities-grid">
-        <article v-for="item in filteredFacilities" :key="item.id" class="facility-card">
-          <div class="card-header">
-            <div class="icon-avatar">
-              <component :is="getFacilityIcon(item.category)" :size="22" />
+        <!-- Facility Cards Grid -->
+        <div class="facilities-grid">
+          <article v-for="item in filteredFacilities" :key="item.id" class="facility-card">
+            <div class="card-header">
+              <div class="icon-avatar">
+                <component :is="getFacilityIcon(item.category)" :size="22" />
+              </div>
+              <div class="header-tags">
+                <span class="category-chip">{{ item.category }}</span>
+                <span class="status-chip free" v-if="item.fee === 0">
+                  <CheckCircle2 :size="13" /> Gratis Warga
+                </span>
+                <span class="status-chip rental" v-else>
+                  Sewa Bersama
+                </span>
+              </div>
             </div>
-            <div class="header-tags">
-              <span class="category-chip">{{ item.category }}</span>
-              <span class="status-chip free" v-if="item.fee === 0">
-                <CheckCircle2 :size="13" /> Gratis Warga
-              </span>
-              <span class="status-chip rental" v-else>
-                Sewa Bersama
-              </span>
+
+            <div class="card-body">
+              <h2 class="facility-title">{{ item.name }}</h2>
+              <p class="facility-desc">{{ item.description }}</p>
+            </div>
+
+            <div class="card-specs">
+              <div class="spec-item">
+                <span class="spec-label">Biaya Penggunaan</span>
+                <span class="spec-value highlight">{{ item.fee > 0 ? formatRupiah(item.fee) : 'Gratis' }}</span>
+              </div>
+              <div class="spec-item" v-if="item.deposit > 0">
+                <span class="spec-label">Deposit Jaminan</span>
+                <span class="spec-value">{{ formatRupiah(item.deposit) }}</span>
+              </div>
+              <div class="spec-item" v-if="item.capacity">
+                <span class="spec-label">Kapasitas Maksimal</span>
+                <span class="spec-value">{{ item.capacity }} Orang</span>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="approval-note">
+                <Clock :size="14" />
+                <span>Perlu reservasi via portal</span>
+              </div>
+              <RouterLink to="/login" class="book-link">
+                Pinjam <ArrowRight :size="15" />
+              </RouterLink>
+            </div>
+          </article>
+        </div>
+      </template>
+    </div>
+
+    <!-- Tab 2: CCTV Monitoring -->
+    <div v-else class="cctv-section">
+      <div class="cctv-info-banner">
+        <ShieldCheck :size="22" class="shield-icon" />
+        <div>
+          <h3>Pemantauan CCTV Lingkungan 24 Jam</h3>
+          <p>Akses siaran langsung CCTV titik publik dipasang untuk menjaga ketertiban, memantau keamanan pos ronda, dan keselamatan warga. Akses privat beresolusi tinggi tersedia di portal warga.</p>
+        </div>
+      </div>
+
+      <div class="cctv-grid">
+        <article v-for="cam in cctvFeeds" :key="cam.id" class="cctv-card">
+          <div class="cctv-screen" :style="{ background: cam.thumbnail }">
+            <div class="screen-overlay">
+              <span class="live-tag"><span class="pulse-dot" /> LIVE</span>
+              <span class="hd-tag">{{ cam.quality }}</span>
+            </div>
+            <div class="cam-watermark">
+              <Video :size="28" />
+              <span>{{ cam.name }}</span>
             </div>
           </div>
-
-          <div class="card-body">
-            <h2 class="facility-title">{{ item.name }}</h2>
-            <p class="facility-desc">{{ item.description }}</p>
-          </div>
-
-          <div class="card-specs">
-            <div class="spec-item">
-              <span class="spec-label">Biaya Penggunaan</span>
-              <span class="spec-value highlight">{{ item.fee > 0 ? formatRupiah(item.fee) : 'Gratis' }}</span>
+          <div class="cctv-details">
+            <h2>{{ cam.name }}</h2>
+            <p>{{ cam.location }}</p>
+            <div class="cctv-status-row">
+              <span class="status-online">● Stream Siaga Normal</span>
+              <RouterLink to="/login" class="expand-btn">Buka Layar Penuh →</RouterLink>
             </div>
-            <div class="spec-item" v-if="item.deposit > 0">
-              <span class="spec-label">Deposit Jaminan</span>
-              <span class="spec-value">{{ formatRupiah(item.deposit) }}</span>
-            </div>
-            <div class="spec-item" v-if="item.capacity">
-              <span class="spec-label">Kapasitas Maksimal</span>
-              <span class="spec-value">{{ item.capacity }} Orang</span>
-            </div>
-          </div>
-
-          <div class="card-footer">
-            <div class="approval-note">
-              <Clock :size="14" />
-              <span>Perlu reservasi via portal</span>
-            </div>
-            <RouterLink to="/login" class="book-link">
-              Pinjam <ArrowRight :size="15" />
-            </RouterLink>
           </div>
         </article>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -133,7 +228,7 @@ function getFacilityIcon(category: string) {
 
 .page-header {
   margin-bottom: 2.8rem;
-  max-width: 50rem;
+  max-width: 52rem;
 }
 
 .header-badge {
@@ -167,7 +262,42 @@ function getFacilityIcon(category: string) {
   font-size: 1.1rem;
   line-height: 1.65;
   color: var(--ink-650);
-  margin: 0;
+  margin: 0 0 1.5rem;
+}
+
+/* Navigation Tabs */
+.main-tabs {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-700);
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  border-color: var(--teal-500);
+  background: var(--teal-50);
+  color: var(--teal-800);
+}
+
+.tab-btn.active {
+  background: var(--teal-700);
+  border-color: var(--teal-700);
+  color: white;
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
 }
 
 /* Category Filter Pills */
@@ -203,7 +333,7 @@ function getFacilityIcon(category: string) {
   box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
 }
 
-/* Grid Layout */
+/* Facilities Grid Layout */
 .facilities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
@@ -370,5 +500,150 @@ function getFacilityIcon(category: string) {
 .book-link:hover {
   transform: translateX(3px);
   color: var(--teal-800);
+}
+
+/* CCTV Section */
+.cctv-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.cctv-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--teal-50) 0%, #ecfdf5 100%);
+  border: 1px solid var(--teal-200);
+  color: var(--ink-900);
+}
+
+.cctv-info-banner h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.1rem;
+  color: var(--teal-900);
+}
+
+.cctv-info-banner p {
+  margin: 0;
+  color: var(--ink-650);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.cctv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 1.6rem;
+}
+
+.cctv-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cctv-screen {
+  position: relative;
+  height: 12rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  color: white;
+}
+
+.screen-overlay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.4rem;
+  background: rgba(225, 29, 72, 0.9);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.pulse-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: white;
+  animation: pulse-cctv 1.5s infinite;
+}
+
+@keyframes pulse-cctv {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.hd-tag {
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.cam-watermark {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.cctv-details {
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cctv-details h2 {
+  font-size: 1.15rem;
+  margin: 0;
+  color: var(--ink-950);
+}
+
+.cctv-details p {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--ink-600);
+}
+
+.cctv-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--line);
+}
+
+.status-online {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--success-700);
+}
+
+.expand-btn {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  text-decoration: none;
 }
 </style>
