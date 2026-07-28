@@ -194,7 +194,7 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some((g)
   border-radius: var(--radius-md);
   color: var(--ink-700);
   font-size: 0.84rem;
-  font-weight: 700;
+  font-weight: 500;
   text-decoration: none;
   transition: background 0.15s, color 0.15s, padding 0.15s;
 }

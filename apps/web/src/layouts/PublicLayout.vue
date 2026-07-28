@@ -233,7 +233,7 @@ nav {
 }
 nav a:not(.button), .nav-link:not(.button) {
   color: var(--ink-800);
-  font-weight: 750;
+  font-weight: 500;
   font-size: 0.92rem;
   text-decoration: none !important;
   padding: 0.4rem 0.65rem;
@@ -257,7 +257,7 @@ nav .emergency-link {
   background: rgba(225, 29, 72, 0.08);
   border: 1px solid rgba(225, 29, 72, 0.28);
   color: #e11d48 !important;
-  font-weight: 850;
+  font-weight: 600;
   text-decoration: none !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -329,7 +329,7 @@ nav .emergency-link.router-link-active .beacon-dot {
   border-radius: 0.5rem;
   background: transparent;
   color: var(--ink-800);
-  font-weight: 750;
+  font-weight: 500;
   font-size: 0.92rem;
   font-family: inherit;
   cursor: pointer;
@@ -376,7 +376,7 @@ nav .emergency-link.router-link-active .beacon-dot {
   border-radius: 0.5rem;
   color: var(--ink-800);
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 500;
   text-decoration: none !important;
   transition: background 0.15s, color 0.15s;
 }
