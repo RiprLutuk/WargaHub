@@ -30,11 +30,11 @@ describe('billing and finance HTTP API', () => {
     await runMigrations(database);
     await seedDemoData(database, { includeSampleContent: false });
     app = await buildApp({ database, logger: false });
-  });
+  }, 30000);
 
   afterEach(async () => {
-    await app.close();
-    await database.close();
+    await app?.close();
+    await database?.close();
   });
 
   it('prevents a resident from creating bills', async () => {

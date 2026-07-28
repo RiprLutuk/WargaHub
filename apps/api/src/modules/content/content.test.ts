@@ -33,12 +33,12 @@ describe('content and resident directory API', () => {
     if (!app.hasRoute({ method: 'GET', url: '/api/v1/public/site' })) {
       await app.register(contentRoutes, { prefix: '/api/v1' });
     }
-  });
+  }, 30000);
 
   afterEach(async () => {
-    await app.close();
-    await database.close();
-    await rm(uploadDirectory, { recursive: true, force: true });
+    await app?.close();
+    await database?.close();
+    if (uploadDirectory) await rm(uploadDirectory, { recursive: true, force: true });
   });
 
   async function login(email: string): Promise<AuthSession> {

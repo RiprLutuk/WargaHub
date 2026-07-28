@@ -35,6 +35,7 @@ import PublicBusinessesPage from './pages/public/PublicBusinessesPage.vue';
 import PublicComplaintsPage from './pages/public/PublicComplaintsPage.vue';
 import PublicFacilitiesPage from './pages/public/PublicFacilitiesPage.vue';
 import PublicProgramsPage from './pages/public/PublicProgramsPage.vue';
+import PublicStructurePage from './pages/public/PublicStructurePage.vue';
 import PublicVerifyLetterPage from './pages/public/PublicVerifyLetterPage.vue';
 import TransparencyPage from './pages/public/TransparencyPage.vue';
 import { useSessionStore } from './stores/session';
@@ -62,6 +63,7 @@ const router = createRouter({
       children: [
         { path: '', component: HomePage, meta: { title: 'Beranda' } },
         { path: 'pengumuman', component: AnnouncementsPage, meta: { title: 'Pengumuman' } },
+        { path: 'struktur', component: PublicStructurePage, meta: { title: 'Struktur Organisasi RT/RW' } },
         { path: 'laporan', component: PublicComplaintsPage, meta: { title: 'Status Laporan Publik' } },
         { path: 'agenda', component: AgendaPage, meta: { title: 'Agenda' } },
         { path: 'transparansi', component: TransparencyPage, meta: { title: 'Transparansi' } },
@@ -104,52 +106,34 @@ const router = createRouter({
       component: AdminLayout,
       meta: { requiresAuth: true, requiresAdmin: true },
       children: [
-        { path: '', component: AdminDashboardPage, meta: { title: 'CMS Pengurus' } },
-        { path: 'warga', component: AdminContentPage, props: { section: 'residents' }, meta: { title: 'Warga & rumah', permission: 'resident.read' } },
-        { path: 'pengumuman', component: AdminContentPage, props: { section: 'announcements' }, meta: { title: 'Publikasi', permission: 'announcement.create' } },
-        { path: 'dokumen', component: AdminContentPage, props: { section: 'documents' }, meta: { title: 'Dokumen', permission: 'document.manage' } },
-        { path: 'pengaturan', component: AdminContentPage, props: { section: 'settings' }, meta: { title: 'Pengaturan', permission: 'settings.manage' } },
-        { path: 'tagihan', component: AdminFinancePage, props: { section: 'bills' }, meta: { title: 'Tagihan', permission: 'billing.create' } },
-        { path: 'pembayaran', component: AdminFinancePage, props: { section: 'payments' }, meta: { title: 'Pembayaran', permission: 'billing.reconcile' } },
-        { path: 'keuangan', component: AdminFinancePage, props: { section: 'ledger' }, meta: { title: 'Keuangan', permission: 'finance.read' } },
-        { path: 'operasional', component: AdminOperationsPage, props: { section: 'operations' }, meta: { title: 'Operasional', permission: 'complaint.assign' } },
-        { path: 'surat', component: LettersPage, meta: { title: 'Kelola Surat' } },
-        { path: 'voting', component: VotingPage, meta: { title: 'Musyawarah & Voting' } },
-        { path: 'fasilitas', component: FacilitiesPage, meta: { title: 'Fasilitas' } },
-        { path: 'program', component: ProgramsPage, meta: { title: 'Program Lingkungan' } },
-        { path: 'layanan', component: ServicesPage, meta: { title: 'Layanan & UMKM' } },
-        { path: 'audit', component: AdminOperationsPage, props: { section: 'audit' }, meta: { title: 'Audit log', permission: 'audit_log.read' } },
+        { path: '', component: AdminDashboardPage, meta: { title: 'Dashboard admin' } },
+        { path: 'konten', component: AdminContentPage, meta: { title: 'Manajemen konten', permission: 'announcement.read' } },
+        { path: 'keuangan', component: AdminFinancePage, meta: { title: 'Manajemen keuangan', permission: 'finance.ledger.read' } },
+        { path: 'operasional', component: AdminOperationsPage, meta: { title: 'Operasional warga' } },
+        { path: 'audit', component: AdminOperationsPage, props: { section: 'audit' }, meta: { title: 'Audit log', permission: 'audit.read' } },
       ],
     },
-    {
-      path: '/:pathMatch(.*)*',
-      component: PublicLayout,
-      children: [{ path: '', component: NotFoundPage, meta: { title: 'Halaman tidak ditemukan' } }],
-    },
+    { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Halaman tidak ditemukan' } },
   ],
 });
 
-function loginRedirect(to: RouteLocationNormalized) {
-  return { path: '/login', query: { redirect: to.fullPath } };
-}
-
-router.beforeEach(async (to) => {
+router.beforeEach(async (to: RouteLocationNormalized) => {
   const session = useSessionStore();
-  if (to.meta.requiresAuth) {
+  if (to.meta.requiresAuth || to.meta.requiresAdmin) {
     await session.ensureSession();
-    if (!session.isAuthenticated) return loginRedirect(to);
-    if (to.meta.requiresAdmin && !session.isAdmin) return '/app';
-    if (to.meta.permission && !session.can(to.meta.permission)) return session.isAdmin ? '/admin' : '/app';
-  }
-  if (to.path === '/login') {
-    await session.ensureSession();
-    if (session.isAuthenticated) return session.isAdmin ? '/admin' : '/app';
+    if (!session.isAuthenticated) {
+      return { path: '/login', query: { redirect: to.fullPath } };
+    }
+    if (to.meta.requiresAdmin && !session.isAdmin) {
+      return { path: '/app' };
+    }
   }
   return true;
 });
 
 router.afterEach((to) => {
-  document.title = `${to.meta.title ?? 'WargaHub'} · WargaHub`;
+  const title = to.meta.title ? `${to.meta.title} · WargaHub` : 'WargaHub';
+  document.title = title;
 });
 
 export default router;

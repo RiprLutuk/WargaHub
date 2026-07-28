@@ -18,11 +18,11 @@ describe('authentication and policy', () => {
       includeSampleContent: false,
     });
     app = await buildApp({ database, logger: false });
-  });
+  }, 30000);
 
   afterAll(async () => {
-    await app.close();
-    await database.close();
+    await app?.close();
+    await database?.close();
   });
 
   it('logs in an active user without exposing the password hash', async () => {

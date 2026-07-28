@@ -49,6 +49,7 @@ const adminGroups: NavigationGroup[] = [
     items: [
       { to: '/admin', label: 'Ringkasan Dashboard', icon: Gauge },
       { to: '/admin/warga', label: 'Kelola warga', icon: Users, permission: 'resident.read' },
+      { to: '/admin/organisasi', label: 'Struktur Pengurus', icon: Users, permission: 'organization.update' },
       { to: '/admin/pengumuman', label: 'Publikasi & Info', icon: Megaphone, permission: 'announcement.create' },
     ],
   },
@@ -98,7 +99,8 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g =
       </div>
     </div>
 
-    <div v-if="showAdmin" class="nav-tree admin-tree">
+    <div v-if="showAdmin" class="nav-tree" :class="{ 'admin-group': variant === 'all' }">
+      <span v-if="variant === 'all'" class="nav-label">Area Pengurus</span>
       <div v-for="group in adminGroups" :key="group.title" class="nav-section">
         <span class="section-title">{{ group.title }}</span>
         <div class="section-items">
@@ -113,12 +115,67 @@ const showAdmin = computed(() => props.variant !== 'app' && adminGroups.some(g =
 </template>
 
 <style scoped>
-.app-sidebar, .nav-tree { display: grid; align-content: start; gap: 1rem; }
-.admin-tree { padding-top: 1rem; border-top: 1px solid var(--line); }
-.nav-section { display: grid; gap: .25rem; }
-.section-title { padding: .2rem .65rem; color: var(--ink-500); font-size: .63rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.section-items { display: grid; gap: .18rem; }
-a { display: flex; min-height: 2.6rem; align-items: center; gap: .65rem; padding: .5rem .65rem; border-radius: .65rem; color: var(--ink-650); font-size: .83rem; font-weight: 720; text-decoration: none; }
-a:hover { background: var(--teal-50); color: var(--teal-800); }
-a.router-link-exact-active { background: var(--teal-100); color: var(--teal-800); font-weight: 820; }
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.nav-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.admin-group {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.nav-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--ink-500);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.section-title {
+  padding-inline: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--ink-500);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.section-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.app-sidebar a {
+  display: flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--ink-700);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.app-sidebar a:hover {
+  background: var(--cream-100);
+  color: var(--teal-800);
+}
+.app-sidebar a.router-link-exact-active {
+  background: var(--teal-100);
+  color: var(--teal-800);
+}
 </style>

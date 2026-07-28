@@ -48,6 +48,7 @@ function closeAll() {
             </button>
             <div class="dropdown-menu">
               <RouterLink to="/pengumuman" @click="closeAll">Pengumuman Resmi</RouterLink>
+              <RouterLink to="/struktur" @click="closeAll">Struktur Pengurus RT/RW</RouterLink>
               <RouterLink to="/laporan" @click="closeAll">Status Laporan Publik</RouterLink>
               <RouterLink to="/agenda" @click="closeAll">Agenda & Kegiatan</RouterLink>
               <RouterLink to="/dokumen" @click="closeAll">Dokumen Publik</RouterLink>
@@ -100,79 +101,225 @@ function closeAll() {
           <p>Informasi resmi lingkungan yang terbuka, privat seperlunya, dan tidak melelahkan secara sosial.</p>
         </div>
         <div>
-          <strong>Informasi Publik</strong>
-          <RouterLink to="/pengumuman">Pengumuman</RouterLink>
-          <RouterLink to="/laporan">Laporan Publik</RouterLink>
-          <RouterLink to="/agenda">Agenda Warga</RouterLink>
-          <RouterLink to="/transparansi">Transparansi Keuangan</RouterLink>
-          <RouterLink to="/fasilitas">Fasilitas Publik</RouterLink>
-          <RouterLink to="/program">Program Lingkungan</RouterLink>
-          <RouterLink to="/umkm">Direktori UMKM</RouterLink>
-          <RouterLink to="/dokumen">Dokumen Publik</RouterLink>
+          <h3>Layanan Publik</h3>
+          <ul>
+            <li><RouterLink to="/pengumuman">Pengumuman</RouterLink></li>
+            <li><RouterLink to="/struktur">Struktur Pengurus</RouterLink></li>
+            <li><RouterLink to="/laporan">Status Laporan</RouterLink></li>
+            <li><RouterLink to="/agenda">Agenda Warga</RouterLink></li>
+            <li><RouterLink to="/transparansi">Transparansi Keuangan</RouterLink></li>
+            <li><RouterLink to="/dokumen">Dokumen Publik</RouterLink></li>
+          </ul>
         </div>
         <div>
-          <strong>Bantuan & Layanan</strong>
-          <RouterLink to="/kontak">Hubungi pengurus</RouterLink>
-          <RouterLink to="/darurat">Nomor darurat</RouterLink>
-          <RouterLink v-if="session?.isAuthenticated" :to="session.isAdmin ? '/admin' : '/app'">Portal {{ session.user?.name ?? 'warga' }}</RouterLink>
-          <RouterLink v-else to="/login">Masuk portal warga</RouterLink>
+          <h3>Akses Pengurus</h3>
+          <ul>
+            <li><RouterLink to="/login">Masuk Portal Admin</RouterLink></li>
+            <li><RouterLink to="/darurat">Panggilan Darurat</RouterLink></li>
+          </ul>
         </div>
-      </div>
-      <div class="container footer-bottom">
-        <span>WargaHub · Perangkat lunak komunitas terbuka</span>
-        <span>Privasi warga selalu diutamakan</span>
       </div>
     </footer>
   </div>
 </template>
 
 <style scoped>
-.public-shell { min-height: 100vh; }
-.site-header { position: sticky; z-index: 30; top: 0; border-bottom: 1px solid rgb(189 203 197 / 0.72); background: rgb(251 248 241 / 0.93); backdrop-filter: blur(18px); }
-.header-inner { display: flex; min-height: 4.75rem; align-items: center; justify-content: space-between; gap: 1rem; }
-.header-inner > a { text-decoration: none; }
-nav { display: flex; align-items: center; gap: 0.35rem; }
-
-/* Dropdown Menu Styles */
-.nav-dropdown { position: relative; }
-.dropdown-trigger { display: inline-flex; min-height: 2.75rem; align-items: center; gap: .35rem; padding: 0.5rem 0.75rem; border: 0; border-radius: 0.65rem; background: transparent; color: var(--ink-800); font-size: 0.88rem; font-weight: 750; cursor: pointer; }
-.dropdown-trigger:hover, .nav-dropdown.active .dropdown-trigger { background: var(--teal-100); color: var(--teal-800); }
-.arrow-icon { transition: transform .2s; }
-.nav-dropdown.active .arrow-icon { transform: rotate(180deg); }
-
-.dropdown-menu { position: absolute; top: calc(100% + .4rem); left: 0; display: none; min-width: 13.5rem; flex-direction: column; gap: .2rem; padding: .5rem; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); box-shadow: var(--shadow-lg); }
-.nav-dropdown:hover .dropdown-menu, .nav-dropdown.active .dropdown-menu { display: flex; }
-.dropdown-menu a { display: flex; min-height: 2.4rem; align-items: center; padding: .4rem .65rem; border-radius: .55rem; color: var(--ink-800); font-size: .83rem; font-weight: 700; text-decoration: none; }
-.dropdown-menu a:hover { background: var(--teal-50); color: var(--teal-800); }
-
-nav > a:not(.button) { display: inline-flex; min-height: 2.75rem; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.65rem; color: var(--ink-800); font-size: 0.88rem; font-weight: 750; text-decoration: none; }
-nav > a:not(.button):hover, nav > a.router-link-exact-active:not(.button) { background: var(--teal-100); color: var(--teal-800); }
-nav .emergency-link { gap: 0.35rem; color: var(--coral-700) !important; }
-.user-portal-btn { gap: 0.4rem; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.menu-button { display: none; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid var(--line); border-radius: 0.7rem; background: var(--paper); color: var(--ink-950); }
-
-.site-footer { padding-block: 3.2rem 1.2rem; background: var(--ink-950); color: white; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; }
-.footer-grid p { max-width: 34rem; margin: 1.1rem 0 0; color: rgb(255 255 255 / .7); }
-.footer-grid > div:not(:first-child) { display: grid; align-content: start; gap: 0.55rem; }
-.footer-grid a { width: fit-content; color: rgb(255 255 255 / .72); text-decoration: none; }
-.footer-grid a:hover { color: white; text-decoration: underline; }
-.footer-bottom { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / .12); color: rgb(255 255 255 / .55); font-size: .78rem; }
-
-@media (max-width: 860px) {
-  .menu-button { display: grid; }
-  nav { position: absolute; inset: calc(100% + 1px) 0 auto; display: none; align-items: stretch; padding: 0.75rem; border-bottom: 1px solid var(--line); background: var(--cream-50); box-shadow: var(--shadow-lg); }
-  nav.open { display: grid; }
-  .nav-dropdown { display: grid; }
-  .dropdown-menu { position: static; display: none; width: 100%; box-shadow: none; border: 0; background: var(--cream-100); padding-left: 1rem; }
-  .nav-dropdown.active .dropdown-menu { display: flex; }
-  nav > a { justify-content: flex-start; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid > div:first-child { grid-column: 1 / -1; }
+.public-shell {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
-@media (max-width: 520px) {
-  .footer-grid { grid-template-columns: 1fr; }
-  .footer-grid > div:first-child { grid-column: auto; }
-  .footer-bottom { align-items: flex-start; flex-direction: column; }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.menu-button {
+  display: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  color: var(--ink-900);
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+nav a {
+  color: var(--ink-700);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+nav a:hover,
+nav a.router-link-active {
+  color: var(--teal-700);
+}
+nav .emergency-link {
+  color: var(--rose-700);
+}
+
+/* Nav Dropdown Styles */
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink-700);
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dropdown-trigger:hover,
+.nav-dropdown.active .dropdown-trigger {
+  color: var(--teal-700);
+}
+
+.arrow-icon {
+  transition: transform 0.2s ease;
+}
+
+.nav-dropdown.active .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 13.5rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nav-dropdown.active .dropdown-menu {
+  display: flex;
+}
+
+.dropdown-menu a {
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.4rem;
+  color: var(--ink-800);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu a.router-link-active {
+  background: var(--teal-50);
+  color: var(--teal-800);
+}
+
+.user-portal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--teal-700);
+  color: white !important;
+  font-weight: 800;
+}
+
+.user-portal-btn:hover {
+  background: var(--teal-800);
+}
+
+main {
+  flex: 1;
+}
+.site-footer {
+  margin-top: 4rem;
+  padding-block: 3.5rem;
+  background: var(--ink-950);
+  color: var(--ink-100);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+}
+.footer-grid p {
+  max-width: 24rem;
+  margin-top: 1rem;
+  color: var(--ink-400);
+}
+.footer-grid h3 {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teal-300);
+}
+.footer-grid ul {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+.footer-grid a {
+  color: var(--ink-300);
+}
+.footer-grid a:hover {
+  color: white;
+}
+@media (max-width: 820px) {
+  .menu-button {
+    display: grid;
+  }
+  nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 1.25rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line-strong);
+    flex-direction: column;
+    align-items: stretch;
+    box-shadow: var(--shadow-lg);
+  }
+  nav.open {
+    display: flex;
+  }
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: 0;
+    padding-left: 1rem;
+    background: var(--cream-50);
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { organizationUpdateSchema } from '@wargahub/contracts';
+import { idSchema, organizationUpdateSchema } from '@wargahub/contracts';
+import { z } from 'zod';
 import { AppError, success } from '../../lib/http.js';
 import { recordAudit } from '../audit/service.js';
 
@@ -16,6 +17,18 @@ type OrganizationRow = {
   currency: string;
   modules: Record<string, boolean>;
 };
+
+const officerSchema = z.object({
+  name: z.string().min(2, 'Nama pengurus minimal 2 karakter'),
+  position: z.string().min(2, 'Jabatan pengurus minimal 2 karakter'),
+  department: z.string().default('PENGURUS_INTI'),
+  phone: z.string().optional(),
+  email: z.string().email('Email tidak valid').optional().or(z.literal('')),
+  period: z.string().default('2024 - 2027'),
+  orderIndex: z.number().int().default(0),
+});
+
+const officerIdParams = z.object({ id: idSchema });
 
 function organizationProjection(row: OrganizationRow) {
   return {
@@ -98,6 +111,86 @@ export async function organizationRoutes(app: FastifyInstance): Promise<void> {
         after: organizationProjection(row),
       });
       return success(request, organizationProjection(row));
+    },
+  );
+
+  // --- Organization Officers CRUD ---
+  app.get(
+    '/organization/officers',
+    { preHandler: app.requirePermission('organization.read') },
+    async (request) => {
+      const result = await app.database.query<{
+        id: string;
+        name: string;
+        position: string;
+        department: string;
+        phone: string | null;
+        email: string | null;
+        avatar_url: string | null;
+        period: string;
+        order_index: number;
+        active: boolean;
+      }>(
+        `SELECT id, name, position, department, phone, email, avatar_url, period, order_index, active
+         FROM organization_officers WHERE organization_id = $1 ORDER BY order_index ASC, created_at ASC`,
+        [request.auth!.organizationId],
+      );
+
+      return success(request, result.rows.map((o) => ({
+        id: o.id,
+        name: o.name,
+        position: o.position,
+        department: o.department,
+        phone: o.phone,
+        email: o.email,
+        avatarUrl: o.avatar_url,
+        period: o.period,
+        orderIndex: o.order_index,
+        active: o.active,
+      })));
+    },
+  );
+
+  app.post(
+    '/organization/officers',
+    { preHandler: app.requirePermission('organization.update') },
+    async (request) => {
+      app.requireCsrf(request);
+      const body = officerSchema.parse(request.body);
+      const id = `officer_${crypto.randomUUID()}`;
+
+      await app.database.query(
+        `INSERT INTO organization_officers
+         (id, organization_id, name, position, department, phone, email, period, order_index)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          id,
+          request.auth!.organizationId,
+          body.name,
+          body.position,
+          body.department,
+          body.phone || null,
+          body.email || null,
+          body.period,
+          body.orderIndex,
+        ],
+      );
+
+      return success(request, { id, ...body });
+    },
+  );
+
+  app.delete(
+    '/organization/officers/:id',
+    { preHandler: app.requirePermission('organization.update') },
+    async (request) => {
+      app.requireCsrf(request);
+      const params = officerIdParams.parse(request.params);
+      await app.database.query(
+        `DELETE FROM organization_officers WHERE id = $1 AND organization_id = $2`,
+        [params.id, request.auth!.organizationId],
+      );
+      return success(request, { id: params.id, deleted: true });
     },
   );
 }

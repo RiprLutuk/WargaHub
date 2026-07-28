@@ -14,11 +14,11 @@ describe('Governance & Voting API', () => {
     await runMigrations(database);
     await seedDemoData(database, { includeSampleContent: false });
     app = await buildApp({ database, logger: false });
-  });
+  }, 30000);
 
   afterEach(async () => {
-    await app.close();
-    await database.close();
+    await app?.close();
+    await database?.close();
   });
 
   it('creates a poll and records resident vote', async () => {

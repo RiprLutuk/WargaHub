@@ -3,12 +3,15 @@ import { buildApp } from '../../app.js';
 import { formatWahaChatId, WahaService } from '../../services/waha.js';
 
 describe('WAHA WhatsApp API Integration', () => {
+  let originalFetch: typeof globalThis.fetch;
+
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn() as unknown as typeof globalThis.fetch;
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    globalThis.fetch = originalFetch;
   });
 
   it('formats phone numbers into valid WAHA chat IDs correctly', () => {
@@ -38,50 +41,52 @@ describe('WAHA WhatsApp API Integration', () => {
     };
 
     const service = new WahaService(config);
-
-    vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ id: 'waha_msg_123' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }),
+    const mockFetch = globalThis.fetch as ReturnType<typeof vi.fn>;
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'msg_123', status: 'PENDING' }), { status: 201 }),
     );
 
-    const res = await service.sendFormattedNotification({
-      phone: '081234567890',
-      title: 'Iuran Juli 2026',
-      message: 'Tagihan iuran lingkungan bulan Juli sebesar Rp 150.000 telah terbit.',
-      actionUrl: 'http://localhost:5173/app/tagihan',
-    });
-
-    expect(res.success).toBe(true);
-    if (res.success) {
-      expect(res.id).toBe('waha_msg_123');
-    }
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3001/api/sendText', expect.objectContaining({
-      method: 'POST',
-      body: expect.stringContaining('6281234567890@c.us'),
-    }));
+    const result = await service.sendText({ phone: '081234567890', text: 'Halo WargaHub' });
+    expect(result).toEqual({ success: true, id: 'msg_123' });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:3001/api/sendText',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({
+          session: 'default',
+          chatId: '6281234567890@c.us',
+          text: 'Halo WargaHub',
+        }),
+      }),
+    );
   });
 
   it('handles WAHA webhook inbound events gracefully', async () => {
     const app = await buildApp({ logger: false });
 
-    const res = await app.inject({
+    const response = await app.inject({
       method: 'POST',
       url: '/api/v1/public/waha/webhook',
       payload: {
         event: 'message',
         session: 'default',
         payload: {
+          id: 'waha_msg_99',
           from: '6281234567890@c.us',
-          body: 'bantuan',
+          body: 'Halo admin RT',
+          hasMedia: false,
         },
       },
     });
 
-    expect(res.statusCode).toBe(200);
-    const body = res.json();
-    expect(body.data).toEqual({ received: true, event: 'message' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      data: {
+        received: true,
+        event: 'message',
+      },
+    });
 
     await app.close();
   });

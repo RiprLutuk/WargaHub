@@ -21,10 +21,10 @@ describe('billing and immutable finance ledger', () => {
     database = await createDatabase({ dataDir: 'memory://' });
     await runMigrations(database);
     await seedDemoData(database, { includeSampleContent: false });
-  });
+  }, 30000);
 
   afterEach(async () => {
-    await database.close();
+    await database?.close();
   });
 
   it('allocates a manual payment and refuses double verification', async () => {

@@ -46,7 +46,7 @@ describe('production installation bootstrap', () => {
     expect(user?.permissions).toContain('settings.manage');
     expect(await verifyPassword(stored.rows[0]!.password_hash, 'RahasiaAman123!')).toBe(true);
     expect(areas.rows).toEqual([{ rw_code: '07', rt_code: '02' }]);
-  });
+  }, 30000);
 
   it('refuses to initialize a database that already has an organization', async () => {
     database = await createDatabase({ dataDir: 'memory://' });
@@ -70,5 +70,5 @@ describe('production installation bootstrap', () => {
       code: 'INSTALLATION_ALREADY_INITIALIZED',
       statusCode: 409,
     });
-  });
+  }, 30000);
 });

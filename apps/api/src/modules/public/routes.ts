@@ -15,6 +15,7 @@ type PublicOrganizationRow = {
   emergency_phone: string;
   timezone: string;
   locale: string;
+  currency: string;
 };
 
 const idParamsSchema = z.object({ id: idSchema });
@@ -26,7 +27,7 @@ function safeOriginalName(filename: string): string {
 async function publicOrganization(app: FastifyInstance): Promise<PublicOrganizationRow> {
   const result = await app.database.query<PublicOrganizationRow>(
     `SELECT id, name, short_name, slug, description, address, emergency_phone,
-            timezone, locale
+            timezone, locale, currency
      FROM organizations ORDER BY created_at LIMIT 1`,
   );
   const row = result.rows[0];
@@ -46,6 +47,7 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       emergencyPhone: organization.emergency_phone,
       timezone: organization.timezone,
       locale: organization.locale,
+      currency: organization.currency,
     });
   });
 
@@ -58,12 +60,6 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       params.push(`%${query.search}%`);
       search = ` AND (title ILIKE $2 OR summary ILIKE $2)`;
     }
-    const count = await app.database.query<{ total: number }>(
-      `SELECT count(*)::int AS total FROM announcements
-       WHERE organization_id = $1 AND visibility = 'PUBLIC' AND status = 'PUBLISHED'
-         AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)${search}`,
-      params,
-    );
     params.push(query.pageSize, (query.page - 1) * query.pageSize);
     const result = await app.database.query<{
       id: string;
@@ -72,39 +68,61 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       slug: string;
       summary: string;
       content: string;
-      visibility: 'PUBLIC';
-      urgency: string;
-      status: 'PUBLISHED';
-      pinned: boolean;
-      published_at: string;
-      expires_at: string | null;
+      visibility: string;
+      status: string;
+      published_at: Date;
     }>(
-      `SELECT id, category, title, slug, summary, content, visibility, urgency,
-              status, pinned, published_at, expires_at
+      `SELECT id, category, title, slug, summary, content, visibility, status, published_at
        FROM announcements
        WHERE organization_id = $1 AND visibility = 'PUBLIC' AND status = 'PUBLISHED'
          AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)${search}
-       ORDER BY pinned DESC, published_at DESC
-       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+       ORDER BY published_at DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params,
     );
-    return success(request, result.rows.map((row) => ({
+    return success(
+      request,
+      result.rows.map((row) => ({
+        id: row.id,
+        category: row.category,
+        title: row.title,
+        slug: row.slug,
+        summary: row.summary,
+        content: row.content,
+        visibility: row.visibility,
+        status: row.status,
+        publishedAt: row.published_at.toISOString(),
+      })),
+    );
+  });
+
+  app.get('/public/announcements/:id', async (request) => {
+    const params = idParamsSchema.parse(request.params);
+    const organization = await publicOrganization(app);
+    const result = await app.database.query<{
+      id: string;
+      category: string;
+      title: string;
+      slug: string;
+      summary: string;
+      content: string;
+      published_at: Date;
+    }>(
+      `SELECT id, category, title, slug, summary, content, published_at
+       FROM announcements
+       WHERE id = $1 AND organization_id = $2 AND visibility = 'PUBLIC' AND status = 'PUBLISHED'
+         AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)`,
+      [params.id, organization.id],
+    );
+    const row = result.rows[0];
+    if (!row) throw new AppError(404, 'ANNOUNCEMENT_NOT_FOUND', 'Pengumuman tidak ditemukan.');
+    return success(request, {
       id: row.id,
       category: row.category,
       title: row.title,
       slug: row.slug,
       summary: row.summary,
       content: row.content,
-      visibility: row.visibility,
-      urgency: row.urgency,
-      status: row.status,
-      pinned: row.pinned,
-      publishedAt: row.published_at,
-      expiresAt: row.expires_at,
-    })), {
-      page: query.page,
-      pageSize: query.pageSize,
-      total: count.rows[0]?.total ?? 0,
+      publishedAt: row.published_at.toISOString(),
     });
   });
 
@@ -115,191 +133,160 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
     let search = '';
     if (query.search) {
       params.push(`%${query.search}%`);
-      search = ` AND (title ILIKE $2 OR coalesce(description, '') ILIKE $2 OR category ILIKE $2)`;
+      search = ` AND (title ILIKE $2 OR description ILIKE $2)`;
     }
-    const count = await app.database.query<{ total: number }>(
-      `SELECT count(*)::int AS total FROM documents
-       WHERE organization_id = $1 AND visibility = 'PUBLIC' AND published_at IS NOT NULL
-         AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)${search}`,
-      params,
-    );
     params.push(query.pageSize, (query.page - 1) * query.pageSize);
     const result = await app.database.query<{
       id: string;
       title: string;
       slug: string;
-      description: string | null;
+      description: string;
       category: string;
-      visibility: 'PUBLIC';
-      current_version: number;
-      file_id: string | null;
-      published_at: string;
-      expires_at: string | null;
+      visibility: string;
+      published_at: Date | null;
     }>(
-      `SELECT id, title, slug, description, category, visibility, current_version,
-              (SELECT dv.file_id FROM document_versions dv
-               WHERE dv.organization_id = documents.organization_id
-                 AND dv.document_id = documents.id
-                 AND dv.version = documents.current_version) AS file_id,
-              published_at, expires_at
+      `SELECT id, title, slug, description, category, visibility, published_at
        FROM documents
-       WHERE organization_id = $1 AND visibility = 'PUBLIC' AND published_at IS NOT NULL
-         AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)${search}
-       ORDER BY published_at DESC
-       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+       WHERE organization_id = $1 AND visibility = 'PUBLIC' AND published_at IS NOT NULL${search}
+       ORDER BY published_at DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params,
     );
-    return success(request, result.rows.map((row) => ({
-      id: row.id,
-      title: row.title,
-      slug: row.slug,
-      description: row.description,
-      category: row.category,
-      visibility: row.visibility,
-      currentVersion: row.current_version,
-      downloadUrl: row.file_id ? `/api/v1/public/documents/${row.id}/download` : null,
-      publishedAt: row.published_at,
-      expiresAt: row.expires_at,
-    })), {
-      page: query.page,
-      pageSize: query.pageSize,
-      total: count.rows[0]?.total ?? 0,
-    });
+    return success(
+      request,
+      result.rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        slug: row.slug,
+        description: row.description,
+        category: row.category,
+        visibility: row.visibility,
+        publishedAt: row.published_at ? row.published_at.toISOString() : null,
+        downloadUrl: `/api/v1/public/documents/${row.id}/download`,
+      })),
+    );
   });
 
   app.get('/public/documents/:id/download', async (request, reply) => {
-    const { id } = idParamsSchema.parse(request.params);
+    const params = idParamsSchema.parse(request.params);
     const organization = await publicOrganization(app);
     const result = await app.database.query<{
       storage_key: string;
-      original_name: string;
       mime_type: string;
+      original_name: string;
     }>(
-      `SELECT f.storage_key, f.original_name, f.mime_type
+      `SELECT f.storage_key, f.mime_type, f.original_name
        FROM documents d
-       JOIN document_versions dv
-         ON dv.organization_id = d.organization_id
-        AND dv.document_id = d.id
-        AND dv.version = d.current_version
-       JOIN files f ON f.organization_id = d.organization_id AND f.id = dv.file_id
-       WHERE d.organization_id = $1 AND d.id = $2
-         AND d.visibility = 'PUBLIC' AND d.published_at IS NOT NULL
-         AND (d.expires_at IS NULL OR d.expires_at > CURRENT_TIMESTAMP)`,
-      [organization.id, id],
+       JOIN document_versions dv ON dv.document_id = d.id AND dv.version = d.current_version
+       JOIN files f ON f.id = dv.file_id
+       WHERE d.id = $1 AND d.organization_id = $2 AND d.visibility = 'PUBLIC'`,
+      [params.id, organization.id],
     );
-    const file = result.rows[0];
-    if (!file) throw new AppError(404, 'DOCUMENT_NOT_FOUND', 'Dokumen tidak ditemukan.');
-    const storageRoot = resolve(app.config.UPLOAD_DIR);
-    const absolutePath = resolve(storageRoot, file.storage_key);
-    if (absolutePath !== storageRoot && !absolutePath.startsWith(`${storageRoot}${sep}`)) {
-      throw new AppError(404, 'DOCUMENT_NOT_FOUND', 'Dokumen tidak ditemukan.');
+    const row = result.rows[0];
+    if (!row) throw new AppError(404, 'DOCUMENT_NOT_FOUND', 'Dokumen tidak ditemukan.');
+
+    const uploadDir = resolve(process.cwd(), app.config.UPLOAD_DIR);
+    const absolutePath = resolve(uploadDir, row.storage_key);
+    if (!absolutePath.startsWith(`${uploadDir}${sep}`)) {
+      throw new AppError(403, 'INVALID_FILE_PATH', 'Akses berkas tidak diizinkan.');
     }
-    const bytes = await readFile(absolutePath).catch(() => undefined);
-    if (!bytes) throw new AppError(404, 'DOCUMENT_NOT_FOUND', 'Dokumen tidak ditemukan.');
-    return reply
-      .type(file.mime_type)
-      .header('cache-control', 'public, max-age=3600')
-      .header('content-disposition', `inline; filename="${safeOriginalName(file.original_name)}"`)
-      .send(bytes);
+
+    try {
+      const buffer = await readFile(absolutePath);
+      const safeName = safeOriginalName(row.original_name);
+      return reply
+        .header('Content-Type', row.mime_type || 'application/octet-stream')
+        .header('Content-Disposition', `attachment; filename="${safeName}"`)
+        .send(buffer);
+    } catch {
+      throw new AppError(404, 'FILE_NOT_FOUND', 'Berkas dokumen fisik tidak ditemukan.');
+    }
   });
 
   app.get('/public/transparency', async (request) => {
     const organization = await publicOrganization(app);
-    const totals = await app.database.query<{
-      income: number | string | bigint;
-      expense: number | string | bigint;
+    const aggregateResult = await app.database.query<{
+      posted_inflow: string | null;
+      posted_outflow: string | null;
     }>(
       `SELECT
-         COALESCE(SUM(amount) FILTER (WHERE kind = 'INCOME'), 0) AS income,
-         COALESCE(SUM(amount) FILTER (WHERE kind = 'EXPENSE'), 0) AS expense
+         COALESCE(SUM(amount) FILTER (WHERE kind = 'INCOME'), 0)::text AS posted_inflow,
+         COALESCE(SUM(amount) FILTER (WHERE kind = 'EXPENSE'), 0)::text AS posted_outflow
        FROM finance_transactions
-       WHERE organization_id = $1 AND status IN ('POSTED', 'REVERSED')`,
+       WHERE organization_id = $1 AND status = 'POSTED'`,
       [organization.id],
     );
-    const monthly = await app.database.query<{
-      period: string;
-      income: number | string | bigint;
-      expense: number | string | bigint;
-    }>(
-      `SELECT to_char(date_trunc('month', occurred_at), 'YYYY-MM') AS period,
-         COALESCE(SUM(amount) FILTER (WHERE kind = 'INCOME'), 0) AS income,
-         COALESCE(SUM(amount) FILTER (WHERE kind = 'EXPENSE'), 0) AS expense
-       FROM finance_transactions
-       WHERE organization_id = $1 AND status IN ('POSTED', 'REVERSED')
-       GROUP BY date_trunc('month', occurred_at)
-       ORDER BY date_trunc('month', occurred_at) DESC LIMIT 12`,
+
+    const pendingResult = await app.database.query<{ pending_count: number }>(
+      `SELECT count(*)::int AS pending_count
+       FROM payments
+       WHERE organization_id = $1 AND status = 'PENDING_VERIFICATION'`,
       [organization.id],
     );
-    const income = Number(totals.rows[0]?.income ?? 0);
-    const expense = Number(totals.rows[0]?.expense ?? 0);
+
+    const inflow = BigInt(aggregateResult.rows[0]?.posted_inflow ?? '0');
+    const outflow = BigInt(aggregateResult.rows[0]?.posted_outflow ?? '0');
+
     return success(request, {
-      currency: 'IDR',
-      income,
-      expense,
-      balance: income - expense,
-      monthly: monthly.rows.map((row) => ({
-        period: row.period,
-        income: Number(row.income),
-        expense: Number(row.expense),
-      })),
-      note: 'Laporan publik hanya menampilkan nilai agregat yang sudah disanitasi.',
+      organizationName: organization.name,
+      currency: organization.currency || 'IDR',
+      income: Number(inflow),
+      expense: Number(outflow),
+      balance: Number(inflow - outflow),
+      totalIncome: inflow.toString(),
+      totalExpenses: outflow.toString(),
+      currentBalance: (inflow - outflow).toString(),
+      pendingVerificationsCount: pendingResult.rows[0]?.pending_count ?? 0,
+      updatedAt: new Date().toISOString(),
     });
   });
 
-  app.get('/public/events', async (request) => {
-    const query = pageQuerySchema.parse(request.query);
+  const agendaHandler = async (request: any) => {
     const organization = await publicOrganization(app);
-    const count = await app.database.query<{ total: number }>(
-      `SELECT count(*)::int AS total FROM activities
-       WHERE organization_id = $1 AND status = 'PUBLISHED'
-         AND ends_at >= CURRENT_TIMESTAMP`,
-      [organization.id],
-    );
-    const events = await app.database.query<{
+
+    const activitiesResult = await app.database.query<{
       id: string;
       title: string;
-      description: string;
+      starts_at: Date;
+      ends_at: Date;
       location: string;
-      starts_at: string | Date;
-      ends_at: string | Date;
-      capacity: number | null;
     }>(
-      `SELECT id, title, description, location, starts_at, ends_at, capacity
-       FROM activities WHERE organization_id = $1 AND status = 'PUBLISHED'
-         AND ends_at >= CURRENT_TIMESTAMP
-       ORDER BY starts_at ASC LIMIT $2 OFFSET $3`,
-      [organization.id, query.pageSize, (query.page - 1) * query.pageSize],
+      `SELECT id, title, starts_at, ends_at, location
+       FROM activities
+       WHERE organization_id = $1 AND starts_at >= CURRENT_TIMESTAMP - INTERVAL '7 days'
+       ORDER BY starts_at ASC LIMIT 20`,
+      [organization.id],
     );
+
+    const patrolsResult = await app.database.query<{
+      id: string;
+      starts_at: Date;
+      ends_at: Date;
+      area: string;
+    }>(
+      `SELECT id, starts_at, ends_at, area
+       FROM patrol_assignments
+       WHERE organization_id = $1 AND starts_at >= CURRENT_TIMESTAMP - INTERVAL '1 days'
+       ORDER BY starts_at ASC LIMIT 10`,
+      [organization.id],
+    );
+
     return success(
       request,
-      events.rows.map((event) => ({
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        location: event.location,
-        startsAt: new Date(event.starts_at).toISOString(),
-        endsAt: new Date(event.ends_at).toISOString(),
-        capacity: event.capacity,
+      activitiesResult.rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        startsAt: row.starts_at.toISOString(),
+        endsAt: row.ends_at.toISOString(),
+        location: row.location,
       })),
-      { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? 0 },
     );
-  });
+  };
+
+  app.get('/public/events', agendaHandler);
+  app.get('/public/agenda', agendaHandler);
 
   app.get('/public/complaints', async (request) => {
-    const query = pageQuerySchema.parse(request.query);
     const organization = await publicOrganization(app);
-    const params: unknown[] = [organization.id];
-    let search = '';
-    if (query.search) {
-      params.push(`%${query.search}%`);
-      search = ` AND (title ILIKE $2 OR description ILIKE $2 OR coalesce(location, '') ILIKE $2 OR category ILIKE $2)`;
-    }
-    const count = await app.database.query<{ total: number }>(
-      `SELECT count(*)::int AS total FROM complaints
-       WHERE organization_id = $1 AND visibility = 'PUBLIC'${search}`,
-      params,
-    );
-    params.push(query.pageSize, (query.page - 1) * query.pageSize);
     const result = await app.database.query<{
       id: string;
       ticket_number: string;
@@ -309,62 +296,55 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       location: string | null;
       priority: string;
       status: string;
-      created_at: string | Date;
-      updated_at: string | Date;
+      created_at: Date;
+      updated_at: Date;
     }>(
       `SELECT id, ticket_number, category, title, description, location, priority, status, created_at, updated_at
-       FROM complaints
-       WHERE organization_id = $1 AND visibility = 'PUBLIC'${search}
-       ORDER BY created_at DESC
-       LIMIT $${params.length - 1} OFFSET $${params.length}`,
-      params,
+       FROM complaints WHERE organization_id = $1 ORDER BY created_at DESC LIMIT 50`,
+      [organization.id],
     );
 
     const items = result.rows.length > 0
-      ? result.rows.map((row) => ({
-          id: row.id,
-          ticketNumber: row.ticket_number,
-          category: row.category,
-          title: row.title,
-          description: row.description,
-          location: row.location,
-          priority: row.priority,
-          status: row.status,
-          createdAt: new Date(row.created_at).toISOString(),
-          updatedAt: new Date(row.updated_at).toISOString(),
+      ? result.rows.map((c) => ({
+          id: c.id,
+          ticketNumber: c.ticket_number,
+          category: c.category,
+          title: c.title,
+          description: c.description,
+          location: c.location,
+          priority: c.priority,
+          status: c.status,
+          createdAt: c.created_at.toISOString(),
+          updatedAt: c.updated_at.toISOString(),
         }))
       : [
           {
-            id: 'pub-comp-1',
+            id: 'c-demo-1',
             ticketNumber: 'TKT-2026-081',
-            category: 'FASILITAS',
-            title: 'Lampu jalan penerangan gerbang utama mati',
-            description: 'Lampu sorot LED di gerbang utama mati sejak semalam, perlu perbaikan fitting.',
-            location: 'Gerbang Utama RT 01',
+            category: 'Fasilitas & Lampu Jalan',
+            title: 'Lampu Penerangan Jalan Gang B Mati Total',
+            description: 'Lampu jalan utama dekat pos keamanan padam sejak kemarin sore, membuat area terasa gelap saat ronda malam.',
+            location: 'Gang B, Dekat Pos Ronda 2',
             priority: 'MEDIUM',
             status: 'IN_PROGRESS',
             createdAt: '2026-07-27T10:00:00.000Z',
             updatedAt: '2026-07-27T14:30:00.000Z',
           },
           {
-            id: 'pub-comp-2',
+            id: 'c-demo-2',
             ticketNumber: 'TKT-2026-079',
-            category: 'DRAINASE',
-            title: 'Sedimentasi saluran air blok B perlunya pengerukan',
-            description: 'Sedimen tanah mulai menebal menjelang musim hujan.',
-            location: 'Saluran Air Blok B No. 01-12',
-            priority: 'NORMAL',
+            category: 'Kebersihan & Drainase',
+            title: 'Pembersihan Saluran Air Mampet Depan Masjid',
+            description: 'Saluran air tersumbat dedaunan dan pasir setelah hujan lebat, perlu pengerukan got gotong royong.',
+            location: 'Depan Masjid Al-Ikhlas Blok C',
+            priority: 'HIGH',
             status: 'RESOLVED',
-            createdAt: '2026-07-20T08:00:00.000Z',
-            updatedAt: '2026-07-22T11:00:00.000Z',
+            createdAt: '2026-07-25T08:00:00.000Z',
+            updatedAt: '2026-07-26T11:00:00.000Z',
           },
         ];
 
-    return success(
-      request,
-      items,
-      { page: query.page, pageSize: query.pageSize, total: count.rows[0]?.total ?? items.length },
-    );
+    return success(request, items);
   });
 
   app.get('/public/facilities', async (request) => {
@@ -374,8 +354,8 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       name: string;
       description: string;
       category: string;
-      fee: string | number;
-      deposit: string | number;
+      fee: string;
+      deposit: string;
       active: boolean;
     }>(
       `SELECT id, name, description, category, fee, deposit, active
@@ -389,40 +369,36 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
           name: f.name,
           description: f.description,
           category: f.category,
-          fee: Number(f.fee),
-          deposit: Number(f.deposit),
-          capacity: null,
+          fee: f.fee,
+          deposit: f.deposit,
           active: f.active,
         }))
       : [
           {
             id: 'fac-1',
-            name: 'Balai Warga Serbaguna',
-            description: 'Gedung balai warga untuk rapat, resepsi pernikahan warga, dan posyandu.',
+            name: 'Balai Warga & Gedung Serbaguna',
+            description: 'Gedung pertemuan warga dilengkapi pendingin ruangan (AC), sound system, meja kursi, dan dapur bersih.',
             category: 'Gedung & Ruang',
-            fee: 0,
-            deposit: 100000,
-            capacity: 150,
+            fee: '150000',
+            deposit: '50000',
             active: true,
           },
           {
             id: 'fac-2',
-            name: 'Lapangan Olahraga & Serbaguna',
-            description: 'Lapangan luar ruang untuk bulutangkis, voli, dan upacara lingkungan.',
+            name: 'Lapangan Olahraga & Bulutangkis',
+            description: 'Lapangan outdoor serbaguna untuk olahraga bulutangkis, voli, dan acara senam pagi warga.',
             category: 'Olahraga',
-            fee: 0,
-            deposit: 0,
-            capacity: 200,
+            fee: '0',
+            deposit: '0',
             active: true,
           },
           {
             id: 'fac-3',
-            name: 'Set Tenda & Kursi Lipat (50 Unit)',
-            description: 'Inventaris tenda hajatan dan kursi lipat besi untuk kegiatan rumah warga.',
-            category: 'Inventaris',
-            fee: 50000,
-            deposit: 50000,
-            capacity: null,
+            name: 'Tenda & Meja Kursi Hajatan (100 Pcs)',
+            description: 'Set tenda terpal 4x6m dan 100 unit kursi lipat stainless steel untuk acara hajatan / duka warga.',
+            category: 'Inventaris & Peralatan',
+            fee: '100000',
+            deposit: '100000',
             active: true,
           },
         ];
@@ -437,14 +413,14 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       title: string;
       description: string;
       category: string;
-      budget: string | number;
-      spent: string | number;
+      budget: string;
+      spent: string;
       status: string;
-      starts_at: string | Date;
-      ends_at: string | Date;
+      starts_at: Date;
+      ends_at: Date;
     }>(
       `SELECT id, title, description, category, budget, spent, status, starts_at, ends_at
-       FROM programs WHERE organization_id = $1 ORDER BY created_at DESC`,
+       FROM programs WHERE organization_id = $1 ORDER BY starts_at DESC`,
       [organization.id],
     );
 
@@ -454,41 +430,41 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
           title: p.title,
           description: p.description,
           category: p.category,
-          targetBudget: Number(p.budget ?? 0),
-          currentBudget: Number(p.spent ?? 0),
+          budget: p.budget,
+          spent: p.spent,
           status: p.status,
-          startDate: new Date(p.starts_at).toISOString().split('T')[0],
-          endDate: new Date(p.ends_at).toISOString().split('T')[0],
+          startsAt: p.starts_at.toISOString(),
+          endsAt: p.ends_at.toISOString(),
         }))
       : [
           {
             id: 'prog-1',
-            title: 'Pemasangan CCTV & Smart Gate Gerbang Masuk',
-            description: 'Program pengadaan 4 unit kamera CCTV 4K dan palang otomatis gerbang utama untuk keamanan 24 jam.',
-            category: 'Keamanan',
-            targetBudget: 15000000,
-            currentBudget: 11200000,
+            title: 'Pemasangan 8 Unit CCTV Pintar Berwarna Malam',
+            description: 'Pengadaan dan penggelangan kabel CCTV pintar HD 1080p dengan night-vision di setiap sudut gerbang dan simpang gang RT.',
+            category: 'Keamanan Lingkungan',
+            budget: '8500000',
+            spent: '8500000',
             status: 'IN_PROGRESS',
-            startDate: '2026-06-01',
-            endDate: '2026-08-31',
+            startsAt: '2026-07-01T00:00:00.000Z',
+            endsAt: '2026-08-15T00:00:00.000Z',
           },
           {
             id: 'prog-2',
-            title: 'Penghijauan & Taman Herbal Komunitas',
-            description: 'Revitalisasi lahan kosong menjadi taman tanaman obat keluarga (TOGA) dan tempat kumpul warga.',
-            category: 'Lingkungan',
-            targetBudget: 5000000,
-            currentBudget: 5000000,
+            title: 'Pavingisasi & Pengaspalan Gang Seruni Blok B',
+            description: 'Perbaikan jalan pemukiman yang retak akibat hujan dengan pemasangan paving block presisi 8cm.',
+            category: 'Infrastruktur Jalan',
+            budget: '15000000',
+            spent: '14200000',
             status: 'COMPLETED',
-            startDate: '2026-05-10',
-            endDate: '2026-07-15',
+            startsAt: '2026-05-10T00:00:00.000Z',
+            endsAt: '2026-06-20T00:00:00.000Z',
           },
         ];
 
     return success(request, items);
   });
 
-  app.get('/public/businesses', async (request) => {
+  const umkmHandler = async (request: any) => {
     const organization = await publicOrganization(app);
     const result = await app.database.query<{
       id: string;
@@ -541,6 +517,113 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
             phone: '085711223344',
             operatingHours: '08.00 - 17.00 WIB',
             verified: true,
+          },
+        ];
+
+    return success(request, items);
+  };
+
+  app.get('/public/businesses', umkmHandler);
+  app.get('/public/umkm', umkmHandler);
+
+  // Public Organization Officers Projection Endpoint
+  app.get('/public/officers', async (request) => {
+    const organization = await publicOrganization(app);
+    const result = await app.database.query<{
+      id: string;
+      name: string;
+      position: string;
+      department: string;
+      phone: string | null;
+      email: string | null;
+      avatar_url: string | null;
+      period: string;
+      order_index: number;
+    }>(
+      `SELECT id, name, position, department, phone, email, avatar_url, period, order_index
+       FROM organization_officers WHERE organization_id = $1 AND active = true
+       ORDER BY order_index ASC, created_at ASC`,
+      [organization.id],
+    );
+
+    const items = result.rows.length > 0
+      ? result.rows.map((o) => ({
+          id: o.id,
+          name: o.name,
+          position: o.position,
+          department: o.department,
+          phone: o.phone,
+          email: o.email,
+          avatarUrl: o.avatar_url,
+          period: o.period,
+          orderIndex: o.order_index,
+        }))
+      : [
+          {
+            id: 'officer-1',
+            name: 'Bpk. H. Bambang Sudirman',
+            position: 'Ketua RW 05 / RT 03',
+            department: 'PENGURUS_INTI',
+            phone: '081234567890',
+            email: 'bambang@wargahub.id',
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 1,
+          },
+          {
+            id: 'officer-2',
+            name: 'Ibu Ratna Saraswati',
+            position: 'Sekretaris RT',
+            department: 'PENGURUS_INTI',
+            phone: '081399887766',
+            email: 'ratna@wargahub.id',
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 2,
+          },
+          {
+            id: 'officer-3',
+            name: 'Bpk. Asep Hendra',
+            position: 'Bendahara RT & Keuangan',
+            department: 'PENGURUS_INTI',
+            phone: '085712345678',
+            email: 'asep@wargahub.id',
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 3,
+          },
+          {
+            id: 'officer-4',
+            name: 'Bpk. Joko Susilo',
+            position: 'Kasie Keamanan & Ronda',
+            department: 'SEKSI_KEAMANAN',
+            phone: '081822334455',
+            email: null,
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 4,
+          },
+          {
+            id: 'officer-5',
+            name: 'Bpk. Dedi Supriyadi',
+            position: 'Kasie Lingkungan & Kebersihan',
+            department: 'SEKSI_LINGKUNGAN',
+            phone: '081977665544',
+            email: null,
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 5,
+          },
+          {
+            id: 'officer-6',
+            name: 'Sdr. Rizky Ramadhan',
+            position: 'Ketua Karang Taruna',
+            department: 'PEMUDA_KARANG_TARUNA',
+            phone: '085699887711',
+            email: null,
+            avatarUrl: null,
+            period: '2024 - 2027',
+            orderIndex: 6,
           },
         ];
 

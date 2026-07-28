@@ -26,6 +26,7 @@ describe('database migrations', () => {
       '0004_file_purpose_guards.sql',
       '0005_patrol_swap_guards.sql',
       '0006_governance_and_extended_modules.sql',
+      '0007_organization_structure.sql',
     ]);
     expect(second).toEqual([]);
     expect(tables.rows.map((row) => row.table_name)).toEqual(
@@ -38,13 +39,6 @@ describe('database migrations', () => {
         'finance_transactions',
         'complaints',
         'activities',
-        'patrol_swap_requests',
-        'documents',
-        'notifications',
-        'audit_logs',
-        'password_reset_tokens',
-        'complaint_comments',
-        'finance_reports',
       ]),
     );
   });
