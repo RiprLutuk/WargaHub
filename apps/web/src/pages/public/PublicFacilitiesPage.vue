@@ -325,7 +325,7 @@ const cctvFeeds = [
 </template>
 
 <style scoped>
-.public-page-shell { width: min(calc(100% - 2rem), 96rem); padding-block: clamp(2rem, 4vw, 3.5rem); }
+.public-page-shell { width: min(calc(100% - 2rem), var(--content)); padding-block: clamp(2rem, 4vw, 3.5rem); }
 
 .page-header {
   margin-bottom: 1.25rem;
