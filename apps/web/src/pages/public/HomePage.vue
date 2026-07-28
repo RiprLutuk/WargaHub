@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, CalendarDays, CheckCircle2, Megaphone, ShieldCheck, WalletCards } from 'lucide-vue-next';
+import { ArrowRight, CalendarDays, CheckCircle2, Megaphone, ShieldCheck, Video, WalletCards } from 'lucide-vue-next';
 import { getActivePinia } from 'pinia';
 import { computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -22,51 +22,47 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="hero">
-    <div class="hero-pattern" aria-hidden="true" />
+  <section class="hero" aria-labelledby="hero-title">
     <div class="container hero-grid">
-      <div class="hero-copy">
-        <span class="hero-kicker"><CheckCircle2 :size="15" aria-hidden="true" /> Ruang bersama yang lebih ringan & manusiawi</span>
-        <h1>WargaHub</h1>
-        <p class="hero-lead">Gotong royong tanpa mengorbankan kewarasan.</p>
-        <p class="hero-description">Informasi resmi, layanan warga, dan transparansi lingkungan—rapi dalam satu tempat, tanpa menambah tekanan sosial.</p>
-        <div class="hero-actions">
-          <RouterLink class="button" to="/pengumuman">Lihat informasi terbaru <ArrowRight :size="17" aria-hidden="true" /></RouterLink>
+      <div class="hero-content">
+        <span class="eyebrow">Pengumuman & Layanan Digital Warga</span>
+        <h1 id="hero-title" class="display-title">{{ site.data.value?.name ?? 'WargaHub' }}</h1>
+        <p class="hero-lead">
+          {{ site.data.value?.description ?? 'Platform gotong-royong warga.' }} Kertas kerja kas terbuka, pengaduan terstruktur, dan pembagian peran yang manusiawi tanpa grup percakapan yang bising.
+        </p>
 
-          <!-- Dynamic Hero Secondary Action -->
+        <div class="hero-actions">
           <RouterLink
             v-if="session?.isAuthenticated && session?.user"
-            class="button button-secondary"
+            class="button button-lg"
             :to="session.isAdmin ? '/admin' : '/app'"
           >
-            Buka Portal {{ session.user.name }}
+            Buka portal {{ session.user.name.split(' ')[0] }} <ArrowRight :size="17" aria-hidden="true" />
           </RouterLink>
-          <RouterLink v-else class="button button-secondary" to="/login">
-            Masuk sebagai warga
+          <RouterLink v-else class="button button-lg" to="/login">
+            Masuk portal warga <ArrowRight :size="17" aria-hidden="true" />
           </RouterLink>
-        </div>
-        <div class="trust-row" aria-label="Prinsip WargaHub">
-          <span><ShieldCheck :size="17" aria-hidden="true" /> Privat seperlunya</span>
-          <span><CheckCircle2 :size="17" aria-hidden="true" /> Tanpa ranking warga</span>
+          <RouterLink class="button button-secondary button-lg" to="/transparansi">Lihat transparansi kas</RouterLink>
         </div>
       </div>
 
-      <aside class="community-card" aria-label="Ringkasan lingkungan">
-        <div class="community-card-top">
-          <span class="live-dot" />
-          <span>Sumber informasi resmi</span>
+      <aside class="hero-sidebar" aria-label="Informasi lingkungan singkat">
+        <div class="community-card">
+          <span class="card-kicker">Prinsip dasar</span>
+          <h2>Tenang, transparan, dan tidak memaksa.</h2>
+          <ul>
+            <li>Privasi warga terjaga dan data tidak dijual.</li>
+            <li>Pengumuman resmi tidak tertumpuk di obrolan grup.</li>
+            <li>Iuran dan tagihan tercatat terbuka untuk audit.</li>
+          </ul>
         </div>
-        <StatePanel v-if="site.loading.value" state="loading" />
-        <StatePanel v-else-if="site.error.value" state="error" :message="site.error.value" @retry="site.reload" />
-        <template v-else-if="site.data.value">
-          <span class="eyebrow">Lingkungan kita</span>
-          <h2>{{ site.data.value.name }}</h2>
-          <p>{{ site.data.value.description }}</p>
-          <dl v-if="site.data.value.households !== null || site.data.value.activePrograms !== null" class="community-stats">
-            <div v-if="site.data.value.households !== null"><dt>Rumah terdaftar</dt><dd>{{ site.data.value.households }}</dd></div>
-            <div v-if="site.data.value.activePrograms !== null"><dt>Program aktif</dt><dd>{{ site.data.value.activePrograms }}</dd></div>
-          </dl>
-          <div class="community-address">{{ site.data.value.address }}</div>
+
+        <template v-if="site.data.value">
+          <div class="meta-strip card">
+            <div><small>Lingkungan</small><strong>{{ site.data.value.shortName }}</strong></div>
+            <div><small>Alamat</small><strong>{{ site.data.value.address }}</strong></div>
+            <div><small>Kontak Siaga</small><strong>{{ site.data.value.emergencyPhone }}</strong></div>
+          </div>
         </template>
       </aside>
     </div>
@@ -123,29 +119,58 @@ onMounted(() => {
     </div>
   </section>
 
-  <!-- Dynamic Bottom CTA Card -->
-  <section class="container invitation">
-    <div v-if="session?.isAuthenticated && session?.user">
-      <span class="eyebrow">Sesi aktif: {{ session.user.roles?.[0] ?? 'Warga' }}</span>
-      <h2>Selamat datang kembali, {{ session.user.name }}!</h2>
-      <p>Akses cepat ke tagihan rumah Anda, pengaduan, giliran ronda, dan pengumuman warga.</p>
-    </div>
-    <div v-else>
-      <span class="eyebrow">Khusus penghuni</span>
-      <h2>Selesaikan kebutuhan warga tanpa percakapan panjang.</h2>
-      <p>Lihat tagihan rumah, laporkan masalah, pilih kontribusi kegiatan, dan kelola jadwal ronda dari portal privat.</p>
-    </div>
+  <!-- Dynamic Premium Bottom CTA Card -->
+  <section class="container invitation-section">
+    <div class="cta-banner">
+      <div class="cta-content">
+        <div v-if="session?.isAuthenticated && session?.user" class="cta-text-group">
+          <span class="cta-badge">
+            <i class="beacon-pulse" />
+            Portal Layanan Aktif: {{ session.user.roles?.[0] ?? 'Warga' }}
+          </span>
+          <h2>Selamat datang kembali, {{ session.user.name }}!</h2>
+          <p>Akses privat untuk iuran rumah, pengaduan, jadwal ronda, dan pengumuman lingkungan.</p>
+          <div class="cta-pills">
+            <span><CheckCircle2 :size="14" /> Tagihan Iuran</span>
+            <span><CheckCircle2 :size="14" /> Jadwal Ronda</span>
+            <span><CheckCircle2 :size="14" /> CCTV Live 1080p</span>
+          </div>
+        </div>
+        <div v-else class="cta-text-group">
+          <span class="cta-badge">
+            <i class="beacon-pulse" />
+            Layanan Digital RT/RW Terpadu
+          </span>
+          <h2>Selesaikan kebutuhan warga tanpa percakapan panjang.</h2>
+          <p>Lihat iuran rumah, laporkan masalah, pilih kontribusi kegiatan, dan kelola jadwal ronda dari portal privat.</p>
+          <div class="cta-pills">
+            <span><CheckCircle2 :size="14" /> Transparansi Kas</span>
+            <span><CheckCircle2 :size="14" /> Layanan Surat Digital</span>
+            <span><CheckCircle2 :size="14" /> CCTV Lingkungan</span>
+          </div>
+        </div>
 
-    <RouterLink
-      v-if="session?.isAuthenticated && session?.user"
-      class="button button-lg"
-      :to="session.isAdmin ? '/admin' : '/app'"
-    >
-      Buka portal {{ session.user.name }} <ArrowRight :size="17" aria-hidden="true" />
-    </RouterLink>
-    <RouterLink v-else class="button button-lg" to="/login">
-      Buka portal warga <ArrowRight :size="17" aria-hidden="true" />
-    </RouterLink>
+        <div class="cta-actions">
+          <RouterLink
+            v-if="session?.isAuthenticated && session?.user"
+            class="cta-primary-btn"
+            :to="session.isAdmin ? '/admin' : '/app'"
+          >
+            <span>Buka Portal {{ session.user.name.split(' ')[0] }}</span>
+            <ArrowRight :size="17" aria-hidden="true" />
+          </RouterLink>
+          <RouterLink v-else class="cta-primary-btn" to="/login">
+            <span>Masuk Portal Warga</span>
+            <ArrowRight :size="17" aria-hidden="true" />
+          </RouterLink>
+
+          <RouterLink to="/fasilitas/cctv" class="cta-secondary-btn">
+            <Video :size="16" />
+            <span>Pantau CCTV Live</span>
+          </RouterLink>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -160,93 +185,61 @@ onMounted(() => {
 .hero-pattern {
   position: absolute;
   inset: 0;
-  opacity: .12;
-  background-image: linear-gradient(var(--teal-700) 1px, transparent 1px), linear-gradient(90deg, var(--teal-700) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%);
+  background-image: radial-gradient(rgba(11, 120, 108, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
 }
 .hero-grid {
-  position: relative;
   display: grid;
-  min-height: 36rem;
-  grid-template-columns: 1.3fr .9fr;
+  min-height: min(38rem, 80vh);
+  grid-template-columns: 1.15fr 0.85fr;
   align-items: center;
   gap: clamp(2rem, 5vw, 4rem);
-  padding-block: 4.5rem;
+  padding-block: clamp(2.5rem, 5vw, 4.5rem);
 }
-.hero-copy { max-width: 43rem; }
-.hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  margin-bottom: 1.2rem;
-  padding: .4rem .75rem;
-  border: 1px solid var(--teal-100);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--teal-700);
-  font-size: .82rem;
-  font-weight: 800;
-  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.08);
-}
-.hero h1 { margin-bottom: .25rem; color: var(--ink-950); }
-.hero-lead {
-  margin-bottom: 1rem;
-  color: var(--teal-700);
-  font-size: clamp(1.45rem, 3vw, 2.25rem);
-  font-weight: 850;
-  line-height: 1.2;
-}
-.hero-description { max-width: 39rem; margin-bottom: 1.8rem; color: var(--ink-650); font-size: 1.08rem; }
-.hero-actions, .trust-row { display: flex; flex-wrap: wrap; gap: .85rem; }
-.trust-row { margin-top: 1.6rem; color: var(--ink-650); font-size: .85rem; font-weight: 750; }
-.trust-row span { display: inline-flex; align-items: center; gap: .4rem; }
+.hero-content { display: grid; gap: 0.8rem; }
+.display-title { font-size: clamp(2.8rem, 5.5vw, 4.5rem); }
+.hero-lead { max-width: 38rem; color: var(--ink-650); font-size: 1.12rem; line-height: 1.6; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.8rem; }
+.text-link { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; font-size: 0.92rem; }
 
+.hero-sidebar { display: grid; gap: 1rem; }
 .community-card {
-  padding: clamp(1.5rem, 3vw, 2.4rem);
-  border: 1px solid var(--line-strong);
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.75rem;
   border-radius: var(--radius-xl);
   background: #ffffff;
-  box-shadow: var(--shadow-md);
-  margin-block: 1rem;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  transform: rotate(-1deg);
+  transition: transform 0.25s ease;
 }
-.community-card-top {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin: -0.2rem 0 1.5rem;
-  color: var(--success-700);
-  font-size: .78rem;
-  font-weight: 850;
-  letter-spacing: 0.02em;
-}
-.live-dot {
-  width: .6rem;
-  height: .6rem;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 0 4px var(--success-100);
-}
-.community-card h2 { font-size: 2.1rem; color: var(--ink-950); }
-.community-card p { color: var(--ink-650); }
-.community-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin: 1.6rem 0; }
-.community-stats div { padding: 1rem; border-radius: var(--radius-md); background: var(--teal-50); border: 1px solid var(--teal-100); }
-.community-stats dt { color: var(--ink-650); font-size: .75rem; font-weight: 750; }
-.community-stats dd { margin: .25rem 0 0; font-size: 1.8rem; font-weight: 850; color: var(--teal-800); }
-.community-address { padding-top: 1rem; border-top: 1px solid var(--line); color: var(--ink-650); font-size: .85rem; font-weight: 600; }
+.community-card:hover { transform: rotate(0deg) translateY(-2px); }
+.card-kicker { font-size: 0.75rem; font-weight: 600; color: var(--teal-700); text-transform: uppercase; letter-spacing: 0.05em; }
+.community-card h2 { font-size: 1.25rem; margin: 0; font-weight: 500; }
+.community-card ul { margin: 0; padding-left: 1.1rem; color: var(--ink-650); font-size: 0.9rem; display: grid; gap: 0.4rem; }
 
-.public-section { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
-.text-link { display: inline-flex; align-items: center; gap: .35rem; font-weight: 800; color: var(--teal-700); text-decoration: none !important; }
-.text-link:hover { color: var(--teal-800); }
+.meta-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+}
+.meta-strip small { display: block; color: var(--ink-500); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.meta-strip strong { display: block; color: var(--ink-950); font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 
-.announcement-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 1.25rem; }
+.public-section { padding-block: clamp(3rem, 6vw, 5rem); }
+.announcement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 .announcement-card {
   display: flex;
-  min-height: 17rem;
   flex-direction: column;
   padding: 1.5rem;
-  border: 1px solid var(--line);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
   background: #ffffff;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -333,37 +326,154 @@ onMounted(() => {
   color: var(--teal-700);
   box-shadow: 0 4px 10px rgba(15, 118, 110, 0.1);
 }
-.service-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+.service-card h3 { font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; }
 .service-card p { margin-bottom: 0; color: var(--ink-650); font-size: 0.95rem; }
 
-.invitation {
+/* Dynamic Premium CTA Banner */
+.invitation-section {
+  margin-block: 4.5rem;
+}
+.cta-banner {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.2rem, 5vw, 3.5rem);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #094b43 0%, #063731 60%, #0d5f55 100%);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  box-shadow: 0 20px 45px -10px rgba(6, 55, 49, 0.35);
+  color: #ffffff;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 25rem;
+  height: 25rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
-  margin-block: 4.5rem;
-  padding: clamp(2rem, 4vw, 3.5rem);
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
-  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+  gap: 2.5rem;
 }
-.invitation > div { max-width: 44rem; }
-.invitation h2 { font-size: clamp(1.8rem, 4vw, 2.7rem); color: #78350f; margin-bottom: 0.5rem; }
-.invitation p { margin-bottom: 0; color: #92400e; font-size: 1.05rem; font-weight: 600; }
-.button-lg { min-height: 3.1rem; padding: 0.8rem 1.4rem; font-size: 1rem; }
+.cta-text-group { max-width: 44rem; }
+.cta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(45, 212, 191, 0.15);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  color: #5eead4;
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin-bottom: 0.9rem;
+}
+.beacon-pulse {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #2dd4bf;
+  box-shadow: 0 0 10px #2dd4bf;
+}
+.cta-banner h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 0.65rem;
+  line-height: 1.2;
+}
+.cta-banner p {
+  color: #cbd5e1;
+  font-size: 1.02rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+}
+.cta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.cta-pills span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: none;
+}
+.cta-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none !important;
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
+  transition: all 0.2s ease;
+}
+.cta-primary-btn:hover {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(45, 212, 191, 0.4);
+}
+.cta-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+}
+.cta-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+}
 
 @media (max-width: 900px) {
   .hero-grid { min-height: auto; grid-template-columns: 1fr; padding-block: 3.5rem; }
   .community-card { max-width: 37rem; transform: none; }
   .announcement-grid { grid-template-columns: 1fr 1fr; }
   .announcement-card.featured { grid-column: 1 / -1; }
+  .cta-content { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .cta-actions { width: 100%; flex-direction: row; }
+  .cta-primary-btn, .cta-secondary-btn { flex: 1; text-align: center; justify-content: center; }
 }
 @media (max-width: 650px) {
   .hero-grid { padding-block: 2.5rem; }
   .hero-actions .button { width: 100%; }
   .announcement-grid, .service-grid { grid-template-columns: 1fr; }
   .announcement-card.featured { grid-column: auto; }
-  .invitation { align-items: stretch; flex-direction: column; }
+  .cta-actions { flex-direction: column; }
 }
 </style>
