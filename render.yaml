@@ -1,11 +1,11 @@
 services:
   - type: web
     name: wargahub-api
-    runtime: node
+    runtime: docker
     plan: free
     rootDir: .
-    buildCommand: bun install --frozen-lockfile && bun run --cwd apps/api build
-    startCommand: bun run --cwd apps/api start
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     autoDeploy: true
     envVars:
