@@ -1,180 +1,184 @@
 <div align="center">
 
-# 🏡 WargaHub
-### *Rukun Dalam Satu Ruang*
+# WargaHub
 
-[![Release](https://img.shields.io/github/v/release/RiprLutuk/WargaHub?style=for-the-badge&color=07574f)](https://github.com/RiprLutuk/WargaHub/releases)
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-amber?style=for-the-badge)](LICENSE)
-[![Bun](https://img.shields.io/badge/Bun-v1.3+-black?style=for-the-badge&logo=bun)](https://bun.sh)
-[![Vue 3](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vuedotjs)](https://vuejs.org)
-[![Fastify](https://img.shields.io/badge/Fastify-5.x-000000?style=for-the-badge&logo=fastify)](https://fastify.dev)
-[![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa)](https://vite-pwa-org.netlify.app/)
+### Rukun dalam satu ruang
 
-**WargaHub** adalah platform open-source modern berbasis *Privacy-First* untuk membantu pengurus RT/RW dan warga dalam mengelola informasi, iuran, pengaduan, kegiatan, ronda, musyawarah digital, serta transparansi keuangan lingkungan secara bermartabat.
+Platform open-source untuk membantu lingkungan RT/RW menyampaikan informasi, mengelola layanan warga, dan menjaga transparansi dengan tetap menghormati privasi.
 
-<br/>
+[![Release](https://img.shields.io/github/v/release/RiprLutuk/WargaHub?style=flat-square&color=07574f)](https://github.com/RiprLutuk/WargaHub/releases)
+[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-07574f?style=flat-square)](LICENSE)
+[![Bun](https://img.shields.io/badge/runtime-Bun-111111?style=flat-square&logo=bun)](https://bun.sh)
+[![Vue](https://img.shields.io/badge/frontend-Vue_3-42b883?style=flat-square&logo=vuedotjs)](https://vuejs.org)
+[![Fastify](https://img.shields.io/badge/API-Fastify-111111?style=flat-square&logo=fastify)](https://fastify.dev)
 
-<img src="docs/wargahub-preview.png" alt="WargaHub Platform Preview" width="92%" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin-block: 1rem;" />
+<br />
 
-<br/>
+<img src="docs/wargahub-preview.png" alt="Preview portal publik WargaHub" width="94%" />
 
-[Demo Online](#-demo-online) • [Fitur Utama](#-fitur-unggulan) • [Cara Jalankan](#-menjalankan-secara-lokal) • [Akun Demo](#-akun-demo) • [Prinsip Privasi](#-prinsip-privasi) • [Dokumentasi](#-dokumentasi)
+<br />
 
----
+[Demo](#demo) · [Fitur](#fitur-utama) · [Lokal](#menjalankan-secara-lokal) · [Deployment](#deployment) · [Kontribusi](#kontribusi)
 
 </div>
 
-## 🌐 Demo Online
+## Tentang proyek
+
+WargaHub memisahkan informasi publik dari data privat warga. Portal publik menyediakan pengumuman, agenda, dokumen, struktur pengurus, fasilitas, CCTV, program lingkungan, UMKM, dan laporan transparansi. Portal privat menyediakan iuran, surat digital, pengaduan, kegiatan, ronda, voting, dan peminjaman fasilitas.
+
+Proyek ini dirancang untuk dapat dipakai ulang oleh lingkungan lain: kontrak API tervalidasi, komponen UI reusable, URL tab yang share-friendly, PWA installable, dan route frontend yang lazy-loaded.
+
+## Demo
 
 - **Portal publik:** [wargahub.demo.pandanteknik.com](https://wargahub.demo.pandanteknik.com)
 - **Alias Vercel:** [wargahub.vercel.app](https://wargahub.vercel.app)
-- **API health check:** [api.wargahub.pandanteknik.com/health](https://api.wargahub.pandanteknik.com/health)
+- **API health:** [api.wargahub.pandanteknik.com/health](https://api.wargahub.pandanteknik.com/health)
 
-Gunakan kredensial pada bagian [Akun Demo](#-akun-demo) untuk mencoba portal privat. Dataset demo berisi 100+ warga, tagihan bulanan, dan ratusan transaksi kas. Jangan gunakan akun demo untuk data warga sungguhan.
+Seed demo berisi 100+ warga/rumah, pengumuman, laporan, agenda, dokumen, fasilitas, program, UMKM, tagihan, dan ratusan transaksi kas. Gunakan data demo hanya untuk eksplorasi.
 
-## 🌟 Fitur Unggulan
+## Fitur utama
 
-<table>
-  <tr>
-    <td width="50%">
-      <h3>🏢 Tata Kelola & Warga</h3>
-      <ul>
-        <li><b>Manajemen Rumah & Warga</b> — Pendataan rumah terisi/kosong, status hunian, dan alur verifikasi via link undangan unik.</li>
-        <li><b>Import/Export CSV</b> — Upload data rumah dan warga secara kolektif dengan validasi format otomatis.</li>
-        <li><b>Role-Based Access Control (RBAC)</b> — Hak akses berjenjang untuk Admin, Ketua RT/RW, Bendahara, Koordinator, dan Warga.</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <h3>💳 Keuangan & Iuran</h3>
-      <ul>
-        <li><b>Buku Kas Immutable</b> — Pencatatan iuran transparan berbasis alokasi pembayaran & reversal tanpa fitur hapus transaksi.</li>
-        <li><b>Verifikasi Bukti Transfer</b> — Upload bukti bayar warga dengan verifikasi aman dari Bendahara.</li>
-        <li><b>Laporan Keuangan Publik</b> — Proyeksi kas agregat bulanan untuk publik tanpa membuka privasi keuangan individu.</li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>🗳️ Musyawarah & Surat Digital</h3>
-      <ul>
-        <li><b>Voting & Polling Warga</b> — Pemungutan suara online untuk keputusan bersama dengan batas waktu & kuorum.</li>
-        <li><b>Permohonan Surat RT/RW</b> — Pengajuan permohonan surat pengantar online dengan pelacakan status approval.</li>
-        <li><b>Program Pembangunan</b> — Transparansi proyek lingkungan beserta progres dan sisa kebutuhan dana.</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <h3>🚨 Operasional & Keamanan</h3>
-      <ul>
-        <li><b>Pengaduan Privat & Publik</b> — Laporan kendala lingkungan dengan penetapan PIC/petugas dan histori penanganan.</li>
-        <li><b>Jadwal & Pertukaran Ronda</b> — Pengaturan petugas siskamling dengan alur tukar jadwal ronda (Patrol Swap).</li>
-        <li><b>Fasilitas, UMKM & Kehilangan</b> — Peminjaman barang/fasilitas warga, direktori usaha warga lokal, dan papan <i>Lost & Found</i>.</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+| Area | Yang tersedia |
+| --- | --- |
+| **Informasi publik** | Pengumuman, agenda, dokumen, struktur RT/RW, kontak, darurat, CCTV, program, UMKM, dan transparansi kas. |
+| **Data warga** | Rumah, warga, undangan verifikasi, import/export CSV, status hunian, dan RBAC. |
+| **Keuangan** | Iuran, verifikasi bukti transfer, ledger append-only, reversal transaksi, dan laporan agregat publik. |
+| **Layanan digital** | Surat pengantar, pengaduan privat, kegiatan, ronda, voting, dan peminjaman fasilitas. |
+| **Operasional** | PIC, histori status, soft delete, audit log, notifikasi, dan broadcast WhatsApp opsional. |
 
----
+## Teknologi
 
-## ⚡ Teknologi & Arsitektur
+- **Frontend:** Vue 3, Vite, Vue Router, Pinia, PWA
+- **Backend:** Fastify 5, Zod contracts, OpenAPI
+- **Database:** PGlite untuk lokal, PostgreSQL untuk production
+- **Runtime:** Bun workspace monorepo
+- **Deployment:** Vercel untuk web, container host untuk API
+- **Analytics:** Vercel Web Analytics
 
-- **Runtime & Package Manager**: [Bun](https://bun.sh) (Monorepo Workspaces)
-- **Backend Framework**: [Fastify](https://fastify.dev) dengan Zod Contract Validation & OpenAPI (Swagger) Documentation
-- **Database**: Embedded WASM [PGlite](https://pglite.dev) (Development lokal tanpa Docker DB) & PostgreSQL (Production)
-- **Frontend Framework**: [Vue 3](https://vuejs.org) + Vite + Vue Router + Pinia
-- **Styling & UI**: Modern Responsive Design System dengan HSL Tokens & Glassmorphism Aesthetics
-- **Offline & Installable**: Progressive Web App (PWA) dengan Service Worker precaching
+## Struktur repository
 
----
+```text
+WargaHub/
+├── apps/web       # portal publik dan portal warga
+├── apps/api       # REST API, auth, worker, dan database
+├── packages/*     # kontrak dan utilitas lintas aplikasi
+├── docs/          # arsitektur, deployment, backup, dan aset preview
+└── PRD-WargaHub.md
+```
 
-## 🚀 Menjalankan Secara Lokal
+## Menjalankan secara lokal
 
 ### Prasyarat
-- **Bun** version `v1.3.0` atau lebih baru (`curl -fsSL https://bun.sh/install | bash`)
 
-### Langkah Instalasi
+- Bun `1.3.12` atau lebih baru
+- Node.js `22`–`24` bila dibutuhkan oleh tooling
+
+### Instalasi
 
 ```bash
-# 1. Clone repository
 git clone https://github.com/RiprLutuk/WargaHub.git
 cd WargaHub
-
-# 2. Salin environment & install dependensi
 cp .env.example .env
 bun install
+```
 
-# 3. Jalankan migrasi & seed database demo
+### Database dan seed
+
+```bash
 bun run db:migrate
 bun run db:seed
-
-# 4. Jalankan server dev (API + Frontend Web)
 bun run dev
 ```
 
-> 💡 **PGlite Embedded Database**: Tanpa mengisi `DATABASE_URL`, WargaHub otomatis menggunakan PGlite WASM di `.data/wargahub`. Anda tidak memerlukan Docker/Podman untuk menjalankan aplikasi di lingkungan lokal!
+Tanpa `DATABASE_URL`, API memakai PGlite lokal di `.data/wargahub`.
 
-- 🌐 **Portal Web**: `http://localhost:5173`
-- ⚙️ **REST API**: `http://localhost:3000`
-- 📑 **Dokumentasi OpenAPI**: `http://localhost:3000/documentation`
+- Web: `http://localhost:5173`
+- API: `http://localhost:3000`
+- OpenAPI: `http://localhost:3000/documentation`
 
----
+## Akun demo
 
-## 🔑 Akun Demo
+Semua akun seed memakai password `WargaHub123!`.
 
-Setelah menjalankan `bun run db:seed`, Anda dapat mencoba masuk menggunakan salah satu kredensial demo berikut:
+| Peran | Email |
+| --- | --- |
+| Admin RT/RW | `admin@demo.wargahub.id` |
+| Bendahara | `bendahara@demo.wargahub.id` |
+| Koordinator | `koordinator@demo.wargahub.id` |
+| Warga | `warga@demo.wargahub.id` |
 
-| Peran | Email Login | Password | Akses Utama |
-| :--- | :--- | :--- | :--- |
-| **Admin RT/RW** | `admin@demo.wargahub.id` | `WargaHub123!` | Kelola Warga, Organisasi, Pengumuman |
-| **Bendahara** | `bendahara@demo.wargahub.id` | `WargaHub123!` | Verifikasi Pembayaran & Ledger Kas |
-| **Koordinator** | `koordinator@demo.wargahub.id` | `WargaHub123!` | Penanganan Pengaduan & Jadwal Ronda |
-| **Warga** | `warga@demo.wargahub.id` | `WargaHub123!` | Portal Warga, Bayar Tagihan, Pengaduan |
+## Deployment
 
----
+### Web ke Vercel
 
-## 🛡️ Prinsip Privasi & Keamanan
+Set **Root Directory** ke `apps/web`, build command `bun run build`, output directory `dist`, dan `VITE_API_BASE_URL` ke URL API production.
 
-WargaHub dibangun dengan prinsip **Privacy-First & Dignity**:
+### API
 
-1. **Anti-Shaming**: Informasi tunggakan iuran, alasan dispensasi, dan detail keuangan individu **TIDAK PERNAH** dipublikasikan ke daftar publik.
-2. **Pengaduan Terlindungi**: Pengaduan bersikap privat hanya dapat diakses oleh pelapor dan petugas yang ditugaskan.
-3. **Audit Log & Append-Only Ledger**: Setiap tindakan sensitif tercatat di audit log. Transaksi kas tidak dihapus melainkan dikoreksi via entri reversal.
-4. **Bebas Surveillance**: WargaHub tidak mendukung *social scoring*, ranking kepatuhan warga, *biometric tracking*, atau pelacakan lokasi real-time.
+API dapat dijalankan di Koyeb, Render, Railway, atau container host lain. Environment minimum:
 
----
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://...
+WEB_ORIGIN=https://wargahub.demo.pandanteknik.com,https://wargahub.vercel.app
+PUBLIC_BASE_URL=https://wargahub.demo.pandanteknik.com
+SESSION_TTL_HOURS=8
+UPLOAD_DIR=/tmp/wargahub-uploads
+MAX_UPLOAD_BYTES=10485760
+WAHA_ENABLED=false
+```
 
-## 🧪 Pemeriksaan Kualitas Code
+Panduan lengkap tersedia di [docs/deployment/self-hosting.md](docs/deployment/self-hosting.md).
+
+## Quality checks
 
 ```bash
-# Menjalankan typecheck TypeScript di seluruh workspace
 bun run typecheck
-
-# Menjalankan 58+ unit tests backend & frontend
 bun run test
-
-# Membangun bundle produksi untuk API & Web PWA
 bun run build
 ```
 
----
+Jalankan Lighthouse pada deployment production, bukan Vite dev server, untuk mendapatkan metrik yang representatif.
 
-## 📖 Dokumentasi Lengkap
+## Privasi dan keamanan
 
-- 📐 [Arsitektur & ADR](docs/architecture/overview.md)
-- 🚀 [Panduan Self-Hosting Production](docs/deployment/self-hosting.md)
-- 💾 [Strategi Backup & Restore](docs/deployment/backup-restore.md)
-- 📋 [Spesifikasi PRD](PRD-WargaHub.md)
+- Data tunggakan dan detail finansial individu tidak ditampilkan ke publik.
+- Pengaduan privat hanya tersedia bagi pelapor dan petugas terkait.
+- Ledger kas bersifat append-only; koreksi dilakukan melalui reversal.
+- Tidak ada social scoring, ranking warga, biometric tracking, atau pelacakan lokasi real-time.
+- Endpoint sensitif dilindungi session, CSRF, RBAC, rate limit, dan audit log.
 
-## ❤️ Dukung Pengembangan WargaHub
+## Dokumentasi
 
-WargaHub dikembangkan sebagai proyek *open-source* nirlaba untuk membantu transparansi dan kerukunan warga di Indonesia. Jika proyek ini bermanfaat bagi lingkungan Anda, Anda dapat memberikan dukungan pengembangan via **GoPay / QRIS**:
+- [PRD WargaHub](PRD-WargaHub.md)
+- [Arsitektur](docs/architecture/overview.md)
+- [Self-hosting production](docs/deployment/self-hosting.md)
+- [Backup dan restore](docs/deployment/backup-restore.md)
+- [Changelog](CHANGELOG.md)
+
+## Kontribusi
+
+Pull request dan issue sangat diterima. Untuk perubahan besar, buka issue terlebih dahulu agar arah desain dan dampaknya bisa didiskusikan.
+
+1. Fork repository dan buat branch fitur.
+2. Jalankan `bun run check`.
+3. Sertakan konteks perubahan dan screenshot untuk perubahan UI.
+4. Buka pull request ke `main`.
+
+## Dukung pengembangan
+
+WargaHub dikembangkan sebagai proyek open-source nirlaba. Jika proyek ini bermanfaat untuk lingkungan Anda, dukungan pemeliharaan dapat diberikan melalui QRIS:
 
 <div align="center">
-  <img src="docs/donation-qr.jpeg" alt="Dukungan WargaHub via GoPay / QRIS" width="280" style="border-radius: 12px; margin-block: 1rem;" />
-  <p><i>Scan kode QRIS / GoPay di atas untuk berkontribusi mendukung pemeliharaan & pengembangan fitur WargaHub. Terima kasih atas dukungan Anda! 🙏</i></p>
+  <img src="docs/donation-qr.jpeg" alt="QRIS dukungan pengembangan WargaHub" width="240" />
+  <br />
+  <sub>Terima kasih telah membantu WargaHub tetap terbuka dan bermanfaat.</sub>
 </div>
 
----
+## Lisensi
 
-## 📜 Lisensi
+WargaHub dirilis dengan lisensi **[AGPL-3.0-or-later](LICENSE)**.
 
-Lisensi open-source di bawah **[AGPL-3.0-or-later](LICENSE)**.
+<div align="center">
+  <sub>Dibangun untuk lingkungan yang lebih manusiawi.</sub>
+</div>
