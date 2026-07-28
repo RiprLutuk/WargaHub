@@ -229,8 +229,8 @@ function onImported() {
 
 .metric-card:hover {
   transform: translateY(-2px);
-  border-color: var(--teal-600);
-  box-shadow: 0 8px 20px -3px rgba(15, 118, 110, 0.12);
+  border-color: var(--teal-300, #99f6e4);
+  box-shadow: 0 8px 22px -3px rgba(15, 118, 110, 0.1);
 }
 
 .metric-icon {
@@ -368,8 +368,8 @@ function onImported() {
 
 .action-card:hover {
   transform: translateY(-2px);
-  border-color: var(--teal-600);
-  box-shadow: 0 8px 20px -3px rgba(15, 118, 110, 0.12);
+  border-color: var(--teal-300, #99f6e4);
+  box-shadow: 0 8px 22px -3px rgba(15, 118, 110, 0.1);
 }
 
 .action-card.primary-action {

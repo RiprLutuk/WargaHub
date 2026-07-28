@@ -446,8 +446,8 @@ const cctvFeeds = [
 
 .facility-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px -4px rgba(15, 118, 110, 0.15), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
-  border-color: var(--teal-600);
+  box-shadow: 0 12px 28px -4px rgba(15, 118, 110, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+  border-color: var(--teal-300, #99f6e4);
 }
 
 .card-header {
@@ -645,8 +645,8 @@ const cctvFeeds = [
 
 .cctv-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px -4px rgba(15, 118, 110, 0.15);
-  border-color: var(--teal-600);
+  box-shadow: 0 12px 28px -4px rgba(15, 118, 110, 0.12);
+  border-color: var(--teal-300, #99f6e4);
 }
 
 .cctv-screen {

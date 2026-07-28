@@ -209,8 +209,8 @@ const nextActivity = computed(() => activities.data.value?.[0]);
 
 .attention-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -4px rgba(15, 118, 110, 0.12);
-  border-color: var(--teal-600);
+  box-shadow: 0 10px 25px -4px rgba(15, 118, 110, 0.1);
+  border-color: var(--teal-300, #99f6e4);
 }
 
 .bill-card {
