@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, ChevronDown, Menu, Phone, User, X } from 'lucide-vue-next';
+import { ArrowRight, ChevronDown, Menu, PhoneCall, User, X } from 'lucide-vue-next';
 import { getActivePinia } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
@@ -69,7 +69,14 @@ function closeAll() {
           </div>
 
           <RouterLink to="/kontak" class="nav-link" @click="closeAll">Kontak</RouterLink>
-          <RouterLink class="nav-link emergency-link" to="/darurat" @click="closeAll">Darurat</RouterLink>
+          <RouterLink class="nav-link emergency-link" to="/darurat" @click="closeAll">
+            <span class="emergency-beacon" aria-hidden="true">
+              <span class="beacon-ring" />
+              <span class="beacon-dot" />
+            </span>
+            <PhoneCall :size="14" aria-hidden="true" />
+            <span>Darurat</span>
+          </RouterLink>
 
           <!-- Dynamic User Portal Button -->
           <RouterLink
@@ -176,13 +183,71 @@ nav a:not(.button).router-link-active {
   background: var(--teal-50);
   text-decoration: none !important;
 }
+
+/* Emergency Badge & Beacon Pulse */
 nav .emergency-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(225, 29, 72, 0.08);
+  border: 1px solid rgba(225, 29, 72, 0.28);
   color: #e11d48 !important;
-  font-weight: 800;
+  font-weight: 850;
+  text-decoration: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-nav .emergency-link:hover {
-  background: #ffe4e6 !important;
-  color: #be123c !important;
+
+nav .emergency-link:hover,
+nav .emergency-link.router-link-active {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+  transform: translateY(-1px);
+}
+
+nav .emergency-beacon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+.beacon-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #e11d48;
+  opacity: 0.75;
+  animation: beacon-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.beacon-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #e11d48;
+}
+
+nav .emergency-link:hover .beacon-ring,
+nav .emergency-link:hover .beacon-dot,
+nav .emergency-link.router-link-active .beacon-ring,
+nav .emergency-link.router-link-active .beacon-dot {
+  background: #ffffff;
+}
+
+@keyframes beacon-ping {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  75%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
 }
 
 /* Nav Dropdown Styles */
