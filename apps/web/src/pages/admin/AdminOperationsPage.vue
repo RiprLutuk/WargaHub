@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, CalendarClock, CheckCircle2, ClipboardCheck, Clock3, FileClock, FileText, Plus, RefreshCw, Search, ShieldCheck, UserCheck } from 'lucide-vue-next';
+import { Activity, CalendarClock, CheckCircle2, ClipboardCheck, Clock3, FileClock, FileText, MessageSquare, Plus, RefreshCw, Search, Send, ShieldCheck, UserCheck } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
 import AutomatedRosterModal from '../../components/AutomatedRosterModal.vue';
 import StatePanel from '../../components/StatePanel.vue';
@@ -11,12 +11,22 @@ import type { Complaint } from '../../lib/demo';
 import { formatDateTime } from '../../lib/format';
 import { adaptActivities, adaptAuditLogs, adaptPatrolAssignments, adaptResidents } from '../../lib/view-models';
 
+interface WahaStatus {
+  enabled: boolean;
+  baseUrl: string;
+  session: string;
+  connected: boolean;
+  status: string;
+  error?: string;
+}
+
 const props = withDefaults(defineProps<{ section?: 'operations' | 'audit' }>(), { section: 'operations' });
 const complaints = useResource(() => api.get<Complaint[]>('/complaints'));
 const activities = useResource(async () => adaptActivities(await api.get<unknown>('/activities')));
 const patrols = useResource(async () => adaptPatrolAssignments(await api.get<unknown>('/patrol-assignments')));
 const audits = useResource(async () => adaptAuditLogs(await api.get<unknown>('/audit-logs')));
 const residents = useResource(async () => adaptResidents(await api.get<unknown>('/residents')));
+const wahaStatus = useResource(() => api.get<WahaStatus>('/waha/status'));
 
 const tab = ref<'complaints' | 'activities' | 'patrol' | 'notifications'>('complaints');
 const message = ref('');
@@ -51,6 +61,13 @@ const assignForm = reactive({
   workerUserId: '',
 });
 
+const wahaTestForm = reactive({
+  phone: '081234567890',
+  message: 'Halo warga, ini pesan tes notifikasi otomatis dari sistem WargaHub via WAHA API!',
+});
+const wahaSending = ref(false);
+const wahaResult = ref('');
+
 const openComplaints = computed(() => complaints.data.value?.filter(item => !['RESOLVED', 'CLOSED'].includes(item.status)) ?? []);
 
 function failureMessage(cause: unknown) {
@@ -80,6 +97,23 @@ async function onGenerated() {
   message.value = 'Giliran & jadwal otomatis berhasil diterbitkan ke sistem WargaHub!';
   await activities.reload();
   await patrols.reload();
+}
+
+async function sendWahaTest() {
+  if (!wahaTestForm.phone || !wahaTestForm.message) return;
+  wahaSending.value = true;
+  wahaResult.value = '';
+  try {
+    const res = await api.post<{ sent: boolean; message: string }>('/waha/send-test', {
+      phone: wahaTestForm.phone,
+      message: wahaTestForm.message,
+    });
+    wahaResult.value = res.message;
+  } catch (cause) {
+    wahaResult.value = failureMessage(cause);
+  } finally {
+    wahaSending.value = false;
+  }
 }
 
 async function resolve(item: Complaint) {
@@ -163,7 +197,7 @@ async function createPatrol() {
       <div>
         <span class="eyebrow">{{ section === 'audit' ? 'Jejak tindakan sensitif' : 'Koordinasi layanan' }}</span>
         <h1>{{ section === 'audit' ? 'Audit log' : 'Operasional warga' }}</h1>
-        <p>{{ section === 'audit' ? 'Audit log hanya dapat dibaca role berizin dan tidak boleh memuat rahasia, token, atau alasan dispensasi mentah.' : 'Kelola pengaduan, giliran otomatis (sodakoh/ronda), jadwal kegiatan, dan notifikasi warga.' }}</p>
+        <p>{{ section === 'audit' ? 'Audit log hanya dapat dibaca role berizin dan tidak boleh memuat rahasia, token, atau alasan dispensasi mentah.' : 'Kelola pengaduan, giliran otomatis (sodakoh/ronda), jadwal kegiatan, dan notifikasi WAHA WhatsApp.' }}</p>
       </div>
 
       <div v-if="section === 'operations'" class="heading-actions">
@@ -225,7 +259,7 @@ async function createPatrol() {
         <button :class="{ active: tab === 'complaints' }" type="button" @click="tab = 'complaints'"><ClipboardCheck :size="17" /> Pengaduan <span>{{ openComplaints.length }}</span></button>
         <button :class="{ active: tab === 'activities' }" type="button" @click="tab = 'activities'"><Activity :size="17" /> Giliran & Kegiatan</button>
         <button :class="{ active: tab === 'patrol' }" type="button" @click="tab = 'patrol'"><ShieldCheck :size="17" /> Jadwal Ronda</button>
-        <button :class="{ active: tab === 'notifications' }" type="button" @click="tab = 'notifications'"><FileClock :size="17" /> Notifikasi</button>
+        <button :class="{ active: tab === 'notifications' }" type="button" @click="tab = 'notifications'"><MessageSquare :size="17" /> WhatsApp WAHA API</button>
       </nav>
 
       <section v-if="tab === 'complaints'" class="operation-section">
@@ -305,17 +339,69 @@ async function createPatrol() {
         </div>
       </section>
 
-      <section v-else class="notification-admin card card-body">
-        <div>
-          <h2>Status pengiriman</h2>
-          <p class="muted">In-app aktif. Email dikirim asinkron dan kegagalan masuk antrean retry.</p>
+      <!-- WAHA WhatsApp Integration Tab -->
+      <section v-else class="waha-admin-section">
+        <div class="card card-body waha-status-card">
+          <div class="status-header">
+            <span class="waha-icon"><MessageSquare :size="24" /></span>
+            <div>
+              <h2>Integrasi Gateway WhatsApp WAHA API</h2>
+              <p class="muted">Kirim notifikasi tagihan iuran, giliran ronda, dan pengumuman darurat langsung ke WhatsApp warga.</p>
+            </div>
+            <span class="waha-badge" :class="wahaStatus.data.value?.connected ? 'online' : 'offline'">
+              <span class="dot" /> {{ wahaStatus.data.value?.connected ? 'WAHA Terhubung (WORKING)' : 'Gateway Siap / Menunggu WAHA' }}
+            </span>
+          </div>
+
+          <dl class="waha-metrics">
+            <div>
+              <dt>Engine Gateway</dt>
+              <dd>WAHA HTTP API</dd>
+            </div>
+            <div>
+              <dt>Base URL API</dt>
+              <dd><code>{{ wahaStatus.data.value?.baseUrl ?? 'http://localhost:3001' }}</code></dd>
+            </div>
+            <div>
+              <dt>ID Sesi WhatsApp</dt>
+              <dd><code>{{ wahaStatus.data.value?.session ?? 'default' }}</code></dd>
+            </div>
+            <div>
+              <dt>Status Integrasi</dt>
+              <dd><strong class="highlight-text">{{ wahaStatus.data.value?.enabled !== false ? 'Aktif' : 'Non-Aktif' }}</strong></dd>
+            </div>
+          </dl>
         </div>
-        <dl>
-          <div><dt>Data terkirim</dt><dd>100%</dd></div>
-          <div><dt>Menunggu worker</dt><dd>0</dd></div>
-          <div><dt>Gagal setelah retry</dt><dd>0</dd></div>
-        </dl>
-        <div class="notice"><CheckCircle2 :size="18" /> Layanan notifikasi beroperasi dengan normal.</div>
+
+        <!-- Test Notification Sender -->
+        <div class="card card-body waha-test-card">
+          <div class="section-heading">
+            <div>
+              <h2>Uji Coba Kirim Pesan WhatsApp</h2>
+              <p class="muted">Kirim pesan notifikasi pengujian melalui API WAHA ke nomor WhatsApp tujuan.</p>
+            </div>
+          </div>
+
+          <form class="waha-form" @submit.prevent="sendWahaTest">
+            <div class="field">
+              <label for="waha-phone">Nomor WhatsApp Tujuan</label>
+              <input id="waha-phone" v-model="wahaTestForm.phone" placeholder="Contoh: 081234567890" required />
+            </div>
+
+            <div class="field">
+              <label for="waha-msg">Isi Pesan Notifikasi</label>
+              <textarea id="waha-msg" v-model="wahaTestForm.message" rows="3" placeholder="Tulis isi pesan yang ingin dikirim..." required />
+            </div>
+
+            <button class="button" type="submit" :disabled="wahaSending">
+              <Send :size="16" /> {{ wahaSending ? 'Mengirim pesan WA...' : 'Kirim Pesan WhatsApp via WAHA' }}
+            </button>
+          </form>
+
+          <div v-if="wahaResult" class="notice notice-info" style="margin-top: 1rem;">
+            <CheckCircle2 :size="18" /> {{ wahaResult }}
+          </div>
+        </div>
       </section>
     </template>
 
@@ -412,15 +498,25 @@ async function createPatrol() {
 .need-meter>span{height:.45rem;overflow:hidden;border-radius:99px;background:var(--cream-100)}
 .need-meter i{display:block;height:100%;border-radius:inherit;background:var(--teal-600)}
 .need-meter strong{color:var(--amber-700);font-size:.75rem}
-.notification-admin{display:grid;gap:1rem}
-.notification-admin dl{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin:0}
-.notification-admin dl div{padding:1rem;border-radius:var(--radius-md);background:var(--cream-50)}
-.notification-admin dt{color:var(--ink-650);font-size:.75rem}
-.notification-admin dd{margin:.25rem 0 0;font-size:1.5rem;font-weight:850}
+.waha-admin-section{display:grid;gap:1.2rem}
+.waha-status-card,.waha-test-card{padding:1.6rem;border-radius:var(--radius-lg)}
+.status-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem}
+.waha-icon{display:grid;width:3.2rem;height:3.2rem;place-items:center;border-radius:1rem;background:var(--teal-100);color:var(--teal-700);flex:none}
+.status-header h2{margin:0 0 .2rem;font-size:1.3rem}
+.waha-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;font-size:.8rem;font-weight:800;margin-left:auto}
+.waha-badge.online{background:var(--teal-100);color:var(--teal-800)}
+.waha-badge.offline{background:var(--cream-100);color:var(--ink-750)}
+.waha-badge .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--teal-600)}
+.waha-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0}
+.waha-metrics div{padding:1rem;border-radius:var(--radius-md);background:var(--cream-50);border:1px solid var(--line)}
+.waha-metrics dt{font-size:.76rem;color:var(--ink-500);font-weight:750;text-transform:uppercase}
+.waha-metrics dd{margin:.3rem 0 0;font-size:1.05rem;font-weight:850}
+.highlight-text{color:var(--teal-700)}
+.waha-form{display:grid;gap:1rem;max-width:38rem;margin-top:1rem}
 .side-panel{position:fixed;z-index:50;top:0;right:0;width:min(100%,35rem);height:100vh;padding:1.5rem;overflow-y:auto;border-left:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow-lg)}
 .panel-heading{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.3rem}
 .panel-heading button{width:2.75rem;height:2.75rem;border:1px solid var(--line);border-radius:.7rem;background:white;font-size:1.5rem;cursor:pointer}
 .two-fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-@media(max-width:950px){.activity-admin-grid{grid-template-columns:1fr 1fr}.operation-list article{grid-template-columns:auto 1fr}.operation-list article>.status-badge{grid-column:2}.row-actions,.operation-list article>.button{grid-column:1/-1}}
-@media(max-width:620px){.admin-heading{align-items:flex-start;flex-direction:column}.activity-admin-grid,.notification-admin dl{grid-template-columns:1fr}.row-actions{flex-direction:column}.row-actions .button{width:100%}.two-fields{grid-template-columns:1fr}}
+@media(max-width:950px){.waha-metrics{grid-template-columns:1fr 1fr}.activity-admin-grid{grid-template-columns:1fr 1fr}.operation-list article{grid-template-columns:auto 1fr}.operation-list article>.status-badge{grid-column:2}.row-actions,.operation-list article>.button{grid-column:1/-1}}
+@media(max-width:620px){.waha-metrics{grid-template-columns:1fr}.admin-heading{align-items:flex-start;flex-direction:column}.activity-admin-grid{grid-template-columns:1fr}.row-actions{flex-direction:column}.row-actions .button{width:100%}.two-fields{grid-template-columns:1fr}}
 </style>

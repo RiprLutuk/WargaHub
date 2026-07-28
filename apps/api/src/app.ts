@@ -32,6 +32,7 @@ import { patrolRoutes } from './modules/patrols/routes.js';
 import { settingsRoutes } from './modules/settings/routes.js';
 import { governanceRoutes } from './modules/governance/routes.js';
 import { extendedRoutes } from './modules/extended/routes.js';
+import { wahaRoutes } from './modules/waha/routes.js';
 
 type BuildAppOptions = {
   database?: Database;
@@ -164,6 +165,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(settingsRoutes, { prefix: '/api/v1' });
   await app.register(governanceRoutes, { prefix: '/api/v1' });
   await app.register(extendedRoutes, { prefix: '/api/v1' });
+  await app.register(wahaRoutes, { prefix: '/api/v1' });
 
   return app;
 }

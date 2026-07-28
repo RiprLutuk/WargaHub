@@ -22,6 +22,11 @@ const environmentSchema = z.object({
   SMTP_FROM: z.string().default('WargaHub <noreply@example.org>'),
   PUBLIC_BASE_URL: z.string().url().default('http://localhost:5173'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  // WAHA (WhatsApp HTTP API Gateway) Integration Configs
+  WAHA_BASE_URL: z.string().url().default('http://localhost:3001'),
+  WAHA_API_KEY: z.string().optional(),
+  WAHA_SESSION: z.string().default('default'),
+  WAHA_ENABLED: z.coerce.boolean().default(true),
 });
 
 export type AppConfig = z.infer<typeof environmentSchema>;
