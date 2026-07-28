@@ -4,6 +4,23 @@ Semua perubahan penting WargaHub dicatat di file ini. Format mengikuti
 [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan versi release
 mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [0.4.0] - 2026-07-28
+
+### Added
+- **Struktur Organisasi & Pengurus RT/RW**:
+  - Migrasi database `0007_organization_structure.sql` untuk tabel `organization_officers`.
+  - Halaman publik Struktur Pengurus (`PublicStructurePage.vue`) di rute `/struktur` dengan filter seksi/bidang (Pengurus Inti, Seksi Keamanan, Seksi Lingkungan, Pemuda Karang Taruna) dan tautan kontak langsung WhatsApp.
+  - Endpoint proyeksi publik `GET /api/v1/public/officers`.
+  - Endpoint CRUD Admin `/api/v1/organization/officers` serta panel manajemen pengurus di `AdminContentPage.vue` (`/admin/organisasi`).
+- **Integrasi WhatsApp WAHA (WhatsApp HTTP API)**:
+  - Service client `WahaService` (`apps/api/src/services/waha.ts`) untuk pengiriman pesan teks, berkas, format nomor otomatis ke format WAHA (`@c.us` & `@g.us`), serta pemeriksaan status sesi.
+  - Endpoint Webhook publik `/api/v1/public/waha/webhook` dengan auto-reply bot WargaHub.
+  - Kartu pemantauan sesi WAHA & penguji kirim pesan instan di portal Admin Operasional (`AdminOperationsPage.vue`).
+
+### Changed
+- **Desain Kartu Pengaduan Publik (`PublicComplaintsPage.vue`)**: Refaktor penuh tampilan kartu pengaduan warga publik dari susunan stacked tag menjadi layout 3-kolom yang lebih bersih, infomatif, dan modern (Avatar kategori, Detail deskripsi & lokasi/tgl, Status badge).
+- **Responsivitas & Layout Portal Publik**: Perbaikan spasi, navigasi navbar dropdown, dan footer pada seluruh halaman portal publik (`PublicLayout.vue`).
+
 ## [0.3.0] - 2026-07-28
 
 ### Added
