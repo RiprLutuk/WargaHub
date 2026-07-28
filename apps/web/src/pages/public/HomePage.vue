@@ -339,8 +339,8 @@ onMounted(() => {
   padding: clamp(2.2rem, 5vw, 3.5rem);
   border-radius: var(--radius-xl);
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 100%);
-  border: 1px solid #f59e0b;
-  box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.18);
   color: #78350f;
 }
 .cta-banner::before {
@@ -351,7 +351,7 @@ onMounted(() => {
   width: 25rem;
   height: 25rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, transparent 70%);
   pointer-events: none;
 }
 .cta-content {
@@ -369,8 +369,8 @@ onMounted(() => {
   gap: 0.45rem;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  background: rgba(180, 83, 9, 0.12);
-  border: 1px solid rgba(180, 83, 9, 0.25);
+  background: rgba(180, 83, 9, 0.08);
+  border: 1px solid rgba(180, 83, 9, 0.14);
   color: #92400e;
   font-size: 0.76rem;
   font-weight: 600;
@@ -408,8 +408,8 @@ onMounted(() => {
   gap: 0.35rem;
   padding: 0.3rem 0.65rem;
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(180, 83, 9, 0.18);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(180, 83, 9, 0.12);
   color: #78350f;
   font-size: 0.8rem;
   font-weight: 600;
@@ -432,13 +432,13 @@ onMounted(() => {
   font-weight: 600;
   font-size: 0.95rem;
   text-decoration: none !important;
-  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.28);
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);
   transition: all 0.2s ease;
 }
 .cta-primary-btn:hover {
   background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.38);
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.35);
 }
 .cta-secondary-btn {
   display: inline-flex;
@@ -447,8 +447,8 @@ onMounted(() => {
   gap: 0.5rem;
   padding: 0.7rem 1.2rem;
   border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(180, 83, 9, 0.25);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(180, 83, 9, 0.15);
   color: #78350f !important;
   font-size: 0.86rem;
   font-weight: 600;
@@ -456,8 +456,8 @@ onMounted(() => {
   transition: all 0.15s ease;
 }
 .cta-secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(180, 83, 9, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(180, 83, 9, 0.28);
 }
 
 @media (max-width: 900px) {
