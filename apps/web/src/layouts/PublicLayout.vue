@@ -436,11 +436,11 @@ main {
 }
 
 .status-indicator {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.6rem;
   font-size: 0.85rem;
-  font-weight: 750;
+  font-weight: 500;
   color: #5eead4;
 }
 
@@ -462,7 +462,7 @@ main {
   border: 1px solid rgba(225, 29, 72, 0.32);
   color: #f43f5e !important;
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none !important;
   transition: all 0.15s ease;
 }
@@ -507,7 +507,7 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #cbd5e1;
   font-size: 0.75rem;
-  font-weight: 750;
+  font-weight: 500;
 }
 
 /* Nav Col */
@@ -519,7 +519,7 @@ main {
 
 .footer-nav-group h4 {
   font-size: 0.85rem;
-  font-weight: 850;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #2dd4bf;
@@ -538,7 +538,7 @@ main {
 .footer-nav-group a {
   color: #cbd5e1;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none !important;
   transition: color 0.15s ease, transform 0.15s ease;
   display: inline-block;
@@ -566,7 +566,7 @@ main {
   align-items: center;
   gap: 0.55rem;
   color: #5eead4;
-  font-weight: 850;
+  font-weight: 600;
   font-size: 0.95rem;
 }
 
@@ -589,7 +589,7 @@ main {
   border-radius: 0.75rem;
   background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
   color: #ffffff !important;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.88rem;
   text-decoration: none !important;
   box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
@@ -625,7 +625,7 @@ main {
   align-items: center;
   gap: 0.35rem;
   color: #94a3b8;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 @media (max-width: 960px) {
