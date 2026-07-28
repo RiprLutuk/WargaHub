@@ -7,9 +7,11 @@ mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [0.5.0] - 2026-07-28
 
 ### Added
-- **Pemantauan Live Stream CCTV Lingkungan**:
-  - Tab pemantauan CCTV publik di `PublicFacilitiesPage.vue` (`/fasilitas?tab=cctv`) yang menampilkan 4 kamera siaga publik (Gerbang Utama RT, Pos Ronda Central, Taman Warga, Pertigaan Gang Utama).
-  - Integrasi arsitektur gateway RTSP/HLS/WebRTC berlatensi rendah (<1 detik) untuk pemantauan keamanan warga 24/7.
+- **Panel Konfigurasi CCTV di Portal Admin Operasional**:
+  - Tab baru **Konfigurasi CCTV** di `/admin/operasional` (`AdminOperationsPage.vue`) untuk menambah, mengelola alamat RTSP/HLS stream IP Camera, mengatur resolusi & dukungan PTZ, serta mengontrol visibilitas tayangan publik/internal.
+- **Sinkronisasi Rute Bersih & Modal Layar Penuh CCTV**:
+  - Dukungan Rute Bersih (*Clean Path Routes*) `/fasilitas/cctv` dan `/cctv` serta modal interaktif *Fullscreen Live Stream* 1080p 60fps dengan tombol kontrol arah PTZ untuk warga yang sudah login.
+
 - **Panduan Kapabilitas & Tugas Pengurus RT/RW**:
   - Penjelasan visual 6 pilar wewenang & fungsi pengurus RT/RW di `PublicStructurePage.vue` (`/struktur`) meliputi Pendataan Warga, Keuangan Kas, Operasional/Ronda, Surat Digital, Musyawarah/Voting, dan WA Broadcast.
 - **Sinkronisasi Tab dengan URL Query Parameter**:
