@@ -1,24 +1,26 @@
 /* Base Design System Tokens & Base Rules */
 :root {
   --content: 84rem;
+  --font-display: 'Outfit', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Universal Typography Enforcement */
-body, button, input, select, textarea, span, div, p, label, a, table, th, td {
-  font-family: var(--font-sans) !important;
+/* Universal Typography Enforcement - Bulletproof Non-Serif Stack */
+* {
+  font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }
 
-h1, h2, h3, h4, h5, h6, .page-heading h1 {
-  font-family: var(--font-display), var(--font-sans) !important;
-  letter-spacing: -0.01em;
+h1, h2, h3, h4, h5, h6, .page-heading h1, .brand-copy strong {
+  font-family: 'Outfit', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  letter-spacing: -0.015em;
 }
 
 html {
-  font-family: var(--font-sans);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   color-scheme: light;
   scroll-behavior: smooth;
   background: var(--surface);
@@ -28,7 +30,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: var(--font-sans);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   background: var(--surface);
   color: var(--ink-900);
 }
@@ -110,8 +112,8 @@ img, video {
 .section-heading h2 { margin-bottom: 0; }
 .section-heading p { margin-bottom: 0; }
 
-/* Clean High-Contrast Button Styling */
-.button {
+/* Bulletproof High-Contrast Button System */
+.button, a.button, button.button {
   display: inline-flex;
   min-height: 2.7rem;
   align-items: center;
@@ -120,50 +122,61 @@ img, video {
   padding: 0.55rem 1.1rem;
   white-space: nowrap !important;
   word-break: keep-all !important;
-  border: 1px solid var(--teal-700);
+  border: 1px solid #0f766e !important;
   border-radius: 0.75rem;
-  background: var(--teal-700) !important;
+  background: #0f766e !important;
   color: #ffffff !important;
-  font-family: var(--font-sans) !important;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
   font-weight: 600 !important;
   font-size: 0.88rem;
   line-height: 1.2;
-  text-decoration: none;
+  text-decoration: none !important;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(15, 118, 110, 0.22);
   transition: all 160ms ease;
 }
-.button:hover {
-  background: var(--teal-600) !important;
-  border-color: var(--teal-600);
+
+.button:hover, a.button:hover, button.button:hover {
+  background: #0d9488 !important;
+  border-color: #0d9488 !important;
   color: #ffffff !important;
-  box-shadow: 0 5px 16px rgba(15, 118, 110, 0.32);
+  box-shadow: 0 5px 16px rgba(15, 118, 110, 0.35);
   transform: translateY(-1px);
 }
-.button:disabled {
-  cursor: not-allowed;
-  background: #cbd5e1 !important;
+
+.button:disabled, a.button:disabled, button.button:disabled, .button[disabled] {
+  cursor: not-allowed !important;
+  background: #e2e8f0 !important;
   border-color: #cbd5e1 !important;
-  color: #64748b !important;
-  opacity: 0.8;
-  box-shadow: none;
-  transform: none;
+  color: #475569 !important; /* Dark Grey Text for High Contrast */
+  opacity: 1 !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
-.button-secondary {
-  border: 1px solid var(--ink-950) !important;
+
+.button-secondary, a.button-secondary, button.button-secondary {
+  border: 1px solid #0f172a !important;
   background: #ffffff !important;
-  color: var(--ink-950) !important;
+  color: #0f172a !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
-.button-secondary:hover {
-  border-color: var(--teal-700) !important;
-  background: var(--teal-50) !important;
-  color: var(--teal-800) !important;
-  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.12);
+
+.button-secondary:hover, a.button-secondary:hover, button.button-secondary:hover {
+  border-color: #0f766e !important;
+  background: #f0fdf4 !important;
+  color: #0f766e !important;
 }
-.button-ghost { border-color: transparent; background: transparent; color: var(--teal-700) !important; box-shadow: none; }
-.button-ghost:hover { background: var(--teal-50); color: var(--teal-800) !important; transform: none; }
-.button-danger { background: var(--coral-700) !important; border-color: var(--coral-700); color: white !important; box-shadow: 0 4px 14px rgba(190, 18, 60, 0.25); }
+
+.button-secondary:disabled, a.button-secondary:disabled, button.button-secondary:disabled {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+.button-ghost { border-color: transparent !important; background: transparent !important; color: #0f766e !important; box-shadow: none; }
+.button-ghost:hover { background: #f0fdf4 !important; color: #0d9488 !important; transform: none; }
+.button-danger { background: #be123c !important; border-color: #be123c !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(190, 18, 60, 0.25); }
 .button-danger:hover { background: #9f1239 !important; }
 .button-sm { min-height: 2.35rem; padding: 0.45rem 0.8rem; font-size: 0.83rem; border-radius: 0.65rem; }
 
@@ -177,7 +190,7 @@ img, video {
   border-radius: 0.75rem;
   background: #ffffff;
   color: var(--ink-950);
-  font-family: var(--font-sans) !important;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .field textarea { min-height: 7rem; resize: vertical; }
@@ -217,7 +230,7 @@ img, video {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.88rem;
-  font-family: var(--font-sans) !important;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
 }
 
 .data-table th, .data-table td {
@@ -273,7 +286,7 @@ img, video {
   background: #fef3c7 !important;
   border: 1px solid #f59e0b !important;
   color: #92400e !important;
-  font-family: var(--font-sans) !important;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
   font-size: 0.8rem !important;
   font-weight: 700 !important;
   white-space: nowrap !important;
