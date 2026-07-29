@@ -120,13 +120,15 @@ API dapat dijalankan di Koyeb, Render, Railway, atau container host lain. Enviro
 ```env
 NODE_ENV=production
 DATABASE_URL=postgresql://...
-WEB_ORIGIN=https://wargahub.demo.pandanteknik.com,https://wargahub.vercel.app
-PUBLIC_BASE_URL=https://wargahub.demo.pandanteknik.com
+WEB_ORIGIN=https://your-web-domain.example,https://your-preview-domain.example
+PUBLIC_BASE_URL=https://your-web-domain.example
 SESSION_TTL_HOURS=8
 UPLOAD_DIR=/tmp/wargahub-uploads
 MAX_UPLOAD_BYTES=10485760
 WAHA_ENABLED=false
 ```
+
+Ganti nilai placeholder dengan domain dan connection string milik deployment Anda. Jangan commit secret atau connection string production ke repository.
 
 Panduan lengkap tersedia di [docs/deployment/self-hosting.md](docs/deployment/self-hosting.md).
 
